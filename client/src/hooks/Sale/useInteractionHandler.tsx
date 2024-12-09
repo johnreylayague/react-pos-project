@@ -1,7 +1,9 @@
+import { Dispatch } from "@reduxjs/toolkit";
 import React from "react";
 import { isMobile } from "react-device-detect";
+import { saleActions } from "../../store/sale-slice";
 
-export const useInteractionHandler = (onOpenEditMode: () => void, isOpenEditMode: boolean) => {
+export const useInteractionHandler = (dispatch: Dispatch) => {
   const holdTimeout = React.useRef<number | null>(null);
 
   const clearHoldTimeout = () => {
@@ -13,7 +15,7 @@ export const useInteractionHandler = (onOpenEditMode: () => void, isOpenEditMode
 
   const handleOnMouseDown = () => {
     holdTimeout.current = setTimeout(() => {
-      onOpenEditMode();
+      dispatch(saleActions.handleOnOpenEdit());
     }, 1000);
   };
 

@@ -3,7 +3,6 @@ import React from "react";
 export const useSearch = () => {
   const [searchData, setSearchData] = React.useState({
     searchInputValue: "",
-    isSearch: false,
   });
 
   const handleOnClearSearchInput = () => {

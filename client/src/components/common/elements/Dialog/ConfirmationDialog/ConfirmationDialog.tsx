@@ -27,9 +27,11 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = (props) => {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitleStyled id="alert-dialog-title">{title}</DialogTitleStyled>
+
         <DialogContentStyled>
           <DialogContentText id="alert-dialog-description">{description}</DialogContentText>
         </DialogContentStyled>
+
         <DialogActionsStyled>
           <TextButtonStyled onClick={onClose}>CANCEL</TextButtonStyled>
           <TextButtonStyled onClick={onDelete}>DELETE</TextButtonStyled>

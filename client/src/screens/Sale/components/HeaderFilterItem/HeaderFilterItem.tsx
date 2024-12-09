@@ -28,6 +28,7 @@ import { Link, LinkProps } from "react-router-dom";
 import { useMenu } from "../../../../hooks/material-ui/useMenu/useMenu";
 import { useDispatch } from "react-redux";
 import { drawerActions } from "../../../../store/drawer-slice";
+import { saleActions } from "../../../../store/sale-slice";
 
 const MenuButton = styled(IconButton)<IconButtonProps>(({ theme }) => ({
   marginLeft: `-${theme.spacing(1)}`,
@@ -81,12 +82,10 @@ const MenuContainer = styled(Box)<BoxProps>(({ theme }) => ({
   flexGrow: 1,
 }));
 
-type HeaderFilterItemProps = {
-  onOpenSearch: () => void;
-};
+type HeaderFilterItemProps = {};
 
 const HeaderFilterItem: React.FC<HeaderFilterItemProps> = (props) => {
-  const { onOpenSearch } = props;
+  const {} = props;
 
   const dispatch = useDispatch();
 
@@ -101,6 +100,10 @@ const HeaderFilterItem: React.FC<HeaderFilterItemProps> = (props) => {
     dispatch(drawerActions.handleOpenDrawer());
   };
 
+  const handleOnOpenSearch = () => {
+    dispatch(saleActions.handleOnOpenSearch());
+  };
+
   return (
     <AppBar elevation={0} position="static" color="success">
       <Toolbar>
@@ -109,7 +112,7 @@ const HeaderFilterItem: React.FC<HeaderFilterItemProps> = (props) => {
         </MenuButton>
 
         <MenuContainer>
-          <TicketButton component={Link} to="ticket/list" relative="path">
+          <TicketButton component={Link} to="/ticket" relative="path">
             <Typography component={"h6"} variant="h6">
               Ticket
             </Typography>
@@ -151,7 +154,7 @@ const HeaderFilterItem: React.FC<HeaderFilterItemProps> = (props) => {
           </MenuStyled>
         </MenuContainer>
 
-        <SearchButton onClick={onOpenSearch}>
+        <SearchButton onClick={handleOnOpenSearch}>
           <SearchIconStyled />
         </SearchButton>
       </Toolbar>

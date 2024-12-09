@@ -194,23 +194,21 @@ export type initialItemState = {
   shapeData: ShapesDataProps[];
 };
 
-const initialState: initialItemState = {
-  isShowSideBar: false,
-  isSetupItem: false,
-  isSearch: false,
-  isSelectionMode: false,
-  isSelectionInProgress: false,
-  menuData: menuDataList,
-  itemData: itemDataList,
-  categoryData: categoryDataList,
-  selectedCount: 0,
-  colorData: colorsDataList,
-  shapeData: shapesDataList,
-};
-
 const itemSlice = createSlice({
   name: "item",
-  initialState,
+  initialState: {
+    isShowSideBar: false,
+    isSetupItem: false,
+    isSearch: false,
+    isSelectionMode: false,
+    isSelectionInProgress: false,
+    menuData: menuDataList,
+    itemData: itemDataList,
+    categoryData: categoryDataList,
+    selectedCount: 0,
+    colorData: colorsDataList,
+    shapeData: shapesDataList,
+  } as initialItemState,
   reducers: {
     selectColorPicker: (state, action: { payload: { colorId: number } }) => {
       const { colorId } = action.payload;

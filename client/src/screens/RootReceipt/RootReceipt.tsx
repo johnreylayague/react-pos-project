@@ -83,7 +83,7 @@ const SearchIcon = styled(Search)<IconProps>(({ theme }: { theme: Theme }) => ({
 
 const RootContainer = styled(Box)<BoxProps>(({}: { theme: Theme }) => ({
   display: "flex",
-  height: "100vh",
+  height: "100dvh",
 }));
 
 const ListStyled = styled(List)<ListProps>(({ theme }: { theme: Theme }) => ({

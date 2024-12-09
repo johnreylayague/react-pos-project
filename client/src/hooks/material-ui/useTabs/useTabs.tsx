@@ -1,12 +1,9 @@
 import React from "react";
 
-export type handleTabChange = (event: React.SyntheticEvent | null, newValue: number) => void;
-export type tabIndex = number;
-
 export const useTabs = () => {
-  const [tabIndex, setTabIndex] = React.useState(0);
+  const [tabIndex, setTabIndex] = React.useState<number>(0);
 
-  const handleTabChange: handleTabChange = (event, newValue) => {
+  const handleTabChange = (_event: React.SyntheticEvent | null, newValue: number) => {
     setTabIndex(newValue);
   };
 

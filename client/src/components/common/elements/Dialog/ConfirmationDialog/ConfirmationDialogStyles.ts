@@ -10,14 +10,12 @@ import {
 import { styled, Theme } from "@mui/material/styles";
 import TextButton from "../../Button/TextButton/TextButton";
 
-export const DialogTitleStyled = styled(DialogTitle)<DialogTitleProps>(
-  ({ theme }: { theme: Theme }) => ({
-    fontWeight: "bold",
-  })
-);
+export const DialogTitleStyled = styled(DialogTitle)<DialogTitleProps>(({}: { theme: Theme }) => ({
+  fontWeight: "bold",
+}));
 
 export const DialogContentStyled = styled(DialogContent)<DialogContentProps>(
-  ({ theme }: { theme: Theme }) => ({
+  ({}: { theme: Theme }) => ({
     paddingBottom: 0,
   })
 );

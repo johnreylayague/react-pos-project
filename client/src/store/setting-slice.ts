@@ -2,9 +2,9 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const menuDataList = [
   { id: 1, title: "General", link: "/settings/general", icon: "settings" },
-  { id: 2, title: "Printers", link: "/settings/printers", icon: "print" },
-  { id: 3, title: "Customer displays", link: "/settings/customer-display", icon: "tablet" },
-  { id: 4, title: "Taxes displays", link: "/settings/taxes-display", icon: "percent" },
+  // { id: 2, title: "Printers", link: "/settings/printers", icon: "print" },
+  // { id: 3, title: "Customer displays", link: "/settings/customer-display", icon: "tablet" },
+  // { id: 4, title: "Taxes displays", link: "/settings/taxes-display", icon: "percent" },
 ];
 
 const generalDataList = [

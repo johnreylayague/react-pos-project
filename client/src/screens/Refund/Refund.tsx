@@ -58,7 +58,7 @@ const MobileView = styled(Box)<BoxProps>(({ theme }: { theme: Theme }) => ({
   },
   display: "flex",
   flexDirection: "column",
-  height: "calc(100vh - 56px)",
+  height: "calc(100dvh - 56px)",
 }));
 
 type RefundProps = {};

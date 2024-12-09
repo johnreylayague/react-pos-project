@@ -33,7 +33,7 @@ const BoxStyled = styled(Box)<BoxProps>(({ theme }: { theme: Theme }) => ({
     height: `calc(100vh - 56px)`,
   } as CSSObject,
   overflowY: "auto",
-  height: `calc(100vh - 64px)`,
+  height: `calc(100dvh - 64px)`,
 }));
 
 const PaperStyled = styled(Paper)<PaperProps>(({ theme }: { theme: Theme }) => ({

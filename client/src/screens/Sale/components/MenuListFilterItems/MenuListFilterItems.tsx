@@ -1,5 +1,6 @@
-import { Menu, MenuItem } from "@mui/material";
+import { MenuItem } from "@mui/material";
 import React from "react";
+import { MenuStyled } from "./MenuListFilterItemsStyles";
 
 type MenuListFilterItemsProps = {
   anchorEl: HTMLElement | null;
@@ -10,7 +11,7 @@ const MenuListFilterItems: React.FC<MenuListFilterItemsProps> = (props) => {
   const { anchorEl, isOpen, onClose } = props;
 
   return (
-    <Menu
+    <MenuStyled
       id="basic-menu"
       anchorEl={anchorEl}
       open={isOpen}
@@ -26,16 +27,11 @@ const MenuListFilterItems: React.FC<MenuListFilterItemsProps> = (props) => {
         vertical: "top",
         horizontal: "left",
       }}
-      sx={(theme) => ({
-        "& .MuiMenu-paper": {
-          borderRadius: 0,
-        },
-      })}
     >
       <MenuItem onClick={onClose}>All items</MenuItem>
       <MenuItem onClick={onClose}>CATEGORY 1</MenuItem>
       <MenuItem onClick={onClose}>CATEGORY 2</MenuItem>
-    </Menu>
+    </MenuStyled>
   );
 };
 

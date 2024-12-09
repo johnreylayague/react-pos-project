@@ -1,57 +1,14 @@
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  IconButton,
-  Menu,
-  MenuItem,
-  ListItemIcon,
-  ListItemText,
-  styled,
-  Theme,
-  AppBarProps,
-  IconProps,
-  MenuProps,
-  TypographyProps,
-} from "@mui/material";
+import { Toolbar, MenuItem, ListItemIcon, ListItemText, IconButton } from "@mui/material";
 import React from "react";
-import { MoreVert, Delete as DeleteIcon, Sync as SyncIcon } from "@mui/icons-material";
-import OptionsMenu from "../../../../components/common/elements/Dropdown/OptionsMenu/OptionsMenu";
-
-const AppBarStyled = styled(AppBar)<AppBarProps>(({ theme }: { theme: Theme }) => ({
-  background: theme.palette.common.white,
-  borderBottom: `1px solid ${theme.palette.divider}`,
-}));
-
-const MoreVertIcon = styled(MoreVert)<IconProps>(({ theme }: { theme: Theme }) => ({
-  color: theme.palette.common.black,
-}));
-
-const MenuStyled = styled(Menu)<MenuProps>(({ theme }: { theme: Theme }) => ({
-  "& .MuiMenu-paper	": {
-    borderRadius: 0,
-  },
-}));
-
-const Title = styled(Typography)<TypographyProps>(({ theme }: { theme: Theme }) => ({
-  color: theme.palette.common.black,
-  flexGrow: 1,
-}));
+import { Delete as DeleteIcon, Sync as SyncIcon } from "@mui/icons-material";
+import { AppBarStyled, MoreVertIcon, Title, MenuStyled } from "./TicketHeaderStyles";
+import { useMenu } from "../../../../hooks/material-ui/useMenu/useMenu";
 
 type TicketHeaderProps = {};
 const TicketHeader: React.FC<TicketHeaderProps> = (props) => {
   const {} = props;
 
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const { anchorEl, handleCloseMenu, handleOpenMenu, isOpen } = useMenu();
 
   return (
     <AppBarStyled elevation={0} position="static">
@@ -60,27 +17,36 @@ const TicketHeader: React.FC<TicketHeaderProps> = (props) => {
           Ticket
         </Title>
 
-        <OptionsMenu
-          id="button-menu"
-          content={<MoreVertIcon />}
+        <IconButton onClick={handleOpenMenu}>
+          <MoreVertIcon />
+        </IconButton>
+
+        <MenuStyled
           anchorEl={anchorEl}
-          isOpen={open}
-          onClose={handleClose}
-          onOpen={handleClick}
+          open={isOpen}
+          onClose={handleCloseMenu}
+          anchorOrigin={{
+            vertical: "top",
+            horizontal: "left",
+          }}
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "left",
+          }}
         >
-          <MenuItem onClick={handleClose}>
+          <MenuItem onClick={handleCloseMenu}>
             <ListItemIcon>
               <DeleteIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText>Clear ticket</ListItemText>
           </MenuItem>
-          <MenuItem onClick={handleClose}>
+          <MenuItem onClick={handleCloseMenu}>
             <ListItemIcon>
               <SyncIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText>Sync</ListItemText>
           </MenuItem>
-        </OptionsMenu>
+        </MenuStyled>
       </Toolbar>
     </AppBarStyled>
   );

@@ -11,10 +11,11 @@ import {
 } from "@mui/material";
 import React from "react";
 import { useSearch } from "../../../../hooks/Sale/useSearch";
+import { useDispatch } from "react-redux";
+import { saleActions } from "../../../../store/sale-slice";
 
 const BackButton = styled(IconButton)<IconButtonProps>(({ theme }) => ({
   marginLeft: `-${theme.spacing(1)}`,
-  // marginRight: theme.spacing(2),
 }));
 
 const CloseButton = styled(IconButton)<IconButtonProps>(({ theme }) => ({
@@ -36,18 +37,21 @@ const CloseIcon = styled(Close)<IconProps>(({ theme }) => ({
   color: theme.palette.common.white,
 }));
 
-type HeaderSearchItemProps = {
-  onCloseSearch: () => void;
-};
+type HeaderSearchItemProps = {};
 const HeaderSearchItem: React.FC<HeaderSearchItemProps> = (props) => {
-  const { onCloseSearch } = props;
+  const {} = props;
 
+  const dispatch = useDispatch();
   const { searchInputValue, handleOnClearSearchInput, handleOnUpdateSearchInput } = useSearch();
+
+  const handleOnCloseSearch = () => {
+    dispatch(saleActions.handleOnCloseSearch());
+  };
 
   return (
     <AppBar elevation={0} position="static" color="success">
       <Toolbar>
-        <BackButton onClick={onCloseSearch}>
+        <BackButton onClick={handleOnCloseSearch}>
           <ArrowBackIcon />
         </BackButton>
 
@@ -55,7 +59,7 @@ const HeaderSearchItem: React.FC<HeaderSearchItemProps> = (props) => {
           autoFocus
           placeholder="Search"
           value={searchInputValue}
-          onChange={(event) => handleOnUpdateSearchInput(event)}
+          onChange={handleOnUpdateSearchInput}
         />
 
         {searchInputValue && (

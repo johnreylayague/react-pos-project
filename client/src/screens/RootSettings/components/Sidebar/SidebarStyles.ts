@@ -31,7 +31,7 @@ export const SidebarContainer = styled(Box)<BoxProps>(({ theme }: { theme: Theme
   [theme.breakpoints.up("sm")]: {
     borderRight: `1px solid ${theme.palette.divider}`,
   },
-  height: `calc(100vh - 64px)`,
+  height: `calc(100dvh - 64px)`,
   display: "flex",
   flexDirection: "column",
   justifyContent: "space-between",

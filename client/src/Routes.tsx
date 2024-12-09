@@ -10,7 +10,6 @@ import Registration from "./screens/Registration/Registration.tsx";
 import SignIn from "./screens/SignIn/SignIn.tsx";
 import Welcome from "./screens/Welcome/Welcome.tsx";
 import ForgotPassword from "./screens/ForgotPassword/ForgotPassword.tsx";
-import SalesPage from "./screens/Sales/Sales.tsx";
 import Test from "./screens/Test/Test.tsx";
 import NotFound from "./screens/NotFound/NotFound.tsx";
 import ItemPage from "./screens/Item/Item.tsx";
@@ -19,8 +18,8 @@ import ItemEditPage from "./screens/ItemEdit/ItemEdit.tsx";
 import RootItem from "./screens/RootItem/RootItem.tsx";
 import CategoryPage from "./screens/Category/Category.tsx";
 import CategoryCreatePage from "./screens/CategoryCreate/CategoryCreate.tsx";
-import TicketPage from "./screens/Ticket/Ticket.tsx";
 import ChargePage from "./screens/Charge/Charge.tsx";
+import PayPage from "./screens/Pay/Pay.tsx";
 import RootTicket from "./screens/RootTicket/RootTicket.tsx";
 import GeneralPage from "./screens/General/General.tsx";
 import RootSettings from "./screens/RootSettings/RootSettings.tsx";
@@ -34,8 +33,7 @@ import CustomerDisplayPage from "./screens/CustomerDisplay/CustomerDisplay.tsx";
 import TaxesDisplayPage from "./screens/TaxesDisplay/TaxesDisplay.tsx";
 import CategoryEditPage from "./screens/CategoryEdit/CategoryEdit.tsx";
 import SalePage from "./screens/Sale/Sale.tsx";
-import FavoritesEditPage from "./screens/FavoritesEdit/FavoritesEdit.tsx";
-import MobileTicketListPage from "./screens/Mobile/Sale/Sale.tsx";
+import TicketPage from "./screens/Ticket/Ticket.tsx";
 
 function Routes() {
   const router = createBrowserRouter(
@@ -50,11 +48,10 @@ function Routes() {
 
         {/* SALES */}
         <Route path="sale" element={<SalePage />} />
-        <Route path="sale/favorite/edit" element={<FavoritesEditPage />} />
-        <Route path="sale/ticket/list" element={<MobileTicketListPage />} />
-        <Route path="sale/ticket" element={<RootTicket />}>
+        <Route path="ticket" element={<RootTicket />}>
           <Route index element={<TicketPage />} />
           <Route path="charge" element={<ChargePage />} />
+          <Route path="pay" element={<PayPage />} />
         </Route>
         {/* END OF SALES */}
 
@@ -69,10 +66,12 @@ function Routes() {
         <Route path="item/create" element={<ItemCreatePage />} />
         <Route path="item/edit/:itemId" element={<ItemEditPage />} />
         {/* END OF ITEM */}
+
         {/* SHIFT */}
         <Route path="shift" element={<ShiftPage />} />
         <Route path="shift/cash-management" element={<CashManagementPage />} />
         {/* END OF SHIFT */}
+
         {/* RECEIPT */}
         <Route path="receipt" element={<RootReceipt />}>
           <Route index element={<ReceiptPage />} />

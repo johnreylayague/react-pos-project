@@ -1,122 +1,77 @@
-import { Close } from "@mui/icons-material";
+import { Close as CloseIcon } from "@mui/icons-material";
+import { Container, InputLabel, Input, FormHelperText } from "@mui/material";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { storeProps } from "../../../../store";
+import { saleActions } from "../../../../store/sale-slice";
 import {
-  Dialog,
-  Toolbar,
-  IconButton,
-  Typography,
-  ButtonBase,
-  Container,
-  FormControl,
-  InputLabel,
-  Input,
-  FormHelperText,
-  styled,
-  Theme,
-  DialogProps,
-  ToolbarProps,
-  TypographyProps,
-  ButtonBaseProps,
-  IconButtonProps,
-  FormControlProps,
-} from "@mui/material";
-import React, { useRef, useState } from "react";
-
-const DialogStyled = styled(Dialog)<DialogProps>(({}: { theme: Theme }) => ({
-  "& .MuiDialog-paper": {
-    borderRadius: 0,
-  },
-}));
-
-const ToolbarStyled = styled(Toolbar)<ToolbarProps>(({ theme }: { theme: Theme }) => ({
-  borderBottom: `1px solid ${theme.palette.divider}`,
-}));
-
-const DialogTitle = styled(Typography)<TypographyProps>(({ theme }: { theme: Theme }) => ({
-  flexGrow: 1,
-  paddingLeft: theme.spacing(3),
-}));
-
-const SaveButton = styled(ButtonBase)<ButtonBaseProps>(({ theme }: { theme: Theme }) => ({
-  ...theme.typography.body2,
-  minHeight: "inherit",
-  padding: `${theme.spacing(2)} ${theme.spacing(3)}`,
-  color: theme.palette.success.main,
-  marginRight: `-${theme.spacing(3)}`,
-}));
-
-const CloseButton = styled(IconButton)<IconButtonProps>(({ theme }: { theme: Theme }) => ({
-  marginRight: `-${theme.spacing(1)}`,
-}));
-
-const FormControlStyled = styled(FormControl)<FormControlProps>(({ theme }: { theme: Theme }) => ({
-  marginTop: theme.spacing(2),
-  marginBottom: theme.spacing(5),
-}));
-
-type pageDataListProps = {
-  id: number;
-  pageName: string;
-  tabId: number;
-}[];
+  CloseButton,
+  DialogStyled,
+  DialogTitle,
+  FormControlStyled,
+  SaveButton,
+  ToolbarStyled,
+} from "./DialgoRenamePageStyles";
 
 type DialgoRenamePageProps = {
-  json: { data: { pageRename: string }; pageList: pageDataListProps };
-  tabs: { tabIndex: number };
-  inputActions: {
-    onUpdatePageName: (value: React.ChangeEvent<HTMLInputElement>) => void;
-    onUpdatePageNameASD: (value: string) => void;
-  };
-  buttonActions: {
-    onSaveDialogRenamePage: () => void;
-  };
   title: string;
   isOpenDialog: boolean;
   onClose: () => void;
 };
-const DialgoRenamePage: React.FC<DialgoRenamePageProps> = (props) => {
-  const {
-    isOpenDialog,
-    onClose,
-    title,
-    json: {
-      data: { pageRename },
-      pageList,
-    },
-    tabs: { tabIndex },
-    inputActions: { onUpdatePageName, onUpdatePageNameASD },
-    buttonActions: { onSaveDialogRenamePage },
-  } = props;
 
-  const inputRef = useRef<HTMLInputElement | null>(null);
+const DialgoRenamePage: React.FC<DialgoRenamePageProps> = (props) => {
+  const { isOpenDialog, onClose, title } = props;
+
+  const dispatch = useDispatch();
+  const inputRef = React.useRef<HTMLInputElement | null>(null);
+  const tabIndex = useSelector((state: storeProps) => state.sale.tabIndex);
+  const pageData = useSelector((state: storeProps) => state.sale.pageData);
+  const [pageTitle, setPageTitle] = React.useState<string>("");
+
+  const handleOnChangePageName = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setPageTitle(value);
+  };
+
+  const handleOnSaveDialogRenamePage = () => {
+    dispatch(saleActions.handleOnUpdatePageTitleForTab(pageTitle));
+    onClose();
+  };
+
+  const handleOnClearPageName = () => () => {
+    setPageTitle("");
+  };
+
+  const handleOnUpdatePageNameAndFocus = () => () => {
+    const findPageData = pageData.find((page) => page.tabId === tabIndex);
+
+    if (findPageData?.pageName && inputRef.current) {
+      setPageTitle(findPageData.pageName);
+      inputRef.current.focus();
+    }
+  };
 
   return (
     <>
       <DialogStyled
         open={isOpenDialog}
-        onTransitionEnter={() => {
-          const ss = pageList.find((page) => page.tabId === tabIndex);
-          if (ss?.pageName && inputRef.current) {
-            onUpdatePageNameASD(ss.pageName);
-            inputRef.current.focus();
-          }
-        }}
-        onTransitionExited={() => {
-          onUpdatePageNameASD("");
-        }}
+        onTransitionEnter={handleOnUpdatePageNameAndFocus}
+        onTransitionExited={handleOnClearPageName}
         maxWidth="sm"
         fullWidth
       >
         <ToolbarStyled>
           <CloseButton onClick={onClose}>
-            <Close />
+            <CloseIcon />
           </CloseButton>
 
           <DialogTitle component={"h6"} variant="h6">
             {title}
           </DialogTitle>
 
-          <SaveButton onClick={onSaveDialogRenamePage}>SAVE</SaveButton>
+          <SaveButton onClick={handleOnSaveDialogRenamePage}>SAVE</SaveButton>
         </ToolbarStyled>
+
         <Container>
           <FormControlStyled fullWidth color="success" variant="standard">
             <InputLabel htmlFor="my-input" color="success">
@@ -124,8 +79,8 @@ const DialgoRenamePage: React.FC<DialgoRenamePageProps> = (props) => {
             </InputLabel>
 
             <Input
-              value={pageRename}
-              onChange={onUpdatePageName}
+              value={pageTitle}
+              onChange={handleOnChangePageName}
               id="my-input"
               aria-describedby="my-helper-text"
               color="success"
