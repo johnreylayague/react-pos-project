@@ -38,11 +38,11 @@ const DialgoRenamePage: React.FC<DialgoRenamePageProps> = (props) => {
     onClose();
   };
 
-  const handleOnClearPageName = () => () => {
+  const handleOnClearPageName = () => {
     setPageTitle("");
   };
 
-  const handleOnUpdatePageNameAndFocus = () => () => {
+  const handleOnUpdatePageNameAndFocus = () => {
     const findPageData = pageData.find((page) => page.tabId === tabIndex);
 
     if (findPageData?.pageName && inputRef.current) {

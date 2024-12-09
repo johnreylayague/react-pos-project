@@ -32,6 +32,9 @@ export const DialogTitle = styled(Typography)<TypographyProps>(({ theme }: { the
 
 export const SaveButton = styled(ButtonBase)<ButtonBaseProps>(({ theme }: { theme: Theme }) => ({
   ...theme.typography.body2,
+  [theme.breakpoints.down("sm")]: {
+    marginRight: `-${theme.spacing(2)}`,
+  },
   minHeight: "inherit",
   padding: `${theme.spacing(2)} ${theme.spacing(3)}`,
   color: theme.palette.success.main,
