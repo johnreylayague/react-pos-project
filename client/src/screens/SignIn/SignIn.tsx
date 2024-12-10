@@ -113,7 +113,15 @@ const SignIn = () => {
                 </FormHelperText>
               </FormControl>
 
-              <Button variant="contained" color="success" size="large" disableElevation>
+              <Button
+                component={RouterLink}
+                to="/sale"
+                relative="path"
+                variant="contained"
+                color="success"
+                size="large"
+                disableElevation
+              >
                 SIGN IN
               </Button>
 
