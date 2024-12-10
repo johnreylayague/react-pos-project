@@ -16,7 +16,11 @@ import { useInteractionHandler } from "../../hooks/Sale/useInteractionHandler";
 import { useDispatch, useSelector } from "react-redux";
 import { storeProps } from "../../store";
 import { saleActions } from "../../store/sale-slice";
-import { ContentContainer, RootContainer, SidebarContainer } from "./SaleStyles.ts";
+import { ActionBox, ContentContainer, RootContainer, SidebarContainer } from "./SaleStyles.ts";
+import OpenShiftRequest from "./components/OpenShiftRequest/OpenShiftRequest.tsx";
+import ContainedButton from "../../components/common/elements/Button/ContainedButton/ContainedButton.tsx";
+import { Link } from "react-router-dom";
+import DialogOpenShift from "./components/Dialog/OpenShift/OpenShift.tsx";
 
 type SaleProps = {};
 
@@ -28,6 +32,13 @@ const Sale: React.FC<SaleProps> = (props) => {
   const isThemeMobileScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const isSearch = useSelector((state: storeProps) => state.sale.isSsearch);
   const isEdit = useSelector((state: storeProps) => state.sale.isEdit);
+  const isShift = useSelector((state: storeProps) => state.shift.isShift);
+
+  const {
+    isOpenDialog: isOpenDialogShiftRequest,
+    handleCloseDialog: onCloseDialogShiftRequest,
+    handleOpenDialog: onOpenDialogShiftRequest,
+  } = useDialog();
 
   const {
     isOpenDialog: isOpenDialogSelectedItem,
@@ -66,12 +77,17 @@ const Sale: React.FC<SaleProps> = (props) => {
     <>
       <RootContainer>
         <ContentContainer>
-          {!isSearch && <HeaderFilterItem />}
-          {isSearch && <HeaderSearchItem />}
-          <TabContent
-            onInteractionHandlers={interactionHandlers}
-            onOpenDialogAddItemAndCategory={onOpenDialogAddItemAndCategory}
-          />
+          {isSearch ? <HeaderSearchItem /> : <HeaderFilterItem />}
+
+          {isShift ? (
+            <TabContent
+              onInteractionHandlers={interactionHandlers}
+              onOpenDialogAddItemAndCategory={onOpenDialogAddItemAndCategory}
+            />
+          ) : (
+            <OpenShiftRequest onOpen={onOpenDialogShiftRequest} />
+          )}
+
           <TabsPanel
             onOpenDialogDelete={onOpenDialogDelete}
             onOpenDialogRename={onOpenDialogRename}
@@ -80,15 +96,29 @@ const Sale: React.FC<SaleProps> = (props) => {
         </ContentContainer>
 
         <SidebarContainer>
-          {!isEdit && (
+          {!isEdit ? (
             <React.Fragment>
               <TicketHeader />
-              <SelectedItemList onOpenDialog={onOpenDialogSelectedItem} />
+
+              {isShift && <SelectedItemList onOpenDialog={onOpenDialogSelectedItem} />}
+
+              <ActionBox>
+                <ContainedButton component={Link} to={"/ticket/charge"} disabled={!isShift}>
+                  CHARGE
+                </ContainedButton>
+              </ActionBox>
             </React.Fragment>
+          ) : (
+            <FavoriteSidebar />
           )}
-          {isEdit && <FavoriteSidebar />}
         </SidebarContainer>
       </RootContainer>
+
+      <DialogOpenShift
+        isThemeMobileScreen={isThemeMobileScreen}
+        isOpen={isOpenDialogShiftRequest}
+        onClose={onCloseDialogShiftRequest}
+      />
 
       <DialogSelectedItem
         isOpenDialog={isOpenDialogSelectedItem}

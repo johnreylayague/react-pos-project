@@ -43,18 +43,20 @@ export const EmailDisplay = styled(Typography)<TypographyProps>(({ theme }: { th
   color: "#a5a5a5",
 }));
 
-export const SignOutButton = styled(ButtonBase)<ButtonBaseProps>(({ theme }: { theme: Theme }) => ({
-  ...theme.applyStyles("light", {
-    backgroundColor: theme.palette.customSecondaryButton.light,
-  }),
-  ...theme.applyStyles("dark", {
-    backgroundColor: theme.palette.customSecondaryButton.dark,
-  }),
-  ...theme.typography.body1,
-  padding: `${theme.spacing(2)} ${theme.spacing(2)} ${theme.spacing(2)} ${theme.spacing(2)}`,
-  borderRadius: 1,
-  border: `1px solid ${theme.palette.divider}`,
-}));
+export const SignOutButton = styled(ButtonBase)<ButtonBaseProps | LinkProps>(
+  ({ theme }: { theme: Theme }) => ({
+    ...theme.applyStyles("light", {
+      backgroundColor: theme.palette.customSecondaryButton.light,
+    }),
+    ...theme.applyStyles("dark", {
+      backgroundColor: theme.palette.customSecondaryButton.dark,
+    }),
+    ...theme.typography.body1,
+    padding: `${theme.spacing(2)} ${theme.spacing(2)} ${theme.spacing(2)} ${theme.spacing(2)}`,
+    borderRadius: 1,
+    border: `1px solid ${theme.palette.divider}`,
+  })
+);
 
 export const SidebarActionsContainer = styled(Stack)<StackProps>(({ theme }: { theme: Theme }) => ({
   padding: theme.spacing(3),

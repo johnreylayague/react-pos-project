@@ -24,7 +24,7 @@ function Welcome() {
           <HeaderContainer>
             <StorefrontIcon sx={iconStyle} />
             <Typography variant="h3" sx={headerTitle(theme)}>
-              JONRII NIPPON
+              NP
             </Typography>
             <Typography variant="h5" sx={subTitle(theme)}>
               POINT OF SALE

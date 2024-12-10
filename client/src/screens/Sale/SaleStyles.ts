@@ -49,3 +49,8 @@ export const SidebarContainer = styled(Box)<BoxProps>(({ theme }: { theme: Theme
   flexDirection: "column",
   borderLeft: `1px solid ${theme.palette.divider}`,
 }));
+
+export const ActionBox = styled(Box)<BoxProps>(({ theme }) => ({
+  padding: `0 ${theme.spacing(2)} ${theme.spacing(2)}`,
+  marginTop: "auto",
+}));

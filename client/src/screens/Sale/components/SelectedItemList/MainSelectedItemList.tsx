@@ -1,13 +1,6 @@
-import { Button, List, ListItem } from "@mui/material";
+import { List, ListItem } from "@mui/material";
 import React from "react";
-import { Link } from "react-router-dom";
-import {
-  ActionBox,
-  DividerStyled,
-  Label,
-  ListStyled,
-  TotalPrice,
-} from "./MainSelectedItemListStyles";
+import { DividerStyled, Label, ListStyled, TotalPrice } from "./MainSelectedItemListStyles";
 import DetailListItem from "./DetailListItem";
 
 type MainSelectedItemListProps = {
@@ -33,7 +26,7 @@ const MainSelectedItemList: React.FC<MainSelectedItemListProps> = (props) => {
         </ListItem>
       </List>
 
-      <ActionBox>
+      {/* <ActionBox>
         <Button
           component={Link}
           to={"/ticket/charge"}
@@ -46,7 +39,7 @@ const MainSelectedItemList: React.FC<MainSelectedItemListProps> = (props) => {
         >
           CHARGE
         </Button>
-      </ActionBox>
+      </ActionBox> */}
     </>
   );
 };

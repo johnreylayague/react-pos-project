@@ -8,7 +8,7 @@ const menuDataList = [
 ];
 
 const generalDataList = [
-  { id: 1, title: "Use camera to scan barcodes", checked: false },
+  // { id: 1, title: "Use camera to scan barcodes", checked: false },
   { id: 2, title: "Dark Theme", checked: false },
 ];
 

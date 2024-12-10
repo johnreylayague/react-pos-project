@@ -1,13 +1,16 @@
 import { Toolbar, MenuItem, ListItemIcon, ListItemText, IconButton } from "@mui/material";
 import React from "react";
-import { Delete as DeleteIcon, Sync as SyncIcon } from "@mui/icons-material";
+import { Delete as DeleteIcon } from "@mui/icons-material";
 import { AppBarStyled, MoreVertIcon, Title, MenuStyled } from "./TicketHeaderStyles";
 import { useMenu } from "../../../../hooks/material-ui/useMenu/useMenu";
+import { useSelector } from "react-redux";
+import { storeProps } from "../../../../store";
 
 type TicketHeaderProps = {};
 const TicketHeader: React.FC<TicketHeaderProps> = (props) => {
   const {} = props;
 
+  const isShift = useSelector((state: storeProps) => state.shift.isShift);
   const { anchorEl, handleCloseMenu, handleOpenMenu, isOpen } = useMenu();
 
   return (
@@ -34,18 +37,18 @@ const TicketHeader: React.FC<TicketHeaderProps> = (props) => {
             horizontal: "left",
           }}
         >
-          <MenuItem onClick={handleCloseMenu}>
+          <MenuItem onClick={handleCloseMenu} disabled={!isShift}>
             <ListItemIcon>
               <DeleteIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText>Clear ticket</ListItemText>
           </MenuItem>
-          <MenuItem onClick={handleCloseMenu}>
+          {/* <MenuItem onClick={handleCloseMenu}>
             <ListItemIcon>
               <SyncIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText>Sync</ListItemText>
-          </MenuItem>
+          </MenuItem> */}
         </MenuStyled>
       </Toolbar>
     </AppBarStyled>

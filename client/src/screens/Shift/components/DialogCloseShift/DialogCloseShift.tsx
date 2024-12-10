@@ -17,6 +17,8 @@ import { Close as CloseIcon } from "@mui/icons-material";
 import OutlinedButton from "../../../../components/common/elements/Button/OutlinedButton/OutlinedButton";
 import ListItemDetail from "../ListItemDetail/ListItemDetail";
 import InputCashAmount from "../InputCashAmount/InputCashAmount";
+import { useDispatch } from "react-redux";
+import { shiftActions } from "../../../../store/shift-slice";
 
 const DialogStyled = styled(Dialog)<DialogProps>(({}: { theme: Theme }) => ({
   "& .MuiPaper-root": {
@@ -47,8 +49,15 @@ type DialogCloseShiftProps = {
 const DialogCloseShift: React.FC<DialogCloseShiftProps> = (props) => {
   const { isOpen, onClose, onCloseShift, isMobile } = props;
 
+  const dispatch = useDispatch();
+
+  const handleOnCloseShift = () => {
+    onCloseShift();
+    dispatch(shiftActions.handleOnCloseShift());
+  };
+
   return (
-    <DialogStyled open={isOpen} onClose={onClose} fullWidth maxWidth="sm" fullScreen={isMobile}>
+    <DialogStyled open={isOpen} fullWidth maxWidth="sm" fullScreen={isMobile}>
       <Toolbar>
         <ButtonClose onClick={onClose}>
           <CloseIcon />
@@ -70,7 +79,7 @@ const DialogCloseShift: React.FC<DialogCloseShiftProps> = (props) => {
           </ListItemDetail>
         </List>
 
-        <OutlinedButton onClick={onCloseShift}>CLOSE SHIFT</OutlinedButton>
+        <OutlinedButton onClick={handleOnCloseShift}>CLOSE SHIFT</OutlinedButton>
       </Container>
     </DialogStyled>
   );

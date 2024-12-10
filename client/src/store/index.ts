@@ -9,6 +9,7 @@ import category, { initialCategoryState } from "./category-slice";
 import refund, { initialRefundState } from "./refund-slice";
 import receipt, { initialReceiptState } from "./receipt-slice";
 import sale, { initialSaleState } from "./sale-slice";
+import shift, { initialShiftState } from "./shift-slice";
 import dialog from "./dialog-slice";
 
 export type storeProps = {
@@ -23,6 +24,7 @@ export type storeProps = {
   receipt: initialReceiptState;
   setting: initialSettingState;
   sale: initialSaleState;
+  shift: initialShiftState;
 };
 
 const store = configureStore({
@@ -38,6 +40,7 @@ const store = configureStore({
     setting: setting.reducer,
     receipt: receipt.reducer,
     sale: sale.reducer,
+    shift: shift.reducer,
   },
 });
 

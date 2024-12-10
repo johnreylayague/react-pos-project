@@ -57,8 +57,10 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
         </ListStyled>
 
         <SidebarActionsContainer spacing={2}>
-          <EmailDisplay component="span">jayroa227@gmail.com</EmailDisplay>
-          <SignOutButton>SIGN OUT</SignOutButton>
+          <EmailDisplay component="span">sample123@gmail.com</EmailDisplay>
+          <SignOutButton component={Link} to="/" relative="path">
+            SIGN OUT
+          </SignOutButton>
         </SidebarActionsContainer>
       </SidebarContainer>
     </>

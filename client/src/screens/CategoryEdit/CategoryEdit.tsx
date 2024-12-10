@@ -100,7 +100,7 @@ const CategoryEdit: React.FC<CategoryEditProps> = (props) => {
         description="Are you sure you want to delete the category?"
         open={isConfirmationDialogOpen}
         onClose={closeConfirmationDialog}
-        onDelete={handleConfirmDeleteAction(handleDeleteCategory)}
+        onDelete={handleConfirmDeleteAction(closeConfirmationDialog)}
       />
     </>
   );

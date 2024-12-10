@@ -5,6 +5,8 @@ import {
 } from "@mui/icons-material";
 import { TabStyled, TabsStyled } from "./TabNavigationStyles";
 import { pageDataProps } from "../../../../store/sale-slice";
+import { useSelector } from "react-redux";
+import { storeProps } from "../../../../store";
 
 type TabNavigationProps = {
   tabIndex: number;
@@ -17,18 +19,26 @@ const TabNavigation: React.FC<TabNavigationProps> = (props) => {
   const { isThemeMobileScreen, onChangeTab, onOpenMenuListFilterIterms, pageData, tabIndex } =
     props;
 
+  const isShift = useSelector((state: storeProps) => state.shift.isShift);
+
   const nextTabIndex = pageData.length + 1;
+  const tab = !isShift ? false : tabIndex;
 
   return (
     <TabsStyled
       variant="scrollable"
       scrollButtons={"auto"}
       allowScrollButtonsMobile
-      value={tabIndex}
+      value={tab}
       onChange={onChangeTab}
       aria-label="basic tabs example"
     >
-      <TabStyled label={"Favorite"} id={`simple-tab-${0}`} aria-controls={`simple-tab-${0}`} />
+      <TabStyled
+        label={"Favorite"}
+        id={`simple-tab-${0}`}
+        aria-controls={`simple-tab-${0}`}
+        disabled={!isShift}
+      />
 
       {pageData.map((page) => {
         return (
@@ -37,6 +47,7 @@ const TabNavigation: React.FC<TabNavigationProps> = (props) => {
             label={page.pageName}
             id={`simple-tab-${page.tabId}`}
             aria-controls={`simple-tab-${page.tabId}`}
+            disabled={!isShift}
           />
         );
       })}
@@ -52,6 +63,7 @@ const TabNavigation: React.FC<TabNavigationProps> = (props) => {
           : {})}
         id={`simple-tab-${nextTabIndex}`}
         aria-controls={`simple-tab-${nextTabIndex}`}
+        disabled={!isShift}
       />
     </TabsStyled>
   );

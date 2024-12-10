@@ -25,6 +25,7 @@ import { NumberFormatter } from "./components/NumberFormatter/NumberFormatter.ts
 import SelectField from "./components/SelectField/SelectField.tsx";
 import SoldByOptionSelector from "./components/SoldByOptionSelector/SoldByOptionSelector.tsx";
 import DialogCategoryCreate from "./components/DialogCategoryCreate/DialogCategoryCreate.tsx";
+import { useLocation } from "react-router-dom";
 
 const BoxStyled = styled(Box)<BoxProps>(({ theme }: { theme: Theme }) => ({
   display: "flex",
@@ -40,6 +41,7 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
 
   const dispatch = useDispatch();
   const theme = useTheme();
+  const location = useLocation();
   const isBelowSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   const colorData = useSelector((state: storeProps) => state.item.colorData);
@@ -121,7 +123,11 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
 
   return (
     <>
-      <HeaderFormAction onNavigateBack="/item" onSave={() => {}} title="Create item" />
+      <HeaderFormAction
+        onNavigateBack={location.state.from}
+        onSave={() => {}}
+        title="Create item"
+      />
 
       <ContainerWrapper>
         <Section>

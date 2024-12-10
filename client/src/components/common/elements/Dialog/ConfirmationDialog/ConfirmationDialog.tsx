@@ -22,7 +22,6 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = (props) => {
     <>
       <Dialog
         open={open}
-        onClose={onClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >

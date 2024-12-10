@@ -29,6 +29,8 @@ import SelectField from "./components/SelectField/SelectField.tsx";
 import SoldByOptionSelector from "./components/SoldByOptionSelector/SoldByOptionSelector.tsx";
 import DialogCategoryCreate from "./components/DialogCategoryCreate/DialogCategoryCreate.tsx";
 import { Delete } from "@mui/icons-material";
+import ConfirmationDialog from "../../components/common/elements/Dialog/ConfirmationDialog/ConfirmationDialog.tsx";
+import { useDialog } from "../../hooks/material-ui/useDialog/useDialog.tsx";
 
 const BoxStyled = styled(Box)<BoxProps>(({ theme }: { theme: Theme }) => ({
   display: "flex",
@@ -60,6 +62,12 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
   const dispatch = useDispatch();
   const theme = useTheme();
   const isBelowSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const {
+    isOpenDialog: isDialogDelete,
+    handleOpenDialog: onOpenDialogDelete,
+    handleCloseDialog: onCloseDialogDelete,
+  } = useDialog();
 
   const colorData = useSelector((state: storeProps) => state.item.colorData);
   const shapeData = useSelector((state: storeProps) => state.item.shapeData);
@@ -134,6 +142,10 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
+  };
+
+  const handleOnDeleteItem = () => {
+    setOpenDialog(true);
   };
 
   return (
@@ -238,7 +250,7 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
           </div>
         </Section>
 
-        <DeleteActionButton>
+        <DeleteActionButton onClick={onOpenDialogDelete}>
           <DeleteIconStyled />
           DELETE ITEM
         </DeleteActionButton>
@@ -249,6 +261,14 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
         content={<InputField label="Name" />}
         onClose={handleCloseDialog}
         isOpen={openDialog}
+      />
+
+      <ConfirmationDialog
+        title="Delete category"
+        description="Are you sure you want to delete the category?"
+        open={isDialogDelete}
+        onClose={onCloseDialogDelete}
+        onDelete={onCloseDialogDelete}
       />
     </>
   );
