@@ -21,7 +21,7 @@ const settingSlice = createSlice({
   name: "setting",
   initialState,
   reducers: {
-    toggleSideBar(state, action) {},
+    toggleSideBar(_state, _action) {},
   },
 });
 

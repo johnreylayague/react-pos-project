@@ -14,18 +14,34 @@ export type itemListProps = {
   itemCount: number;
   itemPrice: string;
   refundedCount: number;
+  refunded: boolean;
 };
 
-const itemList = [
+const itemList: itemListProps[] = [
   {
     id: 1,
     itemName: "Item 21",
     itemCount: 1,
     itemPrice: "199.00",
     refundedCount: 0,
+    refunded: false,
   },
-  { id: 2, itemName: "Item 2", itemCount: 3, itemPrice: "100.00", refunded: false },
-  { id: 3, itemName: "Item 3", itemCount: 55, itemPrice: "45.00", refunded: false },
+  {
+    id: 2,
+    itemName: "Item 2",
+    itemCount: 3,
+    itemPrice: "100.00",
+    refundedCount: 0,
+    refunded: false,
+  },
+  {
+    id: 3,
+    itemName: "Item 3",
+    itemCount: 55,
+    itemPrice: "45.00",
+    refundedCount: 0,
+    refunded: false,
+  },
 ];
 
 const refundList: itemListProps[] = [];

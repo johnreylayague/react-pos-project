@@ -29,7 +29,7 @@ export const NumberFormatter = React.forwardRef<NumericFormatProps, NumberFormat
         fixedDecimalScale
         prefix="₱"
         isAllowed={(values) => {
-          const { floatValue, formattedValue, value } = values;
+          const { floatValue } = values;
           const MAX_LIMIT = 999999.99;
 
           return floatValue === undefined || floatValue <= MAX_LIMIT;

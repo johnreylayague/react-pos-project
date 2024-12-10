@@ -20,7 +20,7 @@ const MobileTotalAmount: React.FC<MobileTotalAmountProps> = (props) => {
       <ListItem>
         <Typography
           noWrap
-          sx={(theme) => ({
+          sx={() => ({
             fontWeight: "bold",
           })}
         >

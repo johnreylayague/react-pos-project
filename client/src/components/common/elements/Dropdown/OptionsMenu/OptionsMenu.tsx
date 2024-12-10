@@ -1,12 +1,6 @@
-import { MoreVert as MoreVertIcon } from "@mui/icons-material";
-import { IconButton, Menu, styled, Theme, MenuProps } from "@mui/material";
+import { IconButton } from "@mui/material";
 import React from "react";
-
-const MenuStyled = styled(Menu)<MenuProps>(({ theme }: { theme: Theme }) => ({
-  "& .MuiMenu-paper	": {
-    borderRadius: 0,
-  },
-}));
+import { MenuStyled } from "./OptionsMenuStyles";
 
 type OptionsMenuProps = {
   isOpen: boolean;

@@ -1,20 +1,4 @@
-import {
-  Dialog,
-  Box,
-  IconButton,
-  Typography,
-  Button,
-  InputBase,
-  List,
-  ListItem,
-  Checkbox,
-  ListItemButton,
-  ListItemAvatar,
-  Avatar,
-  Divider,
-} from "@mui/material";
 import React from "react";
-import { Close as CloseIcon, Search as SearchIcon } from "@mui/icons-material";
 import FilterSearchBar from "../DialogFilterSearchBar/DialogFilterSearchBar";
 import SelectableListItem from "../DialogSelectableListItem/DialogSelectableListItem";
 import { ListStyled, DialogStyled } from "./DialogAssignItemsStyles";

@@ -75,10 +75,6 @@ export const ListItemButtonStyled = styled(ListItemButton)<ListItemButtonProps>(
   })
 );
 
-export const ListItemStyled = styled(ListItem)<ListItemProps>(({ theme }: { theme: Theme }) => ({
+export const ListItemStyled = styled(ListItem)<ListItemProps>(({}: { theme: Theme }) => ({
   padding: 0,
-  // padding: `${theme.spacing(0)}
-  //           ${theme.spacing(0)}
-  //           ${theme.spacing(0)}
-  //           ${theme.spacing(0)}`,
 }));

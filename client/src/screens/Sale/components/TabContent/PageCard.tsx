@@ -2,14 +2,6 @@ import React from "react";
 import { Grid2 as Grid } from "@mui/material";
 import ShapeItemButton from "../ShapeItemButton/ShapeItemButton";
 import assets from "../../../../assets/assets";
-import { pageDataProps } from "../../../../store/sale-slice";
-
-type favoriteData = {
-  id: number;
-  sequenceId: number;
-  itemName: string;
-  representationId: number;
-};
 
 type colorAndShapesData = {
   id: number;

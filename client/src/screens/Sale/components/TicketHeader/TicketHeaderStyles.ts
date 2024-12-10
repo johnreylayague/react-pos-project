@@ -25,7 +25,7 @@ export const Title = styled(Typography)<TypographyProps>(({ theme }: { theme: Th
   flexGrow: 1,
 }));
 
-export const MenuStyled = styled(Menu)<MenuProps>(({ theme }: { theme: Theme }) => ({
+export const MenuStyled = styled(Menu)<MenuProps>(({}: { theme: Theme }) => ({
   "& .MuiMenu-paper	": {
     borderRadius: 0,
   },

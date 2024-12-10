@@ -4,7 +4,7 @@ import { Check } from "@mui/icons-material";
 import { styled, Theme } from "@mui/material/styles";
 import { ShapesDataProps } from "../../../../store/item-slice";
 
-const AvatarStyled = styled(Avatar)<AvatarProps>(({ theme }: { theme: Theme }) => ({
+const AvatarStyled = styled(Avatar)<AvatarProps>(({}: { theme: Theme }) => ({
   height: "100%",
   width: "100%",
 }));

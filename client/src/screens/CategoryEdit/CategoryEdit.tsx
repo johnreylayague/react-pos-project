@@ -1,7 +1,6 @@
 import { GlobalStyles, Interpolation, Theme } from "@mui/material";
 import React from "react";
-import { Link, Params, useParams } from "react-router-dom";
-import Header from "./components/Header/Header";
+import { Link } from "react-router-dom";
 import InputField from "./components/InputField/InputField";
 import ColorPicker from "./components/ColorPicker/ColorPicker";
 import ConfirmationDialog from "../../components/common/elements/Dialog/ConfirmationDialog/ConfirmationDialog.tsx";

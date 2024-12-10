@@ -1,7 +1,7 @@
-import { ListProps, List, Dialog, DialogProps, CSSObject } from "@mui/material";
+import { ListProps, List, Dialog, DialogProps } from "@mui/material";
 import { styled, Theme } from "@mui/material/styles";
 
-export const ListStyled = styled(List)<ListProps>(({ theme }: { theme: Theme }) => ({
+export const ListStyled = styled(List)<ListProps>(({}: { theme: Theme }) => ({
   overflowY: "auto",
 }));
 

@@ -1,12 +1,4 @@
-import {
-  Box,
-  styled,
-  BoxProps,
-  Grid2 as Grid,
-  IconButton,
-  IconButtonProps,
-  Theme,
-} from "@mui/material";
+import { Box, styled, BoxProps, IconButton, IconButtonProps, Theme } from "@mui/material";
 
 export const CloseButton = styled(IconButton)<IconButtonProps>(({ theme }: { theme: Theme }) => ({
   position: "absolute",

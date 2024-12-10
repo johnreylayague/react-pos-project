@@ -18,7 +18,7 @@ import OutlinedButton from "../../../../components/common/elements/Button/Outlin
 import ListItemDetail from "../ListItemDetail/ListItemDetail";
 import InputCashAmount from "../InputCashAmount/InputCashAmount";
 
-const DialogStyled = styled(Dialog)<DialogProps>(({ theme }: { theme: Theme }) => ({
+const DialogStyled = styled(Dialog)<DialogProps>(({}: { theme: Theme }) => ({
   "& .MuiPaper-root": {
     borderRadius: 0,
     my: 0,

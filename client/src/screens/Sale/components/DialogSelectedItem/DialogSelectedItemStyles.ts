@@ -4,12 +4,7 @@ import {
   Toolbar,
   IconButton,
   ButtonBase,
-  Container,
   Stack,
-  Box,
-  FormControl,
-  Input,
-  FormHelperText,
   styled,
   Theme,
   StackProps,
@@ -100,7 +95,7 @@ export const FieldTitle = styled(Typography)<TypographyProps>(({ theme }: { them
   color: theme.palette.success.main,
 }));
 
-export const FormGroup = styled(Stack)<StackProps>(({ theme }: { theme: Theme }) => ({}));
+export const FormGroup = styled(Stack)<StackProps>(({}: { theme: Theme }) => ({}));
 
 export const AlertStyled = styled(Alert)<AlertProps>(({ theme }: { theme: Theme }) => ({
   [theme.breakpoints.down("sm")]: {

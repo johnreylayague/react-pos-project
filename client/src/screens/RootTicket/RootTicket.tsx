@@ -1,5 +1,5 @@
-import React, { HTMLAttributes } from "react";
-import { List, ListItem, styled, Toolbar, useMediaQuery, useTheme } from "@mui/material";
+import React from "react";
+import { List, ListItem, Toolbar, useMediaQuery, useTheme } from "@mui/material";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   RootContainer,

@@ -3,25 +3,16 @@ import {
   AppBar,
   Box,
   Button,
-  Checkbox,
-  CircularProgress,
   Container,
-  createTheme,
   FormControl,
-  FormControlLabel,
-  FormGroup,
   FormHelperText,
   IconButton,
   Input,
   InputAdornment,
   InputLabel,
-  Link,
   MenuItem,
-  NativeSelect,
   Paper,
   Stack,
-  TextField,
-  ThemeProvider,
   Toolbar,
   Typography,
 } from "@mui/material";
@@ -29,7 +20,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router-dom";
 import { IconButtonBackStyle, RegistrationTitleStyle } from "./RegistrationStyle";
 import { useTheme } from "@mui/material/styles";
-import { VisibilityOff, Visibility, CheckBox } from "@mui/icons-material";
+import { VisibilityOff, Visibility } from "@mui/icons-material";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 
 function Registration() {
@@ -38,7 +29,7 @@ function Registration() {
 
   const [showPassword, setShowPassword] = React.useState(false);
 
-  const [country, setCountry] = React.useState("");
+  const [_country, setCountry] = React.useState("");
 
   const handleChange = (event: SelectChangeEvent) => {
     setCountry(event.target.value);

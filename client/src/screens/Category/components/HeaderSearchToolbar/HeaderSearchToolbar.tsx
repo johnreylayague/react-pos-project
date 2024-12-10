@@ -1,4 +1,4 @@
-import { AppBar, Toolbar, IconButton, InputBase } from "@mui/material";
+import { AppBar, Toolbar, IconButton } from "@mui/material";
 import {
   ArrowBackIconStyled,
   CloseIconStyled,

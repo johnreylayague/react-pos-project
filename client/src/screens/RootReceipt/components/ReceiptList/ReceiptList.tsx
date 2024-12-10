@@ -1,7 +1,7 @@
 import { ListSubheader, ListSubheaderProps, styled, Theme } from "@mui/material";
 import React, { HTMLAttributes } from "react";
 
-const UlStyled = styled("ul")<HTMLAttributes<HTMLUListElement>>(({ theme }: { theme: Theme }) => ({
+const UlStyled = styled("ul")<HTMLAttributes<HTMLUListElement>>(({}: { theme: Theme }) => ({
   paddingLeft: 0,
   listStyleType: "none",
 }));

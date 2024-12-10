@@ -11,9 +11,9 @@ export const DividerStyled = styled(Divider)<DividerProps>(({ theme }: { theme: 
   marginLeft: theme.spacing(2),
   marginRight: theme.spacing(2),
 }));
-export const Amount = styled(ListItemText)<ListItemTextProps>(({ theme }: { theme: Theme }) => ({
+export const Amount = styled(ListItemText)<ListItemTextProps>(({}: { theme: Theme }) => ({
   "& .MuiListItemText-primary": { fontWeight: "bold", textAlign: "right" },
 }));
-export const Label = styled(ListItemText)<ListItemTextProps>(({ theme }: { theme: Theme }) => ({
+export const Label = styled(ListItemText)<ListItemTextProps>(({}: { theme: Theme }) => ({
   "& .MuiListItemText-primary": { fontWeight: "bold" },
 }));

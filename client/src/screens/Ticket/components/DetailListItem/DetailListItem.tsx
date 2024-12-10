@@ -1,4 +1,4 @@
-import { ListItem, ListItemButton, ListItemText, Typography } from "@mui/material";
+import { ListItem, ListItemButton } from "@mui/material";
 import React from "react";
 import { Quantity, Details, Price, ItemName } from "./DetailListItemStyles";
 

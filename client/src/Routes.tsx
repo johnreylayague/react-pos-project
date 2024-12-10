@@ -39,13 +39,13 @@ function Routes() {
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route path="/" element={<Root />}>
-        {/* protected routes */}
         {/* unprotected routes */}
         <Route index element={<Welcome />} />
         <Route path="test" element={<Test />} />
         <Route path="forgot-password" element={<ForgotPassword />} />
         <Route path="registration" element={<Registration />} />
 
+        {/* protected routes */}
         {/* SALES */}
         <Route path="sale" element={<SalePage />} />
         <Route path="ticket" element={<RootTicket />}>
@@ -79,6 +79,7 @@ function Routes() {
         </Route>
         <Route path="receipt/:receiptId/refund" element={<RefundPage />} />
         {/* END OF RECEIPT */}
+
         {/* SETTINGS */}
         <Route path="settings" element={<RootSettings />}>
           <Route index element={<GeneralPage />} />
@@ -88,6 +89,7 @@ function Routes() {
           <Route path="taxes-display" element={<TaxesDisplayPage />} />
         </Route>
         {/* END OF SETTINGS */}
+
         <Route path="sign-in" element={<SignIn />} />
         <Route path="*" element={<NotFound />} />
       </Route>

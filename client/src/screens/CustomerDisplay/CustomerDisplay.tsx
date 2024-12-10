@@ -1,6 +1,9 @@
 import React from "react";
 
-const CustomerDisplay = () => {
+type CustomerDisplayProps = {};
+const CustomerDisplay: React.FC<CustomerDisplayProps> = (props) => {
+  const {} = props;
+
   return <div>CustomerDisplay</div>;
 };
 

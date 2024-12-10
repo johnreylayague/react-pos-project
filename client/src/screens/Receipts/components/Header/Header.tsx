@@ -29,7 +29,7 @@ const ArrowBackIcon = styled(ArrowBack)<IconProps>(({ theme }: { theme: Theme })
   color: theme.palette.common.white,
 }));
 
-const TransactionNumber = styled(Typography)<TypographyProps>(({ theme }: { theme: Theme }) => ({
+const TransactionNumber = styled(Typography)<TypographyProps>(({}: { theme: Theme }) => ({
   flexGrow: 1,
 }));
 

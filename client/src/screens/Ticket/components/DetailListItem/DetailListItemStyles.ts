@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { HTMLAttributes } from "react";
 
-export const Price = styled(ListItemText)<ListItemTextProps>(({ theme }: { theme: Theme }) => ({
+export const Price = styled(ListItemText)<ListItemTextProps>(({}: { theme: Theme }) => ({
   textAlign: "right",
   flexShrink: 0,
 }));
@@ -24,4 +24,4 @@ export const Quantity = styled("span")<HTMLAttributes<HTMLSpanElement>>(({ theme
   flexShrink: 0,
 }));
 
-export const ItemName = styled(Typography)<TypographyProps>(({ theme }) => ({}));
+export const ItemName = styled(Typography)<TypographyProps>(({}) => ({}));

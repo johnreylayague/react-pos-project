@@ -8,20 +8,13 @@ import {
   Container,
   FormControl,
   Input,
-  InputAdornment,
   InputLabel,
-  MenuItem,
   Paper,
-  Select,
   Stack,
-  TextField,
   FormHelperText,
 } from "@mui/material";
-import React from "react";
-import { IconButtonBackStyle, RegistrationTitleStyle } from "../Registration/RegistrationStyle";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router-dom";
-import { VisibilityOff, Visibility } from "@mui/icons-material";
 
 function ForgotPassword() {
   const navigate = useNavigate();

@@ -1,5 +1,4 @@
 import { FormControl, FormHelperText, InputLabel, Input } from "@mui/material";
-import React from "react";
 
 function InputField({}) {
   return (

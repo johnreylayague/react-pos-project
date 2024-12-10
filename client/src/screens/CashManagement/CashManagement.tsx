@@ -82,8 +82,8 @@ type CashManagementPorps = {};
 const CashManagement: React.FC<CashManagementPorps> = (props) => {
   const {} = props;
 
-  const [isDisabled, setIsDisabled] = React.useState<boolean>(false);
-  const [value, setValue] = React.useState<number>(0);
+  const [isDisabled] = React.useState<boolean>(false);
+  const [value] = React.useState<number>(0);
 
   return (
     <>

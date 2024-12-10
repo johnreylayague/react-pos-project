@@ -1,7 +1,5 @@
-import { AppBar, Toolbar, IconButton, Icon, Typography } from "@mui/material";
+import { AppBar, Toolbar, IconButton } from "@mui/material";
 import React from "react";
-import { useDispatch } from "react-redux";
-import { itemActions } from "../../../../store/item-slice";
 import Dropdown from "../Dropdown/Dropdown";
 import { Link } from "react-router-dom";
 import { ArrowBack as ArrowBackIcon, Search as SearchIcon } from "@mui/icons-material";
@@ -12,12 +10,6 @@ type HeaderSearchAndFilterToolbarProps = {
 
 const HeaderSearchAndFilterToolbar: React.FC<HeaderSearchAndFilterToolbarProps> = (props) => {
   const { openSearch } = props;
-
-  const dispatch = useDispatch();
-
-  const handleOpenSearch = () => {
-    dispatch(itemActions.toggleIsSearch(true));
-  };
 
   return (
     <>

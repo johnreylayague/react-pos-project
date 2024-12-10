@@ -1,6 +1,4 @@
-import { Box, Container } from "@mui/material";
 import { Theme } from "@mui/material/styles";
-import { styled } from "@mui/material/styles";
 import { css } from "@emotion/react";
 
 export const containerStyle = () => {};

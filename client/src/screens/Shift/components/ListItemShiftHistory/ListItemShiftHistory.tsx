@@ -14,15 +14,15 @@ import {
 } from "@mui/material";
 import { AccessTime as AccessTimeIcon } from "@mui/icons-material";
 
-const AccessTimeIconStyled = styled(AccessTimeIcon)<IconProps>(({ theme }: { theme: Theme }) => ({
+const AccessTimeIconStyled = styled(AccessTimeIcon)<IconProps>(({}: { theme: Theme }) => ({
   color: "#a1a1a1",
 }));
 
-const AvatarStyled = styled(Avatar)<AvatarProps>(({ theme }: { theme: Theme }) => ({
+const AvatarStyled = styled(Avatar)<AvatarProps>(({}: { theme: Theme }) => ({
   background: "#eeeeee",
 }));
 
-const ListItemStyled = styled(ListItem)<ListItemProps>(({ theme }: { theme: Theme }) => ({
+const ListItemStyled = styled(ListItem)<ListItemProps>(({}: { theme: Theme }) => ({
   alignItems: "flex-start",
 }));
 

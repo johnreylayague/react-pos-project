@@ -1,6 +1,6 @@
 import { Box, IconButton, Typography, Button } from "@mui/material";
 import React from "react";
-import { Close as CloseIcon, Search as SearchIcon } from "@mui/icons-material";
+import { Close as CloseIcon } from "@mui/icons-material";
 
 type DialogHeaderProps = {
   onClose: () => void;

@@ -1,12 +1,6 @@
-import { Check } from "@mui/icons-material";
-import { ListItemAvatar, Fade, Avatar, ListItemText, Divider } from "@mui/material";
+import { ListItemText, Divider } from "@mui/material";
 import React from "react";
-import {
-  ListItemStyled,
-  ListItemButtonStyled,
-  AvatarStyled,
-  ListItemAvatarStyled,
-} from "../../CategoryStyles";
+import { ListItemStyled, ListItemButtonStyled, ListItemAvatarStyled } from "../../CategoryStyles";
 import { categoryProps } from "../../../../store/category-slice";
 import { InteractionEventHandlers } from "../../../../hooks/Category/useCategoryInteractionHandlers";
 import SelectableAvatar from "../SelectableAvatar/SelectableAvatar";

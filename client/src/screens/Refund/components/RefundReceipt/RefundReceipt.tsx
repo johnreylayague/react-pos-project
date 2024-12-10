@@ -22,7 +22,7 @@ const RefundContainer = styled(Box)<BoxProps>(({ theme }: { theme: Theme }) => (
   marginTop: "auto",
 }));
 
-const PaperStyled = styled(Paper)<PaperProps>(({ theme }: { theme: Theme }) => ({
+const PaperStyled = styled(Paper)<PaperProps>(({}: { theme: Theme }) => ({
   height: `calc(100vh - 112px)`,
   minHeight: "350px",
   display: "flex",

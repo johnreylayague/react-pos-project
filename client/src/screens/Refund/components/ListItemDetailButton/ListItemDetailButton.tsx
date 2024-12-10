@@ -5,12 +5,11 @@ import {
   Theme,
   styled,
   ListItemTextProps,
-  Typography,
   Divider,
 } from "@mui/material";
 import React from "react";
 
-const PrimaryText = styled(ListItemText)<ListItemTextProps>(({ theme }: { theme: Theme }) => ({
+const PrimaryText = styled(ListItemText)<ListItemTextProps>(({}: { theme: Theme }) => ({
   "& .MuiListItemText-primary": { display: "flex" },
 }));
 

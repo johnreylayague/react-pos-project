@@ -25,7 +25,7 @@ export const ContentContainer = styled(Stack)<StackProps>(({ theme }: { theme: T
   padding: `${theme.spacing(6)} ${theme.spacing(4)} ${theme.spacing(6)} ${theme.spacing(4)}`,
 }));
 
-export const ProfileContainer = styled(Box)<BoxProps>(({ theme }: { theme: Theme }) => ({}));
+export const ProfileContainer = styled(Box)<BoxProps>(({}: { theme: Theme }) => ({}));
 
 export const Role = styled(Typography)<TypographyProps>(({ theme }: { theme: Theme }) => ({
   ...theme.typography.h6,
@@ -57,5 +57,5 @@ export const IconButtonStyled = styled(IconButton)<IconButtonProps>(
 );
 
 export const LockOutlinedIconStyled = styled(LockOutlinedIcon)<IconProps>(
-  ({ theme }: { theme: Theme }) => ({})
+  ({}: { theme: Theme }) => ({})
 );

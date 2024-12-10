@@ -9,20 +9,18 @@ import {
   Button,
   Paper,
   Stack,
-  TextField,
   Link,
   FormControl,
   InputLabel,
   Input,
   InputAdornment,
-  OutlinedInput,
   FormHelperText,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router-dom";
 import { IconButtonBackStyle, SignInTitleStyle } from "./SignInStyle";
 import { useTheme } from "@mui/material/styles";
-import { AccountCircle, Visibility, VisibilityOff } from "@mui/icons-material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Link as RouterLink } from "react-router-dom";
 
 const SignIn = () => {

@@ -60,7 +60,7 @@ export const SidebarActionsContainer = styled(Stack)<StackProps>(({ theme }: { t
   padding: theme.spacing(3),
 }));
 
-export const ListStyled = styled(List)<ListProps>(({ theme }: { theme: Theme }) => ({
+export const ListStyled = styled(List)<ListProps>(({}: { theme: Theme }) => ({
   overflowY: "auto",
 }));
 
@@ -76,7 +76,7 @@ export const IconStyled = styled(Icon)<IconProps & { selected?: boolean }>(
   })
 );
 
-export const ListItemStyled = styled(ListItem)<ListItemProps>(({ theme }: { theme: Theme }) => ({
+export const ListItemStyled = styled(ListItem)<ListItemProps>(({}: { theme: Theme }) => ({
   padding: 0,
 }));
 

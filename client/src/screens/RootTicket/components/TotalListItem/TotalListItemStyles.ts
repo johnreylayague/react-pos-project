@@ -14,7 +14,7 @@ export const ItemDetails = styled(ListItemText)<ListItemTextProps>(({}: { theme:
   "& .MuiListItemText-primary": { display: "flex" },
 }));
 
-export const ItemName = styled(Typography)<TypographyProps>(({ theme }: { theme: Theme }) => ({}));
+export const ItemName = styled(Typography)<TypographyProps>(({}: { theme: Theme }) => ({}));
 
 export const Quantity = styled("span")<HTMLAttributes<HTMLSpanElement>>(({ theme }) => ({
   color: "red",
@@ -23,7 +23,7 @@ export const Quantity = styled("span")<HTMLAttributes<HTMLSpanElement>>(({ theme
   flexShrink: 0,
 }));
 
-export const ItemPrice = styled(List)<ListProps>(({ theme }: { theme: Theme }) => ({
+export const ItemPrice = styled(List)<ListProps>(({}: { theme: Theme }) => ({
   textAlign: "right",
   flexShrink: 0,
 }));

@@ -2,7 +2,7 @@ import { Box, BoxProps } from "@mui/material";
 import { CSSObject, styled, Theme } from "@mui/material/styles";
 import { sidebarWidth } from "../../utils/componentStyles";
 
-export const RootContainer = styled(Box)<BoxProps>(({ theme }: { theme: Theme }) => ({
+export const RootContainer = styled(Box)<BoxProps>(({}: { theme: Theme }) => ({
   display: "flex",
 }));
 

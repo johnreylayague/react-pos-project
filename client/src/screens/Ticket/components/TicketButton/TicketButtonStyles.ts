@@ -28,4 +28,4 @@ export const BadgeStyled = styled(Badge)<BadgeProps>(({ theme }) => ({
   marginLeft: theme.spacing(1),
 }));
 
-export const ConfirmationNumberIcon = styled(ConfirmationNumber)<IconProps>(({ theme }) => ({}));
+export const ConfirmationNumberIcon = styled(ConfirmationNumber)<IconProps>(({}) => ({}));

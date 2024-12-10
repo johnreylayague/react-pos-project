@@ -7,7 +7,6 @@ import {
   Grid2Props,
   ListProps,
   PaperProps,
-  CSSObject,
 } from "@mui/material";
 import React from "react";
 import ReceiptHeader from "../ReceiptHeader/ReceiptHeader";
@@ -17,7 +16,7 @@ import { itemListProps } from "../../../../store/refund-slice";
 
 const ListStyled = styled(List)<ListProps>(({}: { theme: Theme }) => ({ overflowY: "auto" }));
 
-const PaperStyled = styled(Paper)<PaperProps>(({ theme }: { theme: Theme }) => ({
+const PaperStyled = styled(Paper)<PaperProps>(({}: { theme: Theme }) => ({
   height: `calc(100vh - 112px)`,
   minHeight: "350px",
   display: "flex",

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import {
   Box,
   Typography,
@@ -53,7 +53,6 @@ const CategoryDialog: React.FC<CategoryDialogProps> = (props) => {
   const inputSearchRef = useRef<HTMLInputElement | null>(null);
   const [isFocus, setIsFocus] = useState<boolean>(true);
   const [inputValue, setInputValue] = useState<string>("");
-  const [isBlur, setIsBlur] = useState(false);
 
   // useEffect(() => {
   //   if (inputValue) {

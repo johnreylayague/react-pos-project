@@ -1,15 +1,5 @@
-import {
-  Menu,
-  MenuItem,
-  Fade,
-  ButtonBase,
-  Collapse,
-  Grow,
-  Slide,
-  Zoom,
-  Slider,
-} from "@mui/material";
-import React, { useRef, useState } from "react";
+import { Menu, MenuItem, ButtonBase } from "@mui/material";
+import React, { useState } from "react";
 import { ArrowDropDown as ArrowDropDownIcon } from "@mui/icons-material";
 import { useSelector } from "react-redux";
 import { storeProps } from "../../../../store";
@@ -66,7 +56,7 @@ const Dropdown: React.FC<DropdownProps> = (props) => {
             vertical: "top",
             horizontal: "left",
           }}
-          sx={(theme) => ({
+          sx={() => ({
             "& .MuiMenu-paper": {
               borderRadius: 0,
             },

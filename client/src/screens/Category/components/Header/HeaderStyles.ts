@@ -27,7 +27,7 @@ export const AppBarContainer = styled(AppBar)<
   position: "relative",
 }));
 
-export const ToolbarStyled = styled(Toolbar)<ToolbarProps>(({ theme }: { theme: Theme }) => ({
+export const ToolbarStyled = styled(Toolbar)<ToolbarProps>(({}: { theme: Theme }) => ({
   justifyContent: "space-between",
 }));
 

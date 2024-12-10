@@ -32,8 +32,7 @@ const CreateCategory: React.FC<CreateCategoryProps> = (props) => {
     handleSaveAction: handleAssignItemsSaveAction,
   } = useAssignItemsDialog();
 
-  const { colorData, handleColorSelectionChange, handleOnSaveCategory, handleDeleteCategory } =
-    useCategoryActions();
+  const { colorData, handleColorSelectionChange, handleOnSaveCategory } = useCategoryActions();
 
   return (
     <>

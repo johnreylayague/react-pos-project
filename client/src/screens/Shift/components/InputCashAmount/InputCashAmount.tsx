@@ -11,7 +11,7 @@ import {
   FormControlProps,
 } from "@mui/material";
 
-const InputStyled = styled(Input)<InputProps>(({ theme }: { theme: Theme }) => ({
+const InputStyled = styled(Input)<InputProps>(({}: { theme: Theme }) => ({
   "& .MuiInput-input": { textAlign: "right" },
   "&.MuiInput-root": { marginTop: 0 },
 }));

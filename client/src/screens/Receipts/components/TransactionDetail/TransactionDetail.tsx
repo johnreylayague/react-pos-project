@@ -8,16 +8,16 @@ import {
 } from "@mui/material";
 import React from "react";
 
-const Date = styled(ListItemText)<ListItemTextProps>(({ theme }: { theme: Theme }) => ({
+const Date = styled(ListItemText)<ListItemTextProps>(({}: { theme: Theme }) => ({
   color: "#959595",
 }));
 
-const ReceiptNumber = styled(ListItemText)<ListItemTextProps>(({ theme }: { theme: Theme }) => ({
+const ReceiptNumber = styled(ListItemText)<ListItemTextProps>(({}: { theme: Theme }) => ({
   textAlign: "right",
   color: "#959595",
 }));
 
-const ListItemStyled = styled(ListItem)<ListItemProps>(({ theme }: { theme: Theme }) => ({
+const ListItemStyled = styled(ListItem)<ListItemProps>(({}: { theme: Theme }) => ({
   paddingBottom: 0,
 }));
 

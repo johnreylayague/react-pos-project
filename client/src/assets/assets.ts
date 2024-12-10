@@ -37,7 +37,6 @@ import SoftPeachBorderSquare from "./images/shapes/SoftPeach/BorderSquare.png";
 import SoftPeachBorderSquare2 from "./images/shapes/SoftPeach/BorderSquare2.png";
 import SoftPeachBorderSquare3 from "./images/shapes/SoftPeach/BorderSquare3.png";
 import notFound from "./images/notFound/image-not-found-scaled.png";
-import { colorsAndShapes, itemList } from "./json/json.ts";
 
 const assets = {
   images: {

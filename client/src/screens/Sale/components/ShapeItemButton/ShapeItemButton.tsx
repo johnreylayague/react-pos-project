@@ -1,7 +1,7 @@
 import { ButtonBase, Box, Typography, Avatar, AvatarProps, Theme, styled } from "@mui/material";
 import React from "react";
 
-const AvatarStyled = styled(Avatar)<AvatarProps>(({ theme }: { theme: Theme }) => ({
+const AvatarStyled = styled(Avatar)<AvatarProps>(({}: { theme: Theme }) => ({
   "& .MuiAvatar-img": {
     pointerEvents: "none",
   },
@@ -29,7 +29,7 @@ const ShapeItemButton: React.FC<ShapeItemButtonProps> = (props) => {
 
   return (
     <>
-      <ButtonBase {...aa} {...bb} sx={(theme) => ({ width: "100%", height: "100%" })}>
+      <ButtonBase {...aa} {...bb} sx={() => ({ width: "100%", height: "100%" })}>
         <AvatarStyled
           sx={{ height: "100%", width: "100%", objectFit: "cover" }}
           variant="square"
@@ -46,7 +46,7 @@ const ShapeItemButton: React.FC<ShapeItemButtonProps> = (props) => {
         >
           <Typography
             component={"div"}
-            sx={(theme) => ({
+            sx={() => ({
               wordBreak: "break-all",
               display: "-webkit-box",
               WebkitBoxOrient: "vertical",

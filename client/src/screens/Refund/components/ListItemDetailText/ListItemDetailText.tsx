@@ -2,8 +2,6 @@ import {
   ListItem,
   ListItemText,
   styled,
-  Typography,
-  TypographyProps,
   Theme,
   ListItemTextProps,
   CSSObject,

@@ -8,11 +8,9 @@ import {
   Box,
   Theme,
   IconProps,
-  ToolbarProps,
   IconButtonProps,
-  CSSObject,
 } from "@mui/material";
-import { Menu as MenuIcon, ArrowBack as ArrowBackIcon } from "@mui/icons-material";
+import { ArrowBack as ArrowBackIcon } from "@mui/icons-material";
 import { Link, LinkProps } from "react-router-dom";
 
 const Title = styled(Box)<BoxProps>(({ theme }: { theme: Theme }) => ({

@@ -15,7 +15,7 @@ export const ListItemStyled = styled(ListItem)<ListItemProps>(({}: { theme?: The
 }));
 
 export const ListItemButtonStyled = styled(ListItemButton)<ListItemButtonProps>(
-  ({ theme }: { theme: Theme }) => ({
+  ({}: { theme: Theme }) => ({
     "&.Mui-selected, &.Mui-selected:hover ": {
       backgroundColor: "#f1f8e9",
     },
@@ -30,7 +30,7 @@ export const AvatarStyled = styled(Avatar)<AvatarProps>(({ theme }: { theme: The
 }));
 
 export const ListItemAvatarStyled = styled(ListItemAvatar)<ListItemAvatarProps>(
-  ({ theme }: { theme: Theme }) => ({
+  ({}: { theme: Theme }) => ({
     position: "relative",
   })
 );

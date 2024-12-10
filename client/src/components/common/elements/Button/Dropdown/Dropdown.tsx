@@ -1,13 +1,6 @@
 import { ButtonBase, Menu, MenuItem, Slide, Typography } from "@mui/material";
 import React from "react";
-import {
-  Search as SearchIcon,
-  Menu as MenuIcon,
-  ArrowDropDown as ArrowDropDownIcon,
-  Close as CloseIcon,
-  Delete as DeleteIcon,
-  ArrowBack as ArrowBackIcon,
-} from "@mui/icons-material";
+import { ArrowDropDown as ArrowDropDownIcon } from "@mui/icons-material";
 
 type DropdownProps = {};
 

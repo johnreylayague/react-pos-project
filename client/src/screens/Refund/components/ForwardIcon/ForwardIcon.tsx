@@ -9,7 +9,7 @@ const ForwardIcon: React.FC<ForwardIconProps> = (props) => {
   return (
     <Grid2
       {...gridProps}
-      sx={(theme) => ({ display: "flex", alignItems: "center", justifyContent: "center" })}
+      sx={() => ({ display: "flex", alignItems: "center", justifyContent: "center" })}
     >
       <Forward
         sx={(theme) => ({
