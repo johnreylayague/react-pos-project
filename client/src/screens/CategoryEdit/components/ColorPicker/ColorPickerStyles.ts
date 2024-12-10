@@ -13,7 +13,7 @@ export const CheckIconStyled = styled(Check)<IconProps>(({ theme }: { theme: The
   width: "100%",
 }));
 
-export const AvatarStyled = styled(Avatar)<AvatarProps>(({ theme }: { theme: Theme }) => ({
+export const AvatarStyled = styled(Avatar)<AvatarProps>(({}: { theme: Theme }) => ({
   height: "100%",
   width: "100%",
 }));

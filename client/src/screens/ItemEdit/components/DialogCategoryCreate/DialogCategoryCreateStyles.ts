@@ -1,12 +1,4 @@
 import {
-  StackProps,
-  Stack,
-  Divider,
-  DividerProps,
-  Paper,
-  PaperProps,
-  ContainerProps,
-  Container,
   ButtonProps,
   DialogActions,
   DialogActionsProps,
@@ -20,18 +12,16 @@ import {
 import { styled, Theme } from "@mui/material/styles";
 import TextButton from "../../../../components/common/elements/Button/TextButton/TextButton";
 
-export const DialogStyled = styled(Dialog)<DialogProps>(({ theme }: { theme: Theme }) => ({
+export const DialogStyled = styled(Dialog)<DialogProps>(({}: { theme: Theme }) => ({
   "& .MuiDialog-paper": { borderRadius: 0 },
 }));
 
-export const DialogTitleStyled = styled(DialogTitle)<DialogTitleProps>(
-  ({ theme }: { theme: Theme }) => ({
-    fontWeight: "bold",
-  })
-);
+export const DialogTitleStyled = styled(DialogTitle)<DialogTitleProps>(({}: { theme: Theme }) => ({
+  fontWeight: "bold",
+}));
 
 export const DialogContentStyled = styled(DialogContent)<DialogContentProps>(
-  ({ theme }: { theme: Theme }) => ({})
+  ({}: { theme: Theme }) => ({})
 );
 
 export const DialogActionsStyled = styled(DialogActions)<DialogActionsProps>(

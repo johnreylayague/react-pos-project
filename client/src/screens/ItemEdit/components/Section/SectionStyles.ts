@@ -1,4 +1,4 @@
-import { Box, BoxProps, Paper, PaperProps, Typography, TypographyProps } from "@mui/material";
+import { Paper, PaperProps, Typography, TypographyProps } from "@mui/material";
 import { styled, Theme } from "@mui/material/styles";
 
 export const PaperStyled = styled(Paper)<PaperProps>(({ theme }: { theme: Theme }) => ({

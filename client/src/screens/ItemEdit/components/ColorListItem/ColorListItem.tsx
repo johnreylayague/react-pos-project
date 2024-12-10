@@ -4,7 +4,7 @@ import { Grid2 as Grid, ButtonBase, Avatar, Zoom, IconProps, AvatarProps } from 
 import { styled, Theme } from "@mui/material/styles";
 import { Check } from "@mui/icons-material";
 
-const AvatarStyled = styled(Avatar)<AvatarProps>(({ theme }: { theme: Theme }) => ({
+const AvatarStyled = styled(Avatar)<AvatarProps>(({}: { theme: Theme }) => ({
   height: "100%",
   width: "100%",
 }));

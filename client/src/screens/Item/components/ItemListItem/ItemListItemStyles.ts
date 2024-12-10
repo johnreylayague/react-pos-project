@@ -29,22 +29,20 @@ export const ListItemTitle = styled(ListItemText)<ListItemTextProps>(
 );
 
 export const ListItemButtonStyled = styled(ListItemButton)<ListItemButtonProps>(
-  ({ theme }: { theme: Theme }) => ({
+  ({}: { theme: Theme }) => ({
     "&.Mui-selected, &.Mui-selected:hover ": {
       backgroundColor: "#f1f8e9",
     },
   })
 );
 
-export const ListItemStock = styled(ListItemText)<ListItemTextProps>(
-  ({ theme }: { theme: Theme }) => ({
-    "& .MuiListItemText-primary	": {
-      textAlign: "right",
-      wordBreak: "keep-all",
-    } as CSSObject,
-    flexShrink: 0,
-  })
-);
+export const ListItemStock = styled(ListItemText)<ListItemTextProps>(({}: { theme: Theme }) => ({
+  "& .MuiListItemText-primary	": {
+    textAlign: "right",
+    wordBreak: "keep-all",
+  } as CSSObject,
+  flexShrink: 0,
+}));
 
 export const AvatarStyled = styled(Avatar)<AvatarProps>(({ theme }: { theme: Theme }) => ({
   backgroundColor: theme.palette.success.main,

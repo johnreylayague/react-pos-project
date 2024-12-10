@@ -33,11 +33,11 @@ const ButtonBaseStyled = styled(ButtonBase)<ButtonBaseProps>(({ theme }: { theme
   padding: `${theme.spacing(1)} ${theme.spacing(1)}`,
 }));
 
-const StackStyled = styled(Stack)<StackProps>(({ theme }: { theme: Theme }) => ({
+const StackStyled = styled(Stack)<StackProps>(({}: { theme: Theme }) => ({
   alignItems: "start",
 }));
 
-const ImageIconStyled = styled(Image)<IconProps>(({ theme }: { theme: Theme }) => ({
+const ImageIconStyled = styled(Image)<IconProps>(({}: { theme: Theme }) => ({
   color: "#9e9e9e",
   fontSize: 50,
 }));
