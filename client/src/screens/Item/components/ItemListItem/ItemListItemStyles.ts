@@ -52,7 +52,7 @@ export const AvatarStyled = styled(Avatar)<AvatarProps>(({ theme }: { theme: The
 }));
 
 export const ListItemAvatarStyled = styled(ListItemAvatar)<ListItemAvatarProps>(
-  ({ theme }: { theme: Theme }) => ({
+  ({}: { theme: Theme }) => ({
     position: "relative",
   })
 );
