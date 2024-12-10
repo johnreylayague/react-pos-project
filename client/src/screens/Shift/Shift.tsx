@@ -91,14 +91,6 @@ const Shift: React.FC<ShiftProps> = (props) => {
         onOpenShiftHistory={onOpenShiftHistory}
       />
 
-      {/* {dialogState.isShowOpenShift && (
-        <OpenShift
-          title="Specifiy the cash amount in your drawer at the start of the shift"
-          onOpenShift={handleOpenShift}
-          inputProps={{ value: amount, onChangeInput: handleChangeInputAmount }}
-        />
-      )} */}
-
       {!isShift && (
         <OpenShift
           title="Specifiy the cash amount in your drawer at the start of the shift"
@@ -108,9 +100,6 @@ const Shift: React.FC<ShiftProps> = (props) => {
       )}
 
       {isShift && <ShiftManagementPanel onCloseShift={handleOpenCloseShift} />}
-      {/* {dialogState.isShowShiftManagement && (
-        <ShiftManagementPanel onCloseShift={handleOpenCloseShift} />
-      )} */}
 
       <DialogShiftHistory
         isOpen={dialogState.isShowShiftsHistory}

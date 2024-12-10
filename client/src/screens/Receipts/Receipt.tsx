@@ -30,7 +30,7 @@ const ContainerStyled = styled(Container)<ContainerProps>(({ theme }: { theme: T
 
 const BoxStyled = styled(Box)<BoxProps>(({ theme }: { theme: Theme }) => ({
   [theme.breakpoints.down("sm")]: {
-    height: `calc(100vh - 56px)`,
+    height: `calc(100dvh - 56px)`,
   } as CSSObject,
   overflowY: "auto",
   height: `calc(100dvh - 64px)`,
