@@ -2,73 +2,95 @@ import React from "react";
 import HeaderFormAction from "../../components/common/elements/Header/HeaderFormAction/HeaderFormAction";
 import ContainerWrapper from "./components/ContainerWrapper/ContainerWrapper.tsx";
 import Section from "./components/Section/Section.tsx";
-import {
-  Box,
-  BoxProps,
-  Collapse,
-  SelectChangeEvent,
-  styled,
-  Switch,
-  Theme,
-  Typography,
-} from "@mui/material";
+import { Collapse, SelectChangeEvent, Switch, Typography } from "@mui/material";
 import InputField from "./components/InputField/InputField.tsx";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { storeProps } from "../../store/index.ts";
 import { Grid2 as Grid, useMediaQuery, useTheme } from "@mui/material";
 import ImageUploadActions from "./components/ImageUploadActions/ImageUploadActions.tsx";
 import ShapeListItem from "./components/ShapeListItem/ShapeListItem.tsx";
 import ColorListItem from "./components/ColorListItem/ColorListItem.tsx";
 import RepresentationSelector from "./components/RepresentationSelector/RepresentationSelector.tsx";
-import { itemActions } from "../../store/item-slice";
 import { NumberFormatter } from "./components/NumberFormatter/NumberFormatter.tsx";
 import SelectField from "./components/SelectField/SelectField.tsx";
 import SoldByOptionSelector from "./components/SoldByOptionSelector/SoldByOptionSelector.tsx";
 import DialogCategoryCreate from "./components/DialogCategoryCreate/DialogCategoryCreate.tsx";
 import { useLocation } from "react-router-dom";
+import { useForm, Controller, ControllerRenderProps } from "react-hook-form";
+import { useDialog } from "../../hooks/material-ui/useDialog/useDialog.tsx";
+import NumericInputField from "../../components/vendor/react-number-formatter/NumericInputField/NumericInputField.tsx";
+import { BoxStyled } from "./ItemCreateStyles.ts";
 
-const BoxStyled = styled(Box)<BoxProps>(({ theme }: { theme: Theme }) => ({
-  display: "flex",
-  flexDirection: "row",
-  alignItems: "center",
-  justifyContent: "space-between",
-  marginTop: theme.spacing(3),
-}));
+type LocationState = {
+  pathname: string;
+  search: string;
+  hash: string;
+  state: null | { from: string };
+  key: string;
+};
 
 type ItemCreateProps = {};
+
 const ItemCreate: React.FC<ItemCreateProps> = (props) => {
   const {} = props;
 
-  const dispatch = useDispatch();
   const theme = useTheme();
-  const location = useLocation();
+  const location = useLocation() as LocationState;
   const isBelowSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   const colorData = useSelector((state: storeProps) => state.item.colorData);
   const shapeData = useSelector((state: storeProps) => state.item.shapeData);
 
-  const [stateSwitch, setStateSwitch] = React.useState(false);
-  const [valuePOS, setValuePOS] = React.useState("colorAndShape");
+  const { isOpenDialog, handleCloseDialog, handleOpenDialog } = useDialog();
 
-  const [openDialog, setOpenDialog] = React.useState(false);
-  const [category, setCategory] = React.useState<string>("");
-  const [valueRadio, setValueRadio] = React.useState("weight");
-
-  const handleChangePOS = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValuePOS((event.target as HTMLInputElement).value);
+  type FormValues = {
+    name: string;
+    category: string | "addCategory";
+    soldby: string;
+    price: string;
+    cost: string;
+    sku: string;
+    barcode: string;
+    trackstock: boolean;
+    representation: string;
+    colorId: number;
+    shapeId: number;
+    instock: number;
   };
+
+  const {
+    handleSubmit,
+    control,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<FormValues>({
+    defaultValues: {
+      name: "",
+      price: "12.00",
+      category: "",
+      soldby: "each",
+      cost: "15.00",
+      sku: "",
+      barcode: "",
+      trackstock: false,
+      representation: "colorAndShape",
+      instock: 0,
+      colorId: 1,
+      shapeId: 3,
+    },
+  });
 
   const handleSelectChange = (event: React.MouseEvent<HTMLButtonElement>) => {
     const colorId = event.currentTarget.getAttribute("data-color-id");
 
     if (colorId) {
       const convertColorId = Number.parseInt(colorId);
+      setValue("colorId", convertColorId);
+    }
 
-      dispatch(
-        itemActions.selectColorPicker({
-          colorId: convertColorId,
-        })
-      );
+    if (!colorId) {
+      console.log("colorId does not exist");
     }
   };
 
@@ -77,132 +99,233 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
 
     if (shapeId) {
       const convertShapeId = Number.parseInt(shapeId);
+      setValue("shapeId", convertShapeId);
+    }
 
-      dispatch(
-        itemActions.selectShapePicker({
-          shapeId: convertShapeId,
-        })
-      );
+    if (!shapeId) {
+      console.log("shapeId does not exist");
     }
   };
 
-  const handleChangeSwitch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setStateSwitch(event.target.checked);
-  };
-
-  // --
-
-  const handleChangeRadio = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValueRadio((event.target as HTMLInputElement).value);
-  };
-
-  const handleChange = (event: SelectChangeEvent) => {
-    const value = event.target.value;
-
-    setCategory(value === "30" ? "" : value);
-
-    if (value === "30") {
-      setOpenDialog(true);
+  const handleCategoryChange = (
+    event: SelectChangeEvent<unknown>,
+    field: ControllerRenderProps<FormValues, "category">
+  ) => {
+    if (event.target.value === "addCategory") {
+      handleOpenDialog();
+      return;
     }
+
+    field.onChange(event);
   };
 
-  const [valuesInput, setValuesInput] = React.useState({
-    numberformat: "1320",
-  });
-
-  const handleChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValuesInput({
-      ...valuesInput,
-      [event.target.name]: event.target.value,
-    });
-  };
-
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
+  const handleOnSubmit = (data: FormValues) => {
+    console.log(data);
   };
 
   return (
     <>
       <HeaderFormAction
-        onNavigateBack={location.state.from}
-        onSave={() => {}}
+        onNavigateBack={location.state ? location.state.from : ".."}
+        onSave={handleSubmit(handleOnSubmit)}
         title="Create item"
       />
 
       <ContainerWrapper>
         <Section>
           <Grid container rowSpacing={3} columnSpacing={6}>
-            <InputField label="Name" wrapperComponent={<Grid size={12} />} />
-
-            <SelectField
-              value={category}
-              onChange={handleChange}
-              wrapperComponent={<Grid size={12} />}
-            />
-
-            <SoldByOptionSelector
-              label="Sold by"
-              onChange={handleChangeRadio}
-              value={valueRadio}
-              wrapperComponent={<Grid size={12} />}
-            />
-
-            <InputField
-              label="Price"
-              helperText="Leave the field blank to indicate the price upon sale"
-              isShowHelperText={true}
-              inputProps={{
-                inputComponent: NumberFormatter as any,
-                value: valuesInput.numberformat,
-                onChange: handleChangeInput,
+            <Controller
+              name="name"
+              control={control}
+              rules={{
+                required: "Name is required.",
+                minLength: { value: 5, message: "SKU must be at least 5 characters long." },
+                maxLength: { value: 50, message: "SKU cannot exceed 50 characters." },
               }}
-              wrapperComponent={<Grid size={{ xs: 12, sm: 6 }} />}
+              render={({ field }) => (
+                <InputField
+                  inputProps={{
+                    ...field,
+                  }}
+                  helperText={errors.name?.message}
+                  isShowHelperText={!!errors.name?.message}
+                  label="Name"
+                  wrapperComponent={<Grid size={12} />}
+                />
+              )}
             />
 
-            <InputField
-              label="Cost"
-              inputProps={{ inputComponent: NumberFormatter as any, value: 0 }}
-              wrapperComponent={<Grid size={{ xs: 12, sm: 6 }} />}
+            <Controller
+              name="category"
+              control={control}
+              rules={{}}
+              render={({ field }) => (
+                <SelectField
+                  selectProps={{
+                    ...field,
+                    onChange: (event) => handleCategoryChange(event, field),
+                  }}
+                  wrapperComponent={<Grid size={12} />}
+                />
+              )}
             />
 
-            <InputField label="SKU" wrapperComponent={<Grid size={{ xs: 12, sm: 6 }} />} />
+            <Controller
+              name="soldby"
+              control={control}
+              rules={{
+                required: "Soldby is required.",
+              }}
+              render={({ field }) => (
+                <SoldByOptionSelector
+                  radioGroupProps={{ ...field }}
+                  label="Sold by"
+                  wrapperComponent={<Grid size={12} />}
+                />
+              )}
+            />
 
-            <InputField label="Barcode" wrapperComponent={<Grid size={{ xs: 12, sm: 6 }} />} />
+            <Controller
+              name="price"
+              control={control}
+              rules={{
+                required: "Price is required.",
+              }}
+              render={({ field }) => (
+                <InputField
+                  label="Price"
+                  inputProps={{
+                    ...field,
+                    inputComponent: NumberFormatter as any,
+                  }}
+                  helperText={errors.price?.message}
+                  isShowHelperText={!!errors.price?.message}
+                  wrapperComponent={<Grid size={{ xs: 12, sm: 6 }} />}
+                />
+              )}
+            />
+
+            <Controller
+              name="cost"
+              control={control}
+              rules={{
+                required: "Cost is required.",
+              }}
+              render={({ field }) => (
+                <InputField
+                  label="Cost"
+                  inputProps={{
+                    ...field,
+                    inputComponent: NumberFormatter as any,
+                  }}
+                  helperText={errors.cost?.message}
+                  isShowHelperText={!!errors.cost?.message}
+                  wrapperComponent={<Grid size={{ xs: 12, sm: 6 }} />}
+                />
+              )}
+            />
+
+            <Controller
+              name="sku"
+              control={control}
+              rules={{
+                required: "SKU is required.",
+                maxLength: { value: 50, message: "SKU cannot exceed 50 characters." },
+              }}
+              render={({ field }) => (
+                <InputField
+                  label="SKU"
+                  inputProps={{
+                    ...field,
+                  }}
+                  helperText={errors.sku?.message}
+                  isShowHelperText={!!errors.sku?.message}
+                  wrapperComponent={<Grid size={{ xs: 12, sm: 6 }} />}
+                />
+              )}
+            />
+
+            <Controller
+              name="barcode"
+              control={control}
+              rules={{
+                required: "Barcode is required.",
+                maxLength: { value: 50, message: "Barcode cannot exceed 50 characters." },
+              }}
+              render={({ field }) => (
+                <InputField
+                  label="Barcode"
+                  inputProps={{
+                    ...field,
+                  }}
+                  helperText={errors.barcode?.message}
+                  isShowHelperText={!!errors.barcode?.message}
+                  wrapperComponent={<Grid size={{ xs: 12, sm: 6 }} />}
+                />
+              )}
+            />
           </Grid>
         </Section>
-
         <Section title="Inventory">
           <BoxStyled>
             <Typography>Track stock</Typography>
-            <Switch color="success" checked={stateSwitch} onChange={handleChangeSwitch} />
+
+            <Controller
+              name="trackstock"
+              control={control}
+              rules={{}}
+              render={({ field }) => (
+                <Switch
+                  checked={field.value}
+                  onChange={(event) => field.onChange(event)}
+                  color="success"
+                />
+              )}
+            />
           </BoxStyled>
 
-          <Collapse in={stateSwitch} timeout="auto" unmountOnExit>
-            <InputField
-              label="In stock"
-              inputLabelProps={{ shrink: true }}
-              inputProps={{ value: 0 }}
-              formControlProps={{
-                sx: (theme) => ({ mb: theme.spacing(2), mt: theme.spacing(3) }),
-              }}
+          <Collapse in={watch("trackstock")} timeout="auto" unmountOnExit>
+            <Controller
+              name="instock"
+              control={control}
+              rules={{ required: "In stock is required." }}
+              render={({ field }) => (
+                <InputField
+                  inputProps={{ ...field, inputComponent: NumericInputField as any }}
+                  label="In stock"
+                  inputLabelProps={{ shrink: true }}
+                  helperText={errors.instock?.message}
+                  isShowHelperText={!!errors.instock?.message}
+                  formControlProps={{
+                    sx: (theme) => ({ mb: theme.spacing(2), mt: theme.spacing(3) }),
+                  }}
+                />
+              )}
             />
           </Collapse>
         </Section>
 
         <Section title="Representation on POS">
-          <RepresentationSelector
-            defaultValue={"colorAndShape"}
-            isBelowSmallScreen={isBelowSmallScreen}
-            onChange={handleChangePOS}
+          <Controller
+            name="representation"
+            control={control}
+            rules={{}}
+            render={({ field }) => (
+              <RepresentationSelector
+                radioGroupProps={{ ...field }}
+                isBelowSmallScreen={isBelowSmallScreen}
+              />
+            )}
           />
 
-          <div hidden={valuePOS !== "colorAndShape"}>
+          <div hidden={watch("representation") !== "colorAndShape"}>
             <Grid container spacing={3} sx={() => ({ mt: 2 })}>
               {colorData.map((color) => {
                 return (
                   <ColorListItem
                     key={color.id}
                     colorData={color}
+                    selected={watch("colorId") === color.id}
                     onChangeColor={handleSelectChange}
                   />
                 );
@@ -215,6 +338,7 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
                   <ShapeListItem
                     key={shape.id}
                     shapeData={shape}
+                    selected={watch("shapeId") === shape.id}
                     onChangeShape={handleSelectChangeShape}
                   />
                 );
@@ -222,7 +346,7 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
             </Grid>
           </div>
 
-          <div hidden={valuePOS !== "image"}>
+          <div hidden={watch("representation") !== "image"}>
             <ImageUploadActions />
           </div>
         </Section>
@@ -232,7 +356,7 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
         title="Create category"
         content={<InputField label="Name" />}
         onClose={handleCloseDialog}
-        isOpen={openDialog}
+        isOpen={isOpenDialog}
       />
     </>
   );

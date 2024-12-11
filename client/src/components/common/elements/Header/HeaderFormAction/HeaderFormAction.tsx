@@ -14,7 +14,7 @@ const HeaderFormAction: React.FC<HeaderFormActionProps> = (props) => {
 
   return (
     <>
-      <AppBarStyled component="div" elevation={0}>
+      <AppBarStyled elevation={0} position="sticky">
         <Toolbar>
           <IconButton component={Link} to={onNavigateBack} relative="path">
             <ArrowBackIconStyled />

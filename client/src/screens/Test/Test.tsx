@@ -1,62 +1,57 @@
 import * as React from "react";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
+import { Controller, useForm } from "react-hook-form";
 
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
+type FormValues = {
+  category: number;
+};
 
-function CustomTabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
+export default function BasicSelect() {
+  const {
+    handleSubmit,
+    register,
+    control,
+    formState: { errors },
+  } = useForm<FormValues>({
+    defaultValues: {
+      category: 20,
+    },
+  });
 
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
-    </div>
-  );
-}
-
-function a11yProps(index: number) {
-  return {
-    id: `simple-tab-${index}`,
-    "aria-controls": `simple-tabpanel-${index}`,
-  };
-}
-
-export default function BasicTabs() {
-  const [value, setValue] = React.useState(0);
-
-  const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
+  const onSubmit = (data: FormValues) => {
+    console.log(data); // Handle form data
   };
 
   return (
-    <Box sx={{ width: "100%" }}>
-      <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-        <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-          <Tab label="Item One" {...a11yProps(0)} />
-          <Tab label="Item Two" {...a11yProps(2)} />
-          <Tab label="Item Three" {...a11yProps(3)} />
-        </Tabs>
-      </Box>
-      <CustomTabPanel value={value} index={0}>
-        Item One
-      </CustomTabPanel>
-      <CustomTabPanel value={value} index={2}>
-        Item Two
-      </CustomTabPanel>
-      <CustomTabPanel value={value} index={3}>
-        Item Three
-      </CustomTabPanel>
+    <Box sx={{ minWidth: 120 }}>
+      <FormControl fullWidth variant="filled">
+        <InputLabel id="demo-simple-select-label">Category</InputLabel>
+        <Controller
+          name="category"
+          control={control}
+          rules={{
+            required: "Category is required.",
+          }}
+          render={({ field }) => (
+            <Select
+              {...field}
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              label="Category"
+            >
+              <MenuItem value={10}>Ten</MenuItem>
+              <MenuItem value={20}>Twenty</MenuItem>
+              <MenuItem value={30}>Thirty</MenuItem>
+            </Select>
+          )}
+        />
+      </FormControl>
+      {errors.category && <p style={{ color: "red" }}>{errors.category.message}</p>}
+      <button onClick={handleSubmit(onSubmit)}>Submit</button>
     </Box>
   );
 }

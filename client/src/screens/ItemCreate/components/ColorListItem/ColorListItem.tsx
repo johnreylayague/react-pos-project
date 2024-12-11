@@ -22,11 +22,12 @@ const CheckIconStyled = styled(Check)<IconProps>(({ theme }: { theme: Theme }) =
 
 type ColorListItemProps = {
   colorData: ColorDataProps;
+  selected: boolean;
   onChangeColor: (event: React.MouseEvent<HTMLButtonElement>) => void;
 };
 
 const ColorListItem: React.FC<ColorListItemProps> = (props) => {
-  const { colorData, onChangeColor } = props;
+  const { colorData, onChangeColor, selected } = props;
 
   return (
     <Grid key={colorData.id} size={{ xs: 3, sm: 1.5 }}>
@@ -42,7 +43,8 @@ const ColorListItem: React.FC<ColorListItemProps> = (props) => {
           alt={colorData.imgAlt}
           src={colorData.imageSrc}
         />
-        <Zoom in={colorData.selected}>
+        <Zoom in={selected}>
+          {/* <Zoom in={colorData.selected}> */}
           <CheckIconStyled />
         </Zoom>
       </ButtonBase>

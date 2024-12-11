@@ -8,7 +8,7 @@ interface NumberFormatterProps {
 
 export const NumberFormatter = React.forwardRef<NumericFormatProps, NumberFormatterProps>(
   function NumberFormatter(props, ref) {
-    const { onChange, ...other } = props;
+    const { onChange, name, ...other } = props;
 
     return (
       <NumericFormat
@@ -17,7 +17,7 @@ export const NumberFormatter = React.forwardRef<NumericFormatProps, NumberFormat
         onValueChange={(values) => {
           onChange({
             target: {
-              name: props.name,
+              name: name,
               value: values.value,
             },
           });

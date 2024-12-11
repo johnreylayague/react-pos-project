@@ -22,11 +22,12 @@ const CheckIconStyled = styled(Check)<IconProps>(({ theme }: { theme: Theme }) =
 
 type ShapeListProps = {
   shapeData: ShapesDataProps;
+  selected: boolean;
   onChangeShape: (event: React.MouseEvent<HTMLButtonElement>) => void;
 };
 
 const ShapeListItem: React.FC<ShapeListProps> = (props) => {
-  const { shapeData, onChangeShape } = props;
+  const { shapeData, onChangeShape, selected } = props;
 
   return (
     <Grid key={shapeData.id} size={{ xs: 3, sm: 1.5 }}>
@@ -42,7 +43,7 @@ const ShapeListItem: React.FC<ShapeListProps> = (props) => {
           alt={shapeData.imgAlt}
           src={shapeData.imageSrc}
         />
-        <Zoom in={shapeData.selected}>
+        <Zoom in={selected}>
           <CheckIconStyled />
         </Zoom>
       </ButtonBase>

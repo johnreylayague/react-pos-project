@@ -12,7 +12,6 @@ import { styled, Theme } from "@mui/material/styles";
 
 export const AppBarStyled = styled(AppBar)<AppBarProps>(({ theme }: { theme: Theme }) => ({
   backgroundColor: theme.palette.success.main,
-  position: "static",
 }));
 
 export const ArrowBackIconStyled = styled(ArrowBack)<IconProps>(({ theme }: { theme: Theme }) => ({

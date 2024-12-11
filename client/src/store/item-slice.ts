@@ -210,32 +210,32 @@ const itemSlice = createSlice({
     shapeData: shapesDataList,
   } as initialItemState,
   reducers: {
-    selectColorPicker: (state, action: { payload: { colorId: number } }) => {
-      const { colorId } = action.payload;
+    // selectColorPicker: (state, action: { payload: { colorId: number } }) => {
+    //   const { colorId } = action.payload;
 
-      const updatedColorData = state.colorData.map((color) => {
-        if (color.id === colorId) {
-          return { ...color, selected: true };
-        } else {
-          return { ...color, selected: false };
-        }
-      });
+    //   const updatedColorData = state.colorData.map((color) => {
+    //     if (color.id === colorId) {
+    //       return { ...color, selected: true };
+    //     } else {
+    //       return { ...color, selected: false };
+    //     }
+    //   });
 
-      state.colorData = updatedColorData;
-    },
-    selectShapePicker: (state, action: { payload: { shapeId: number } }) => {
-      const { shapeId } = action.payload;
+    //   state.colorData = updatedColorData;
+    // },
+    // selectShapePicker: (state, action: { payload: { shapeId: number } }) => {
+    //   const { shapeId } = action.payload;
 
-      const updatedShapeData = state.shapeData.map((shape) => {
-        if (shape.id === shapeId) {
-          return { ...shape, selected: true };
-        } else {
-          return { ...shape, selected: false };
-        }
-      });
+    //   const updatedShapeData = state.shapeData.map((shape) => {
+    //     if (shape.id === shapeId) {
+    //       return { ...shape, selected: true };
+    //     } else {
+    //       return { ...shape, selected: false };
+    //     }
+    //   });
 
-      state.shapeData = updatedShapeData;
-    },
+    //   state.shapeData = updatedShapeData;
+    // },
     closeDeleting: (state) => {
       state.isSelectionMode = false;
       state.isSelectionInProgress = false;

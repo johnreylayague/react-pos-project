@@ -7,6 +7,7 @@ import {
   ListItemText,
   FormHelperText,
   SelectChangeEvent,
+  SelectProps,
 } from "@mui/material";
 import React from "react";
 import { DividerStyled } from "./SelectFieldStyles";
@@ -14,12 +15,11 @@ import { Add as AddIcon } from "@mui/icons-material";
 import CloneElement from "../CloneElement/CloneElement";
 
 type SelectFieldProps = {
-  value: string;
-  onChange: (event: SelectChangeEvent) => void;
   wrapperComponent?: React.ReactNode;
+  selectProps?: SelectProps;
 };
 const SelectField: React.FC<SelectFieldProps> = (props) => {
-  const { onChange, value, wrapperComponent } = props;
+  const { selectProps, wrapperComponent } = props;
 
   const content = (
     <FormControl variant="standard" fullWidth>
@@ -27,11 +27,10 @@ const SelectField: React.FC<SelectFieldProps> = (props) => {
         Category
       </InputLabel>
       <Select
+        {...selectProps}
         labelId="demo-simple-select-helper-label"
         id="demo-simple-select"
-        value={value}
         label="category"
-        onChange={onChange}
         color="success"
         displayEmpty
         MenuProps={{
@@ -44,7 +43,7 @@ const SelectField: React.FC<SelectFieldProps> = (props) => {
         <MenuItem value={"10"}>Ten</MenuItem>
         <MenuItem value={"20"}>Twenty</MenuItem>
         <DividerStyled component="li" />
-        <MenuItem value={"30"}>
+        <MenuItem value={"addCategory"}>
           <ListItemIcon sx={(_theme) => ({ "&.MuiListItemIcon-root": { minWidth: 22 } })}>
             <AddIcon sx={{ color: "#000", fontSize: 16 }} />
           </ListItemIcon>

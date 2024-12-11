@@ -22,10 +22,18 @@ export const PesosInputField = React.forwardRef<NumericFormatProps, PesosInputFi
             },
           });
         }}
+        thousandSeparator
+        allowNegative={false}
+        allowLeadingZeros={false}
         decimalScale={2}
         fixedDecimalScale
-        thousandSeparator=","
         prefix="₱"
+        isAllowed={(values) => {
+          const { floatValue } = values;
+          const MAX_LIMIT = 999999.99;
+
+          return floatValue === undefined || floatValue <= MAX_LIMIT;
+        }}
       />
     );
   }

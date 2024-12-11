@@ -21,11 +21,9 @@ type SectionProps = { children?: React.ReactNode; title?: string };
 const Section: React.FC<SectionProps> = (props) => {
   const { children, title } = props;
 
-  const titleContent = title && <Title color="success">{title}</Title>;
-
   return (
     <PaperStyled>
-      {titleContent}
+      {title && <Title color="success">{title}</Title>}
 
       {children}
     </PaperStyled>
