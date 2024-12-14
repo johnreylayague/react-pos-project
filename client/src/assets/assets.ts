@@ -38,6 +38,41 @@ import SoftPeachBorderSquare2 from "./images/shapes/SoftPeach/BorderSquare2.png"
 import SoftPeachBorderSquare3 from "./images/shapes/SoftPeach/BorderSquare3.png";
 import notFound from "./images/notFound/image-not-found-scaled.png";
 
+export type colorAndShapeDataProps = {
+  id: number;
+  color: string;
+  shape: string;
+  image: string;
+};
+
+export type ColorDataProps = {
+  id: number;
+  color: string;
+  shape: string;
+  image: string;
+  isDefault: boolean;
+};
+
+export type categoryDataList = {
+  id: number;
+  categoryName: string;
+};
+
+export type ShapeDataProps = {
+  id: number;
+  color: string;
+  shape: string;
+  image: string;
+  isDefault: boolean;
+};
+
+export type menuDataListProps = {
+  id: number;
+  title: string;
+  link: string;
+  icon: string;
+};
+
 const assets = {
   images: {
     notFound: notFound,
@@ -324,12 +359,110 @@ const assets = {
         image: VividGambogeSquare,
       },
     ],
+    colorData: [
+      {
+        id: 1,
+        color: "SoftPeach",
+        shape: "Square",
+        image: SoftPeachSquare,
+        isDefault: true,
+      },
+      {
+        id: 2,
+        color: "CoralRedCircle",
+        shape: "Square",
+        image: coralRedSquare,
+        isDefault: false,
+      },
+      {
+        id: 3,
+        color: "Razzmatazz",
+        shape: "Square",
+        image: RazzmatazzSquare,
+        isDefault: false,
+      },
+      {
+        id: 4,
+        color: "VividGamboge",
+        shape: "Square",
+        image: VividGambogeSquare,
+        isDefault: false,
+      },
+      {
+        id: 5,
+        color: "Pear",
+        shape: "Square",
+        image: PearSquare,
+        isDefault: false,
+      },
+      {
+        id: 6,
+        color: "Apple",
+        shape: "Square",
+        image: appleSqaure,
+        isDefault: false,
+      },
+      {
+        id: 7,
+        color: "ButtonBlue",
+        shape: "Square",
+        image: buttonBlueSquare,
+        isDefault: false,
+      },
+      {
+        id: 8,
+        color: "DarkOrchid",
+        shape: "Square",
+        image: DarkOrchidSquare,
+        isDefault: false,
+      },
+    ],
+    shapeData: [
+      {
+        id: 1,
+        color: "SoftPeach",
+        shape: "BorderSquare",
+        image: SoftPeachBorderSquare,
+        isDefault: true,
+      },
+      {
+        id: 2,
+        color: "SoftPeach",
+        shape: "BorderCircle",
+        image: SoftPeachBorderCircle,
+        isDefault: false,
+      },
+      {
+        id: 3,
+        color: "SoftPeach",
+        shape: "BorderHexadecagon",
+        image: SoftPeachBorderHexadecagon,
+        isDefault: false,
+      },
+      {
+        id: 4,
+        color: "SoftPeach",
+        shape: "BorderOctagon",
+        image: SoftPeachBorderOctagon,
+        isDefault: false,
+      },
+    ],
     favoriteList: [
       { id: 1, sequenceId: 0, itemName: "Item 1", representationId: 12 },
       { id: 2, sequenceId: 1, itemName: "Item 2", representationId: 14 },
       { id: 3, sequenceId: 4, itemName: "Item 3", representationId: 26 },
       { id: 4, sequenceId: 6, itemName: "Item 4", representationId: 5 },
       { id: 5, sequenceId: 12, itemName: "Item 5", representationId: 24 },
+    ],
+    menuDataList: [
+      { id: 1, title: "Items", link: "/item/index", icon: "lists" },
+      { id: 2, title: "Categories", link: "/item/category", icon: "content_copy" },
+    ],
+    categoryDataList: [
+      { id: 1, categoryName: "Category 1" },
+      { id: 2, categoryName: "Category 2" },
+      { id: 3, categoryName: "Category 3" },
+      { id: 4, categoryName: "Category 4" },
     ],
     itemList: [
       { id: 1, itemName: "Item 1", representationId: 15 },

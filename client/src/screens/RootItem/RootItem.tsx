@@ -36,7 +36,7 @@ const RootItem: React.FC<RootItemProps> = (props) => {
       <RootContainer>
         <SidebarContainer data-show-sidebar={isShowSideBar}>
           <Header title="Items" />
-          <Sidebar />
+          <Sidebar isMobileView={isMobileView} />
         </SidebarContainer>
 
         <ContentContainer data-show-sidebar={isShowSideBar}>

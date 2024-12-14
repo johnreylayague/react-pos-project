@@ -18,7 +18,6 @@ export type InteractionEventHandlers = {
 
 export const useItemInteractionHandlers = () => {
   const isSelectionMode = useSelector((state: storeProps) => state.item.isSelectionMode);
-  const itemData = useSelector((state: storeProps) => state.item.itemData);
 
   const holdTimeout = useRef<number | null>(null);
   const dispatch = useDispatch();
@@ -119,6 +118,5 @@ export const useItemInteractionHandlers = () => {
 
   return {
     interactionHandlers,
-    itemData,
   };
 };

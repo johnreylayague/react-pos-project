@@ -17,7 +17,7 @@ const SelectableAvatar: React.FC<SelectableAvatarProps> = (props) => {
   return (
     <>
       <Fade in={selected} timeout={timeout}>
-        <AvatarStyled variant={variant}>
+        <AvatarStyled variant={"circular"}>
           <CheckIcon />
         </AvatarStyled>
       </Fade>

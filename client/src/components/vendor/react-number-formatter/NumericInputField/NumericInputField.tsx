@@ -22,7 +22,6 @@ export const NumericInputField = React.forwardRef<NumericFormatProps, NumericInp
             },
           });
         }}
-        maxLength={3}
         allowNegative={false}
         allowLeadingZeros={false}
         decimalScale={0}

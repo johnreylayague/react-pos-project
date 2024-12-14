@@ -1,67 +1,120 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import HeaderFormAction from "../../components/common/elements/Header/HeaderFormAction/HeaderFormAction";
 import ContainerWrapper from "./components/ContainerWrapper/ContainerWrapper.tsx";
 import Section from "./components/Section/Section.tsx";
-import {
-  Collapse,
-  SelectChangeEvent,
-  Switch,
-  Typography,
-  styled,
-  Box,
-  BoxProps,
-  Theme,
-  ButtonBase,
-  ButtonBaseProps,
-  IconProps,
-} from "@mui/material";
+import { Collapse, Switch, Typography } from "@mui/material";
 import InputField from "./components/InputField/InputField.tsx";
-import { useSelector, useDispatch } from "react-redux";
-import { storeProps } from "../../store/index.ts";
 import { Grid2 as Grid, useMediaQuery, useTheme } from "@mui/material";
 import ImageUploadActions from "./components/ImageUploadActions/ImageUploadActions.tsx";
 import ShapeListItem from "./components/ShapeListItem/ShapeListItem.tsx";
 import ColorListItem from "./components/ColorListItem/ColorListItem.tsx";
 import RepresentationSelector from "./components/RepresentationSelector/RepresentationSelector.tsx";
-import { itemActions } from "../../store/item-slice";
-import { NumberFormatter } from "./components/NumberFormatter/NumberFormatter.tsx";
+import PesosInputField from "../../components/vendor/react-number-formatter/PesosInputField/PesosInputField.tsx";
 import SelectField from "./components/SelectField/SelectField.tsx";
 import SoldByOptionSelector from "./components/SoldByOptionSelector/SoldByOptionSelector.tsx";
 import DialogCategoryCreate from "./components/DialogCategoryCreate/DialogCategoryCreate.tsx";
-import { Delete } from "@mui/icons-material";
 import ConfirmationDialog from "../../components/common/elements/Dialog/ConfirmationDialog/ConfirmationDialog.tsx";
 import { useDialog } from "../../hooks/material-ui/useDialog/useDialog.tsx";
+import { BoxStyled, DeleteActionButton, DeleteIconStyled } from "./ItemEditStyles.ts";
+import assets, { ColorDataProps, ShapeDataProps } from "../../assets/assets.ts";
+import { Controller, useForm } from "react-hook-form";
+import { useInteractionHandlers } from "../../hooks/ItemEdit/useInteractionHandlers.ts";
+import NumericInputField from "../../components/vendor/react-number-formatter/NumericInputField/NumericInputField.tsx";
+import { useActions } from "../../hooks/ItemEdit/useActions.ts";
+import { validationItemRules, validationCategoryRules } from "./ItemEditValidationRules.ts.ts";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
+import { storeProps } from "../../store/index.ts";
 
-const BoxStyled = styled(Box)<BoxProps>(({ theme }: { theme: Theme }) => ({
-  display: "flex",
-  flexDirection: "row",
-  alignItems: "center",
-  justifyContent: "space-between",
-  marginTop: theme.spacing(3),
-}));
+export type FormValuesCategory = {
+  name: string;
+};
 
-const DeleteIconStyled = styled(Delete)<IconProps>(({ theme }: { theme: Theme }) => ({
-  color: "#757575",
-  marginRight: theme.spacing(1),
-}));
-
-const DeleteActionButton = styled(ButtonBase)<ButtonBaseProps>(({ theme }: { theme: Theme }) => ({
-  [theme.breakpoints.down("sm")]: {
-    borderRadius: 0,
-  },
-  width: "100%",
-  padding: `${theme.spacing(1.142)} ${theme.spacing(3)}`,
-  boxShadow: theme.shadows[3],
-  backgroundColor: theme.palette.background.paper,
-}));
+export type FormValuesItem = {
+  id: number | string;
+  name: string;
+  category: string;
+  soldby: string;
+  price: string;
+  cost: string;
+  sku: string;
+  barcode: string;
+  trackstock: boolean;
+  representation: string;
+  image: string;
+  colorId: number;
+  shapeId: number;
+  instock: number;
+};
 
 type ItemCreateProps = {};
 const ItemCreate: React.FC<ItemCreateProps> = (props) => {
   const {} = props;
 
-  const dispatch = useDispatch();
   const theme = useTheme();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const isBelowSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const itemList = useSelector((state: storeProps) => state.item.itemList);
+  const [colorData, _setColorData] = useState<ColorDataProps[] | []>(assets.json.colorData);
+  const [shapeData, _setShapeData] = useState<ShapeDataProps[] | []>(assets.json.shapeData);
+  const params = useParams<{ itemId: string }>();
+
+  const {
+    handleSubmit: handleSubmitCategory,
+    control: controlCategory,
+    formState: { errors: errorsCategory },
+  } = useForm<FormValuesCategory>({
+    defaultValues: {
+      name: "",
+    },
+  });
+
+  const {
+    handleSubmit: handleSubmitItem,
+    control: controlItem,
+    setValue: setValueItem,
+    watch: watchItem,
+    reset: resetItem,
+    formState: { errors: errorsItem },
+  } = useForm<FormValuesItem>({
+    defaultValues: {
+      id: "",
+      name: "",
+      category: "",
+      soldby: "each",
+      price: "0",
+      cost: "0",
+      sku: "",
+      barcode: "",
+      trackstock: false,
+      instock: 0,
+      representation: "colorAndShape",
+      colorId: 1,
+      shapeId: 1,
+      image: "",
+    },
+  });
+
+  useEffect(() => {
+    const itemId = params.itemId ? Number.parseInt(params.itemId) : params.itemId;
+    const findItemById = itemList.find((item) => item.id === itemId);
+
+    if (findItemById) {
+      resetItem(findItemById);
+    }
+
+    if (!findItemById) {
+      const itemRedirectPath = isBelowSmallScreen ? "/item/index" : "/item";
+      navigate(itemRedirectPath);
+    }
+  }, [resetItem, navigate]);
+
+  useEffect(() => {
+    if (!watchItem("trackstock")) {
+      setValueItem("instock", 0);
+    }
+  }, [watchItem("trackstock")]);
 
   const {
     isOpenDialog: isDialogDelete,
@@ -69,164 +122,216 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
     handleCloseDialog: onCloseDialogDelete,
   } = useDialog();
 
-  const colorData = useSelector((state: storeProps) => state.item.colorData);
-  const shapeData = useSelector((state: storeProps) => state.item.shapeData);
+  const {
+    isOpenDialog: isDialogCreateCategory,
+    handleOpenDialog: onOpenDialogCreateCategory,
+    handleCloseDialog: onCloseDialogCreateCategory,
+  } = useDialog();
 
-  const [stateSwitch, setStateSwitch] = React.useState(false);
-  const [valuePOS, setValuePOS] = React.useState("colorAndShape");
+  const { handleCategoryChange, handleSelectChangeColor, handleSelectChangeShape } =
+    useInteractionHandlers(setValueItem, onOpenDialogCreateCategory);
 
-  const [openDialog, setOpenDialog] = React.useState(false);
-  const [category, setCategory] = React.useState<string>("");
-  const [valueRadio, setValueRadio] = React.useState("weight");
-
-  const handleChangePOS = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValuePOS((event.target as HTMLInputElement).value);
-  };
-
-  const handleSelectChange = (event: React.MouseEvent<HTMLButtonElement>) => {
-    const colorId = event.currentTarget.getAttribute("data-color-id");
-
-    if (colorId) {
-      const convertColorId = Number.parseInt(colorId);
-
-      dispatch(
-        itemActions.selectColorPicker({
-          colorId: convertColorId,
-        })
-      );
-    }
-  };
-
-  const handleSelectChangeShape = (event: React.MouseEvent<HTMLButtonElement>) => {
-    const shapeId = event.currentTarget.getAttribute("data-shape-id");
-
-    if (shapeId) {
-      const convertShapeId = Number.parseInt(shapeId);
-
-      dispatch(
-        itemActions.selectShapePicker({
-          shapeId: convertShapeId,
-        })
-      );
-    }
-  };
-
-  const handleChangeSwitch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setStateSwitch(event.target.checked);
-  };
-
-  const handleChangeRadio = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValueRadio((event.target as HTMLInputElement).value);
-  };
-
-  const handleChange = (event: SelectChangeEvent) => {
-    const value = event.target.value;
-
-    setCategory(value === "30" ? "" : value);
-
-    if (value === "30") {
-      setOpenDialog(true);
-    }
-  };
-
-  const [valuesInput, setValuesInput] = React.useState({
-    numberformat: "1320",
-  });
-
-  const handleChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValuesInput({
-      ...valuesInput,
-      [event.target.name]: event.target.value,
-    });
-  };
-
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-  };
-
-  const handleOnDeleteItem = () => {
-    setOpenDialog(true);
-  };
+  const { handleOnSubmitCategory, handleOnSubmitItem, handleOnDeleteItem } = useActions(
+    navigate,
+    dispatch,
+    isBelowSmallScreen,
+    params
+  );
 
   return (
     <>
-      <HeaderFormAction onNavigateBack="/item" onSave={() => {}} title="Edit item" />
+      <HeaderFormAction
+        onNavigateBack="/item"
+        onSave={handleSubmitItem(handleOnSubmitItem)}
+        title="Edit item"
+      />
 
       <ContainerWrapper>
         <Section>
           <Grid container rowSpacing={3} columnSpacing={6}>
-            <InputField label="Name" wrapperComponent={<Grid size={12} />} />
-
-            <SelectField
-              value={category}
-              onChange={handleChange}
-              wrapperComponent={<Grid size={12} />}
+            <Controller
+              name="name"
+              control={controlItem}
+              rules={validationItemRules.name}
+              render={({ field }) => (
+                <InputField
+                  inputProps={{
+                    ...field,
+                  }}
+                  helperText={errorsItem.name?.message}
+                  isShowHelperText={!!errorsItem.name?.message}
+                  label="Name"
+                  wrapperComponent={<Grid size={12} />}
+                />
+              )}
             />
 
-            <SoldByOptionSelector
-              label="Sold by"
-              onChange={handleChangeRadio}
-              value={valueRadio}
-              wrapperComponent={<Grid size={12} />}
+            <Controller
+              name="category"
+              control={controlItem}
+              rules={validationItemRules.category}
+              render={({ field }) => (
+                <SelectField
+                  selectProps={{
+                    ...field,
+                    onChange: (event) => handleCategoryChange(event, field),
+                  }}
+                  wrapperComponent={<Grid size={12} />}
+                />
+              )}
             />
 
-            <InputField
-              label="Price"
-              helperText="Leave the field blank to indicate the price upon sale"
-              isShowHelperText={true}
-              inputProps={{
-                inputComponent: NumberFormatter as any,
-                value: valuesInput.numberformat,
-                onChange: handleChangeInput,
-              }}
-              wrapperComponent={<Grid size={{ xs: 12, sm: 6 }} />}
+            <Controller
+              name="soldby"
+              control={controlItem}
+              rules={{}}
+              render={({ field }) => (
+                <SoldByOptionSelector
+                  radioGroupProps={{ ...field }}
+                  label="Sold by"
+                  wrapperComponent={<Grid size={12} />}
+                />
+              )}
             />
 
-            <InputField
-              label="Cost"
-              inputProps={{ inputComponent: NumberFormatter as any, value: 0 }}
-              wrapperComponent={<Grid size={{ xs: 12, sm: 6 }} />}
+            <Controller
+              name="price"
+              control={controlItem}
+              rules={validationItemRules.price}
+              render={({ field }) => (
+                <InputField
+                  inputProps={{
+                    ...field,
+                    inputComponent: PesosInputField as any,
+                  }}
+                  label="Price"
+                  helperText={errorsItem.price?.message}
+                  isShowHelperText={!!errorsItem.price?.message}
+                  wrapperComponent={<Grid size={{ xs: 12, sm: 6 }} />}
+                />
+              )}
             />
 
-            <InputField label="SKU" wrapperComponent={<Grid size={{ xs: 12, sm: 6 }} />} />
+            <Controller
+              name="cost"
+              control={controlItem}
+              rules={validationItemRules.cost}
+              render={({ field }) => (
+                <InputField
+                  label="Cost"
+                  inputProps={{
+                    ...field,
+                    inputComponent: PesosInputField as any,
+                  }}
+                  helperText={errorsItem.cost?.message}
+                  isShowHelperText={!!errorsItem.cost?.message}
+                  wrapperComponent={<Grid size={{ xs: 12, sm: 6 }} />}
+                />
+              )}
+            />
 
-            <InputField label="Barcode" wrapperComponent={<Grid size={{ xs: 12, sm: 6 }} />} />
+            <Controller
+              name="sku"
+              control={controlItem}
+              rules={validationItemRules.sku}
+              render={({ field }) => (
+                <InputField
+                  label="SKU"
+                  inputProps={{
+                    ...field,
+                  }}
+                  helperText={errorsItem.sku?.message}
+                  isShowHelperText={!!errorsItem.sku?.message}
+                  wrapperComponent={<Grid size={{ xs: 12, sm: 6 }} />}
+                />
+              )}
+            />
+
+            <Controller
+              name="barcode"
+              control={controlItem}
+              rules={validationItemRules.barcode}
+              render={({ field }) => (
+                <InputField
+                  label="Barcode"
+                  inputProps={{
+                    ...field,
+                  }}
+                  helperText={errorsItem.barcode?.message}
+                  isShowHelperText={!!errorsItem.barcode?.message}
+                  wrapperComponent={<Grid size={{ xs: 12, sm: 6 }} />}
+                />
+              )}
+            />
           </Grid>
         </Section>
 
         <Section title="Inventory">
           <BoxStyled>
             <Typography>Track stock</Typography>
-            <Switch color="success" checked={stateSwitch} onChange={handleChangeSwitch} />
+
+            <Controller
+              name="trackstock"
+              control={controlItem}
+              render={({ field }) => (
+                <Switch
+                  checked={field.value}
+                  onChange={(event) => field.onChange(event)}
+                  color="success"
+                />
+              )}
+            />
           </BoxStyled>
 
-          <Collapse in={stateSwitch} timeout="auto" unmountOnExit>
-            <InputField
-              label="In stock"
-              inputLabelProps={{ shrink: true }}
-              inputProps={{ value: 0 }}
-              formControlProps={{
-                sx: (theme) => ({ mb: theme.spacing(2), mt: theme.spacing(3) }),
-              }}
+          <Collapse in={watchItem("trackstock")} timeout="auto">
+            <Controller
+              name="instock"
+              control={controlItem}
+              rules={validationItemRules.instock}
+              render={({ field }) => (
+                <InputField
+                  inputProps={{
+                    ...field,
+                    inputComponent: NumericInputField as any,
+                    slotProps: { input: { maxLength: 3 } },
+                  }}
+                  label="In stock"
+                  inputLabelProps={{ shrink: true }}
+                  helperText={errorsItem.instock?.message}
+                  isShowHelperText={!!errorsItem.instock?.message}
+                  formControlProps={{
+                    sx: (theme) => ({
+                      marginBottom: theme.spacing(2),
+                      marginTop: theme.spacing(3),
+                    }),
+                  }}
+                />
+              )}
             />
           </Collapse>
         </Section>
 
         <Section title="Representation on POS">
-          <RepresentationSelector
-            defaultValue={"colorAndShape"}
-            isBelowSmallScreen={isBelowSmallScreen}
-            onChange={handleChangePOS}
+          <Controller
+            name="representation"
+            control={controlItem}
+            render={({ field }) => (
+              <RepresentationSelector
+                radioGroupProps={{ ...field }}
+                isBelowSmallScreen={isBelowSmallScreen}
+              />
+            )}
           />
 
-          <div hidden={valuePOS !== "colorAndShape"}>
+          <div hidden={watchItem("representation") !== "colorAndShape"}>
             <Grid container spacing={3} sx={() => ({ mt: 2 })}>
               {colorData.map((color) => {
                 return (
                   <ColorListItem
                     key={color.id}
                     colorData={color}
-                    onChangeColor={handleSelectChange}
+                    selected={watchItem("colorId") === color.id}
+                    onChangeColor={handleSelectChangeColor}
                   />
                 );
               })}
@@ -238,6 +343,7 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
                   <ShapeListItem
                     key={shape.id}
                     shapeData={shape}
+                    selected={watchItem("shapeId") === shape.id}
                     onChangeShape={handleSelectChangeShape}
                   />
                 );
@@ -245,7 +351,7 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
             </Grid>
           </div>
 
-          <div hidden={valuePOS !== "image"}>
+          <div hidden={watchItem("representation") !== "image"}>
             <ImageUploadActions />
           </div>
         </Section>
@@ -258,9 +364,26 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
 
       <DialogCategoryCreate
         title="Create category"
-        content={<InputField label="Name" />}
-        onClose={handleCloseDialog}
-        isOpen={openDialog}
+        onSave={handleSubmitCategory(handleOnSubmitCategory)}
+        content={
+          <>
+            <Controller
+              name="name"
+              control={controlCategory}
+              rules={validationCategoryRules.name}
+              render={({ field }) => (
+                <InputField
+                  label="Name"
+                  inputProps={{ ...field }}
+                  helperText={errorsCategory.name?.message}
+                  isShowHelperText={!!errorsCategory.name?.message}
+                />
+              )}
+            />
+          </>
+        }
+        onClose={onCloseDialogCreateCategory}
+        isOpen={isDialogCreateCategory}
       />
 
       <ConfirmationDialog
@@ -268,7 +391,7 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
         description="Are you sure you want to delete the category?"
         open={isDialogDelete}
         onClose={onCloseDialogDelete}
-        onDelete={onCloseDialogDelete}
+        onDelete={handleOnDeleteItem}
       />
     </>
   );

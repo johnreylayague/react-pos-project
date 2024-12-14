@@ -2,7 +2,7 @@ import React from "react";
 import { Grid2 as Grid, ButtonBase, Avatar, Zoom, AvatarProps, IconProps } from "@mui/material";
 import { Check } from "@mui/icons-material";
 import { styled, Theme } from "@mui/material/styles";
-import { ShapesDataProps } from "../../../../store/item-slice";
+import { ShapeDataProps } from "../../../../assets/assets";
 
 const AvatarStyled = styled(Avatar)<AvatarProps>(({}: { theme: Theme }) => ({
   height: "100%",
@@ -21,7 +21,7 @@ const CheckIconStyled = styled(Check)<IconProps>(({ theme }: { theme: Theme }) =
 }));
 
 type ShapeListProps = {
-  shapeData: ShapesDataProps;
+  shapeData: ShapeDataProps;
   selected: boolean;
   onChangeShape: (event: React.MouseEvent<HTMLButtonElement>) => void;
 };
@@ -40,8 +40,8 @@ const ShapeListItem: React.FC<ShapeListProps> = (props) => {
         <AvatarStyled
           imgProps={{ draggable: false }}
           variant="rounded"
-          alt={shapeData.imgAlt}
-          src={shapeData.imageSrc}
+          alt={shapeData.shape}
+          src={shapeData.image}
         />
         <Zoom in={selected}>
           <CheckIconStyled />

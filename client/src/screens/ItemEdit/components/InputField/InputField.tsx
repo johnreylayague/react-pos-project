@@ -39,12 +39,8 @@ const InputField: React.FC<InputFieldProps> = (props) => {
       <InputLabel color="success" {...inputLabelProps}>
         {label}
       </InputLabel>
-      <Input aria-describedby="category-name-helper-text" color="success" {...inputProps} />
-      <FormHelperText
-        id="category-name-helper-text"
-        hidden={!isShowHelperText}
-        {...formHelperTextProps}
-      >
+      <Input color="success" {...inputProps} />
+      <FormHelperText error hidden={!isShowHelperText} {...formHelperTextProps}>
         {helperText}
       </FormHelperText>
     </FormControl>

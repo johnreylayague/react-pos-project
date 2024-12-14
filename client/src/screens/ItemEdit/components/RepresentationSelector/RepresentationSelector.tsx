@@ -6,6 +6,7 @@ import {
   Radio,
   styled,
   Theme,
+  RadioGroupProps,
 } from "@mui/material";
 import React from "react";
 
@@ -17,21 +18,14 @@ const FormControlLabelStyled = styled(FormControlLabel)<FormControlLabelProps>(
 
 type RepresentationSelectorProps = {
   isBelowSmallScreen: boolean;
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  defaultValue: string;
+  radioGroupProps: RadioGroupProps;
 };
 const RepresentationSelector: React.FC<RepresentationSelectorProps> = (props) => {
-  const { onChange, isBelowSmallScreen, defaultValue } = props;
+  const { isBelowSmallScreen, radioGroupProps } = props;
 
   return (
     <FormControl>
-      <RadioGroup
-        row={!isBelowSmallScreen}
-        aria-labelledby="demo-row-radio-buttons-group-label"
-        name="row-radio-buttons-group"
-        onChange={onChange}
-        defaultValue={defaultValue}
-      >
+      <RadioGroup row={!isBelowSmallScreen} {...radioGroupProps}>
         <FormControlLabelStyled
           value="colorAndShape"
           control={<Radio color="success" />}

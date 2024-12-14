@@ -8,20 +8,21 @@ import {
 } from "./DialogCategoryCreateStyles";
 type DialogCategoryCreateProps = {
   onClose: () => void;
+  onSave: () => void;
   isOpen: boolean;
   title: string;
   content: React.ReactNode;
 };
 const DialogCategoryCreate: React.FC<DialogCategoryCreateProps> = (props) => {
-  const { onClose, isOpen, title, content } = props;
+  const { onClose, onSave, isOpen, title, content } = props;
 
   return (
-    <DialogStyled maxWidth="xs" fullWidth onClose={onClose} open={isOpen}>
+    <DialogStyled maxWidth="xs" fullWidth open={isOpen}>
       <DialogTitleStyled>{title}</DialogTitleStyled>
       <DialogContentStyled>{content}</DialogContentStyled>
       <DialogActionsStyled>
         <TextButtonStyled onClick={onClose}>CANCEL</TextButtonStyled>
-        <TextButtonStyled>SAVE</TextButtonStyled>
+        <TextButtonStyled onClick={onSave}>SAVE</TextButtonStyled>
       </DialogActionsStyled>
     </DialogStyled>
   );

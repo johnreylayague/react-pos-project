@@ -20,6 +20,7 @@ export const useHeaderInteractionHandlers = () => {
   };
 
   const handleCloseSearch = () => {
+    console.log("handleOpenSearch");
     dispatch(itemActions.toggleIsSearch(false));
   };
 

@@ -61,8 +61,10 @@ function Routes() {
           <Route path="index" element={<ItemPage />} />
           <Route path="category" element={<CategoryPage />} />
         </Route>
+        {/* CATEGORY */}
         <Route path="item/category/edit/:categoryId" element={<CategoryEditPage />} />
         <Route path="item/category/create" element={<CategoryCreatePage />} />
+        {/* ITEM */}
         <Route path="item/create" element={<ItemCreatePage />} />
         <Route path="item/edit/:itemId" element={<ItemEditPage />} />
         {/* END OF ITEM */}
@@ -91,6 +93,7 @@ function Routes() {
         {/* END OF SETTINGS */}
 
         <Route path="sign-in" element={<SignIn />} />
+        <Route path="invalid" element={<NotFound />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     )

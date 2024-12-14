@@ -9,26 +9,24 @@ import {
   ListItemTextStyled,
   IconStyled,
 } from "./SidebarStyles";
-import { useSelector } from "react-redux";
-import { storeProps } from "../../../../store";
-import { useMediaQuery } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
+import assets from "../../../../assets/assets";
 
-type SidebarProps = {};
+const menuDataList = assets.json.menuDataList;
+
+type SidebarProps = {
+  isMobileView: boolean;
+};
 
 const Sidebar: React.FC<SidebarProps> = (props) => {
-  const {} = props;
+  const { isMobileView } = props;
 
   const location = useLocation();
-  const item = useSelector((state: storeProps) => state.item);
-  const theme = useTheme();
-  const isMobileView = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
     <>
       <SidebarContainer>
         <ListStyled>
-          {item.menuData.map((menu) => {
+          {menuDataList.map((menu) => {
             const isSelected =
               location.pathname === "/item" && menu.link === "/item/index" && !isMobileView;
             const isCurrentRoute = location.pathname === menu.link || isSelected;

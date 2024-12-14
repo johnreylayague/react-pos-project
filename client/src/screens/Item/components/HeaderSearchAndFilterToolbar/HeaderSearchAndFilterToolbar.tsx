@@ -1,8 +1,23 @@
-import { AppBar, Toolbar, IconButton } from "@mui/material";
+import { AppBar } from "@mui/material";
 import React from "react";
-import Dropdown from "../Dropdown/Dropdown";
 import { Link } from "react-router-dom";
-import { ArrowBack as ArrowBackIcon, Search as SearchIcon } from "@mui/icons-material";
+import {
+  SearchIcon,
+  SearchButton,
+  BackButton,
+  ArrowBackIcon,
+  ToolbarStyled,
+  ButtonBaseStyled,
+  MenuStyled,
+  MenuItemStyled,
+} from "./HeaderSearchAndFilterToolbarStyles";
+import { ArrowDropDown as ArrowDropDownIcon } from "@mui/icons-material";
+import { useMenu } from "../../../../hooks/material-ui/useMenu/useMenu";
+import assets from "../../../../assets/assets";
+import { useDispatch } from "react-redux";
+import { itemActions } from "../../../../store/item-slice";
+
+const categoryDataList = assets.json.categoryDataList;
 
 type HeaderSearchAndFilterToolbarProps = {
   openSearch: () => void;
@@ -11,52 +26,64 @@ type HeaderSearchAndFilterToolbarProps = {
 const HeaderSearchAndFilterToolbar: React.FC<HeaderSearchAndFilterToolbarProps> = (props) => {
   const { openSearch } = props;
 
-  return (
-    <>
-      <AppBar
-        component="div"
-        elevation={0}
-        sx={(theme) => ({
-          backgroundColor: theme.palette.success.main,
-          position: "static",
-        })}
-      >
-        <Toolbar
-          sx={(theme) => ({
-            justifyContent: "space-between",
-            [theme.breakpoints.down("sm")]: {
-              justifyContent: "unset",
-            },
-          })}
-        >
-          <IconButton
-            component={Link}
-            to=".."
-            relative="path"
-            sx={(theme) => ({
-              [theme.breakpoints.down("sm")]: {
-                display: "inline-flex",
-              },
-              display: "none",
-            })}
-          >
-            <ArrowBackIcon sx={(theme) => ({ color: theme.palette.common.white })} />
-          </IconButton>
-          <Dropdown />
+  const dispatch = useDispatch();
 
-          <IconButton
-            onClick={openSearch}
-            sx={(theme) => ({
-              [theme.breakpoints.down("sm")]: {
-                marginLeft: "auto",
-              },
-            })}
+  const { isOpen, anchorEl, handleCloseMenu, handleOpenMenu } = useMenu();
+
+  const handleOnBackButton = () => {
+    dispatch(itemActions.onChangeSearchInputValue(""));
+    openSearch();
+  };
+
+  return (
+    <AppBar component="div" elevation={0} position="static" color="success">
+      <ToolbarStyled>
+        <BackButton component={Link} to=".." relative="path">
+          <ArrowBackIcon />
+        </BackButton>
+
+        <div>
+          <ButtonBaseStyled
+            id="button"
+            disableRipple
+            aria-controls={isOpen ? "menu" : undefined}
+            aria-haspopup="true"
+            aria-expanded={isOpen ? "true" : undefined}
+            onClick={handleOpenMenu}
           >
-            <SearchIcon sx={(theme) => ({ color: theme.palette.common.white })} />
-          </IconButton>
-        </Toolbar>
-      </AppBar>
-    </>
+            All Items
+            <ArrowDropDownIcon sx={() => ({ marginLeft: 1 })} />
+          </ButtonBaseStyled>
+          <MenuStyled
+            id="menu"
+            anchorEl={anchorEl}
+            open={isOpen}
+            onClose={handleCloseMenu}
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "left",
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "left",
+            }}
+          >
+            <MenuItemStyled onClick={handleCloseMenu}>All items</MenuItemStyled>
+            {categoryDataList.map((category) => {
+              return (
+                <MenuItemStyled key={category.id} onClick={handleCloseMenu}>
+                  {category.categoryName}
+                </MenuItemStyled>
+              );
+            })}
+          </MenuStyled>
+        </div>
+
+        <SearchButton onClick={handleOnBackButton}>
+          <SearchIcon />
+        </SearchButton>
+      </ToolbarStyled>
+    </AppBar>
   );
 };
 

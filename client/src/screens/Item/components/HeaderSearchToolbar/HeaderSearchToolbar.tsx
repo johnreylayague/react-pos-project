@@ -1,41 +1,49 @@
-import { AppBar, Toolbar, IconButton, Icon, InputBase } from "@mui/material";
-import React from "react";
+import { AppBar, Toolbar, IconButton } from "@mui/material";
+import React, { useRef } from "react";
+import { CloseButton, CloseIcon, SearchInput, ArrowBackIcon } from "./HeaderSearchToolbarStyles";
+import { useDispatch } from "react-redux";
+import { itemActions } from "../../../../store/item-slice";
 
-type HeaderSearchToolbarProps = { closeSearch: () => void };
+type HeaderSearchToolbarProps = { backButton: () => void; searchInputValue: string };
 const HeaderSearchToolbar: React.FC<HeaderSearchToolbarProps> = (props) => {
-  const { closeSearch } = props;
+  const { backButton, searchInputValue } = props;
+
+  const searchInputRef = useRef<HTMLInputElement | null>();
+  const dispatch = useDispatch();
+
+  const handleOnChangeSearchInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    dispatch(itemActions.onChangeSearchInputValue(value));
+  };
+
+  const handleOnCloseSearch = () => {
+    dispatch(itemActions.onChangeSearchInputValue(""));
+    searchInputRef.current?.focus();
+  };
+
 
   return (
-    <>
-      <AppBar
-        component="div"
-        elevation={0}
-        sx={(theme) => ({
-          backgroundColor: theme.palette.success.main,
-          position: "static",
-        })}
-      >
-        <Toolbar>
-          <IconButton onClick={closeSearch}>
-            <Icon sx={(theme) => ({ color: theme.palette.common.white })}>arrow_back</Icon>
-          </IconButton>
-          <InputBase
-            autoFocus
-            placeholder="Search"
-            sx={(theme) => ({
-              ...theme.typography.h6,
-              paddingLeft: theme.spacing(3),
-              paddingRight: theme.spacing(3),
-              flexGrow: 1,
-              color: theme.palette.common.white,
-            })}
-          />
-          <IconButton onClick={() => {}}>
-            <Icon sx={(theme) => ({ color: theme.palette.common.white })}>close</Icon>
-          </IconButton>
-        </Toolbar>
-      </AppBar>
-    </>
+    <AppBar component="div" elevation={0} position="sticky" color="success">
+      <Toolbar>
+        <IconButton onClick={backButton}>
+          <ArrowBackIcon />
+        </IconButton>
+
+        <SearchInput
+          autoFocus
+          placeholder="Search"
+          onChange={handleOnChangeSearchInput}
+          value={searchInputValue}
+          inputRef={searchInputRef}
+        />
+
+        {searchInputValue && (
+          <CloseButton onClick={handleOnCloseSearch}>
+            <CloseIcon />
+          </CloseButton>
+        )}
+      </Toolbar>
+    </AppBar>
   );
 };
 

@@ -38,25 +38,18 @@ const RadioGroupStyled = styled(RadioGroup)<RadioGroupProps>(({ theme }: { theme
 }));
 
 type SoldByOptionSelectorProps = {
-  value: string;
   label: string;
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   wrapperComponent?: React.ReactNode;
+  radioGroupProps?: RadioGroupProps;
 };
 
 const SoldByOptionSelector: React.FC<SoldByOptionSelectorProps> = (props) => {
-  const { onChange, value, label, wrapperComponent } = props;
+  const { label, wrapperComponent, radioGroupProps } = props;
 
   const content = (
     <FormControlStyled fullWidth color="success">
-      <FormLabelStyled id="demo-row-radio-buttons-group-label">{label}</FormLabelStyled>
-      <RadioGroupStyled
-        row
-        aria-labelledby="demo-row-radio-buttons-group-label"
-        name="row-radio-buttons-group"
-        value={value}
-        onChange={onChange}
-      >
+      <FormLabelStyled>{label}</FormLabelStyled>
+      <RadioGroupStyled row {...radioGroupProps}>
         <FormControlLabel value="each" control={<Radio color="success" />} label="Each" />
         <FormControlLabel value="weight" control={<Radio color="success" />} label="Weight" />
       </RadioGroupStyled>

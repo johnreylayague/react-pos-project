@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ChangeEvent, useRef } from "react";
 import { NumericFormat, NumericFormatProps } from "react-number-format";
 
 type PesosInputFieldProps = {

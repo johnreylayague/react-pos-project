@@ -1,8 +1,8 @@
 import React from "react";
-import { ColorDataProps } from "../../../../store/item-slice";
 import { Grid2 as Grid, ButtonBase, Avatar, Zoom, IconProps, AvatarProps } from "@mui/material";
 import { styled, Theme } from "@mui/material/styles";
 import { Check } from "@mui/icons-material";
+import { ColorDataProps } from "../../../../assets/assets";
 
 const AvatarStyled = styled(Avatar)<AvatarProps>(({}: { theme: Theme }) => ({
   height: "100%",
@@ -22,11 +22,12 @@ const CheckIconStyled = styled(Check)<IconProps>(({ theme }: { theme: Theme }) =
 
 type ColorListItemProps = {
   colorData: ColorDataProps;
+  selected: boolean;
   onChangeColor: (event: React.MouseEvent<HTMLButtonElement>) => void;
 };
 
 const ColorListItem: React.FC<ColorListItemProps> = (props) => {
-  const { colorData, onChangeColor } = props;
+  const { colorData, onChangeColor, selected } = props;
 
   return (
     <Grid key={colorData.id} size={{ xs: 3, sm: 1.5 }}>
@@ -39,10 +40,10 @@ const ColorListItem: React.FC<ColorListItemProps> = (props) => {
         <AvatarStyled
           imgProps={{ draggable: false }}
           variant="rounded"
-          alt={colorData.imgAlt}
-          src={colorData.imageSrc}
+          alt={colorData.color}
+          src={colorData.image}
         />
-        <Zoom in={colorData.selected}>
+        <Zoom in={selected}>
           <CheckIconStyled />
         </Zoom>
       </ButtonBase>
