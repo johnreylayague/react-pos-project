@@ -1,71 +1,53 @@
-import { SelectChangeEvent } from "@mui/material";
-import { Dispatch, UnknownAction } from "@reduxjs/toolkit";
-import React from "react";
-import { ControllerRenderProps, UseFormSetValue, UseFormWatch } from "react-hook-form";
-import { itemActions } from "../../store/item-slice";
-import { FormValuesItem, FormValuesCategory } from "../../screens/ItemCreate/ItemCreate";
+import { FormValuesCategory, FormValuesItem } from "../../screens/ItemCreate/ItemCreate";
 import { NavigateFunction } from "react-router-dom";
+import { UnknownAction, Dispatch } from "@reduxjs/toolkit";
+import { itemActions } from "../../store/item-slice";
+import { categoryActions } from "../../store/category-slice";
+import assets from "../../assets/assets";
+import { UseFormReset, UseFormSetValue } from "react-hook-form";
+import { useSelector } from "react-redux";
+import { storeProps } from "../../store";
+
+const colorData = assets.json.colorData;
 
 export const useActions = (
   setValueItem: UseFormSetValue<FormValuesItem>,
   navigate: NavigateFunction,
   dispatch: Dispatch<UnknownAction>,
-  isBelowSmallScreen: boolean
+  isBelowSmallScreen: boolean,
+  onCloseDialogCreateCategory: () => void,
+  resetCategory: UseFormReset<FormValuesCategory>
 ) => {
-  const handleSelectChangeColor = (event: React.MouseEvent<HTMLButtonElement>) => {
-    const colorId = event.currentTarget.getAttribute("data-color-id");
+  const categoryList = useSelector((state: storeProps) => state.category.categoryList);
 
-    if (colorId) {
-      const convertColorId = Number.parseInt(colorId);
+  const itemRedirectPath = isBelowSmallScreen ? "/item/index" : "/item";
 
-      setValueItem("colorId", convertColorId);
-    }
+  const handleOnSubmitCategory = (data: FormValuesCategory) => {
+    const findColorByIsDefault = colorData.find((color) => color.isDefault);
 
-    if (!colorId) {
-      console.log("colorId does not exist");
-    }
-  };
-
-  const handleSelectChangeShape = (event: React.MouseEvent<HTMLButtonElement>) => {
-    const shapeId = event.currentTarget.getAttribute("data-shape-id");
-
-    if (shapeId) {
-      const convertShapeId = Number.parseInt(shapeId);
-      setValueItem("shapeId", convertShapeId);
-    }
-
-    if (!shapeId) {
-      console.log("shapeId does not exist");
-    }
-  };
-
-  const handleCategoryChange = (
-    event: SelectChangeEvent<unknown>,
-    field: ControllerRenderProps<FormValuesItem, "category">,
-    handleOpenDialog: () => void
-  ) => {
-    if (event.target.value === "addCategory") {
-      handleOpenDialog();
+    if (!findColorByIsDefault) {
+      console.log("findColorByIsDefault result not found.");
       return;
     }
 
-    field.onChange(event);
+    const newCategoryId = categoryList.length + 1;
+
+    dispatch(
+      categoryActions.addItemCategory({
+        id: newCategoryId,
+        name: data.name,
+        colorId: findColorByIsDefault.id,
+      })
+    );
+    resetCategory();
+    setValueItem("categoryId", newCategoryId);
+    onCloseDialogCreateCategory();
   };
 
   const handleOnSubmitItem = (data: FormValuesItem) => {
     dispatch(itemActions.addItem(data));
-    navigate(isBelowSmallScreen ? "/item/index" : "/item");
+    navigate(itemRedirectPath);
   };
 
-  const handleOnSubmitCategory = (data: FormValuesCategory) => {
-    console.log(data);
-  };
-
-  return {
-    handleSelectChangeColor,
-    handleSelectChangeShape,
-    handleCategoryChange,
-    handleOnSubmitItem,
-    handleOnSubmitCategory,
-  };
+  return { handleOnSubmitCategory, handleOnSubmitItem };
 };

@@ -1,46 +1,57 @@
 import React from "react";
-import {
-  ListItem,
-  ListItemButton,
-  ListItemAvatar,
-  Avatar,
-  ListItemText,
-  Divider,
-  styled,
-  Theme,
-  IconProps,
-  AvatarProps,
-  ListItemProps,
-} from "@mui/material";
-import { AccessTime as AccessTimeIcon } from "@mui/icons-material";
+import { ListItemButton, ListItemAvatar, ListItemText, Divider } from "@mui/material";
+import { shiftActions, shiftProps } from "../../../../store/shift-slice";
+import { formatStartTime, formatShiftDateRange } from "../../../../utils/format";
+import { AccessTimeIcon, AvatarStyled, ListItemStyled } from "./ListItemShiftHistoryStyles";
+import { convertToType } from "../../../../utils/typescriptHelpers";
+import { useDispatch } from "react-redux";
 
-const AccessTimeIconStyled = styled(AccessTimeIcon)<IconProps>(({}: { theme: Theme }) => ({
-  color: "#a1a1a1",
-}));
-
-const AvatarStyled = styled(Avatar)<AvatarProps>(({}: { theme: Theme }) => ({
-  background: "#eeeeee",
-}));
-
-const ListItemStyled = styled(ListItem)<ListItemProps>(({}: { theme: Theme }) => ({
-  alignItems: "flex-start",
-}));
-
-type ListItemShiftHistoryProps = { onShowShiftReport: () => void };
+type ListItemShiftHistoryProps = { onShowShiftReport: () => void; shiftData: shiftProps };
 
 const ListItemShiftHistory: React.FC<ListItemShiftHistoryProps> = (props) => {
-  const { onShowShiftReport } = props;
+  const { onShowShiftReport, shiftData } = props;
+
+  const dispatch = useDispatch();
+
+  const convertedShiftStartDate = convertToType(
+    "string",
+    shiftData.shiftStartDate,
+    new Date(shiftData.shiftStartDate)
+  );
+
+  const convertedShiftEndDate = convertToType(
+    "string",
+    shiftData.shiftEndDate,
+    new Date(shiftData.shiftEndDate)
+  );
+
+  const shiftStartTime = formatStartTime(convertedShiftStartDate);
+  const shiftEndTime = formatStartTime(convertedShiftEndDate);
+  const shiftDateRange = formatShiftDateRange(convertedShiftStartDate, convertedShiftEndDate);
+
+  const handleOnShowReport = () => {
+    dispatch(shiftActions.selected(shiftData));
+    onShowShiftReport();
+  };
 
   return (
     <React.Fragment>
       <ListItemStyled disablePadding>
-        <ListItemButton onClick={onShowShiftReport}>
+        <ListItemButton onClick={handleOnShowReport}>
           <ListItemAvatar>
             <AvatarStyled>
-              <AccessTimeIconStyled />
+              <AccessTimeIcon />
             </AvatarStyled>
           </ListItemAvatar>
-          <ListItemText secondary={<>10:38 PM - 10:43 PM</>}>Nov 17</ListItemText>
+          <ListItemText
+            secondary={
+              <>
+                {shiftStartTime} - {shiftEndTime}
+              </>
+            }
+          >
+            {shiftDateRange}
+          </ListItemText>
         </ListItemButton>
       </ListItemStyled>
       <Divider variant="inset" component="li" />

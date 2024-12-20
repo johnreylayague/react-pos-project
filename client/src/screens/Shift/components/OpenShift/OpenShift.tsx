@@ -1,68 +1,58 @@
 import React from "react";
-import {
-  Container,
-  ContainerProps,
-  CSSObject,
-  Paper,
-  PaperProps,
-  Stack,
-  styled,
-  Theme,
-  Typography,
-} from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import OutlinedButton from "../../../../components/common/elements/Button/OutlinedButton/OutlinedButton";
 import InputField from "../../../ItemCreate/components/InputField/InputField";
-import { NumberFormatter } from "../NumberFormatter/NumberFormatter";
+import PesosInputField from "../../../../components/vendor/react-number-formatter/PesosInputField/PesosInputField";
+import { Controller, useForm } from "react-hook-form";
+import { ContainerStyled, PaperStyled } from "./OpenShiftStyles";
+import { validationRules } from "./OpenShiftValidationRules";
+import { useDispatch } from "react-redux";
+import { shiftActions } from "../../../../store/shift-slice";
 
-const PaperStyled = styled(Paper)<PaperProps>(({ theme }: { theme: Theme }) => ({
-  [theme.breakpoints.down("sm")]: {
-    boxShadow: "none",
-    paddingLeft: 0,
-    paddingRight: 0,
-  } as CSSObject,
-  padding: theme.spacing(3),
-  boxShadow: theme.shadows[3],
-}));
-
-const ContainerStyled = styled(Container)<ContainerProps>(({ theme }: { theme: Theme }) => ({
-  [theme.breakpoints.down("sm")]: {
-    marginTop: 0,
-    marginBottom: 0,
-  } as CSSObject,
-  marginTop: theme.spacing(3),
-  marginBottom: theme.spacing(3),
-}));
-
-type OpenShiftProps = {
-  inputProps: {
-    value: number;
-    onChangeInput: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  };
-  title: string;
-  onOpenShift: () => void;
+export type FormValuesShift = {
+  amount: string;
 };
+
+type OpenShiftProps = {};
+
 const OpenShift: React.FC<OpenShiftProps> = (props) => {
+  const {} = props;
+
+  const dispatch = useDispatch();
+
   const {
-    inputProps: { value, onChangeInput },
-    title,
-    onOpenShift,
-  } = props;
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<FormValuesShift>({
+    defaultValues: {
+      amount: "0.00",
+    },
+  });
+
+  const handleOnOpenShift = (data: FormValuesShift) => {
+    dispatch(shiftActions.openShift(data));
+  };
 
   return (
     <ContainerStyled maxWidth="sm">
       <PaperStyled>
         <Stack spacing={3}>
-          <Typography>{title}</Typography>
-          <InputField
-            label="Amount"
-            inputLabelProps={{ shrink: true }}
-            inputProps={{
-              value: value,
-              inputComponent: NumberFormatter as any,
-              onChange: onChangeInput,
-            }}
+          <Typography>Specifiy the cash amount in your drawer at the start of the shift</Typography>
+          <Controller
+            name="amount"
+            control={control}
+            rules={validationRules.amount}
+            render={({ field }) => (
+              <InputField
+                label="Amount"
+                inputProps={{ ...field, inputComponent: PesosInputField as any }}
+                helperText={errors.amount?.message}
+                isShowHelperText={!!errors.amount?.message}
+              />
+            )}
           />
-          <OutlinedButton onClick={onOpenShift}>OPEN SHIFT</OutlinedButton>{" "}
+          <OutlinedButton onClick={handleSubmit(handleOnOpenShift)}>OPEN SHIFT</OutlinedButton>
         </Stack>
       </PaperStyled>
     </ContainerStyled>

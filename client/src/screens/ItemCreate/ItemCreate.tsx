@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import HeaderFormAction from "../../components/common/elements/Header/HeaderFormAction/HeaderFormAction";
 import ContainerWrapper from "./components/ContainerWrapper/ContainerWrapper.tsx";
 import Section from "./components/Section/Section.tsx";
-import { Collapse, Switch, Typography } from "@mui/material";
+import { CircularProgress, Collapse, IconButton, Switch, Toolbar, Typography } from "@mui/material";
 import InputField from "./components/InputField/InputField.tsx";
 import { useDispatch, useSelector } from "react-redux";
 import { Grid2 as Grid, useMediaQuery, useTheme } from "@mui/material";
@@ -14,18 +14,37 @@ import { NumberFormatter } from "./components/NumberFormatter/NumberFormatter.ts
 import SelectField from "./components/SelectField/SelectField.tsx";
 import SoldByOptionSelector from "./components/SoldByOptionSelector/SoldByOptionSelector.tsx";
 import DialogCategoryCreate from "./components/DialogCategoryCreate/DialogCategoryCreate.tsx";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { useDialog } from "../../hooks/material-ui/useDialog/useDialog.tsx";
 import NumericInputField from "../../components/vendor/react-number-formatter/NumericInputField/NumericInputField.tsx";
-import { BoxStyled } from "./ItemCreateStyles.ts";
+import {
+  BoxStyled,
+  ActionStack,
+  AvatarStyled,
+  CameraAltIcon,
+  ChoosePhotoButton,
+  ChoosePhotoFolderIcon,
+  CloseButton,
+  CloseIcon,
+  DialogActionsStyled,
+  ImageContainer,
+  ImageIcon,
+  ImageWrapper,
+  ProgressContainer,
+  RemoveImageButton,
+  RightAlignedContainer,
+  TakePhotoButton,
+  TakePhotoCameraAltIcon,
+  WebcamDialog,
+} from "./ItemCreateStyles.ts";
 import { validationCategoryRules, validationItemRules } from "./ItemCreateValidationRules.ts";
 import { useActions } from "../../hooks/ItemCreate/useActions.ts";
-import assets, {
-  colorAndShapeDataProps,
-  ColorDataProps,
-  ShapeDataProps,
-} from "../../assets/assets.ts";
+import assets, { ColorDataProps, ShapeDataProps } from "../../assets/assets.ts";
+import { useRepresentationInteractionHandlers } from "../../hooks/ItemCreate/useRepresentationInteractionHandlers.ts";
+import { isMobile } from "react-device-detect";
+import Webcam from "react-webcam";
+import { useInteractionHandlers } from "../../hooks/ItemCreate/useInteractionHandlers.ts";
 
 type LocationState = {
   pathname: string;
@@ -37,15 +56,16 @@ type LocationState = {
 
 export type FormValuesItem = {
   name: string;
-  category: string;
+  categoryId: string | number;
   soldby: string;
   price: string;
   cost: string;
   sku: string;
   barcode: string;
   trackstock: boolean;
-  representation: string;
+  representation: "colorAndShape" | "image";
   image: string;
+  colorAndShapeImage: string;
   colorId: number;
   shapeId: number;
   instock: number;
@@ -65,14 +85,12 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
   const navigate = useNavigate();
   const location = useLocation() as LocationState;
   const isBelowSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
-  const [colorAndShapes, _setColorAndShapes] = useState<colorAndShapeDataProps[]>(
-    assets.json.colorAndShapes
-  );
   const [colorData, _setColorData] = useState<ColorDataProps[]>(assets.json.colorData);
   const [shapeData, _setShapeData] = useState<ShapeDataProps[]>(assets.json.shapeData);
 
   const {
     handleSubmit: handleSubmitCategory,
+    reset: resetCategory,
     control: controlCategory,
     formState: { errors: errorsCategory },
   } = useForm<FormValuesCategory>({
@@ -91,13 +109,14 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
     defaultValues: {
       name: "",
       price: "0",
-      category: "",
+      categoryId: "",
       soldby: "each",
       cost: "0",
       sku: "",
       barcode: "",
       trackstock: false,
       representation: "colorAndShape",
+      colorAndShapeImage: "",
       image: "",
       instock: 0,
       colorId: 1,
@@ -105,59 +124,35 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
     },
   });
 
-  useEffect(() => {
-    const color = colorData.find((color) => color.isDefault);
-    const shape = shapeData.find((shape) => shape.isDefault);
-
-    if (color?.id) {
-      setValueItem("colorId", color.id);
-    }
-
-    if (shape?.id) {
-      setValueItem("shapeId", shape.id);
-    }
-
-    if (!color?.id) {
-      console.log("ColorId does not exist !");
-    }
-
-    if (!shape?.id) {
-      console.log("ShapeId does not exist !");
-    }
-  }, [colorData, shapeData]);
-
-  useEffect(() => {
-    const color = colorData.find((color) => color.id === watchItem("colorId"))?.color;
-    const shape = shapeData.find((shape) => shape.id === watchItem("shapeId"))?.shape;
-    const removedBorder = shape?.replace("Border", "");
-    const Image = colorAndShapes.find(
-      (cs) => cs.shape == removedBorder && cs.color == color
-    )?.image;
-
-    if (Image) {
-      setValueItem("image", Image);
-    }
-
-    if (!Image) {
-      console.log("Image does not exist !");
-    }
-  }, [watchItem("shapeId"), watchItem("colorId")]);
-
-  useEffect(() => {
-    if (!watchItem("trackstock")) {
-      setValueItem("instock", 0);
-    }
-  }, [watchItem("trackstock")]);
-
   const { isOpenDialog, handleCloseDialog, handleOpenDialog } = useDialog();
 
+  const { handleCategoryChange, handleSelectChangeColor, handleSelectChangeShape } =
+    useInteractionHandlers(setValueItem, watchItem, handleOpenDialog);
+
   const {
-    handleCategoryChange,
-    handleSelectChangeColor,
-    handleSelectChangeShape,
-    handleOnSubmitCategory,
-    handleOnSubmitItem,
-  } = useActions(setValueItem, navigate, dispatch, isBelowSmallScreen);
+    handleCloseDialogWebcam,
+    handleFileChange,
+    handleOnCapturePhoto,
+    handleOnChoosePhoto,
+    handleOnRemoveImage,
+    handleOnTakePhoto,
+    inputRef,
+    isDialogWebcamDialog,
+    isMediaStreamActive,
+    mobileInputRef,
+    onStartMediaStream,
+    onStopMediaStream,
+    webcamRef,
+  } = useRepresentationInteractionHandlers(setValueItem, isMobile);
+
+  const { handleOnSubmitCategory, handleOnSubmitItem } = useActions(
+    setValueItem,
+    navigate,
+    dispatch,
+    isBelowSmallScreen,
+    handleCloseDialog,
+    resetCategory
+  );
 
   return (
     <>
@@ -190,14 +185,14 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
             />
 
             <Controller
-              name="category"
+              name="categoryId"
               control={controlItem}
               rules={validationItemRules.category}
               render={({ field }) => (
                 <SelectField
                   selectProps={{
                     ...field,
-                    onChange: (event) => handleCategoryChange(event, field, handleOpenDialog),
+                    onChange: (event) => handleCategoryChange(event, field),
                   }}
                   wrapperComponent={<Grid size={12} />}
                 />
@@ -375,7 +370,56 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
           </div>
 
           <div hidden={watchItem("representation") !== "image"}>
-            <ImageUploadActions />
+            <ImageContainer direction={"row"} spacing={2}>
+              {!watchItem("image") && (
+                <AvatarStyled variant="square">
+                  <ImageIcon />
+                </AvatarStyled>
+              )}
+
+              {watchItem("image") && (
+                <ImageWrapper>
+                  <RemoveImageButton size="small" onClick={handleOnRemoveImage}>
+                    <CloseIcon />
+                  </RemoveImageButton>
+
+                  <AvatarStyled
+                    src={watchItem("image")}
+                    variant="square"
+                    slotProps={{ img: { draggable: false } }}
+                  />
+                </ImageWrapper>
+              )}
+
+              <ActionStack spacing={2}>
+                <ChoosePhotoButton onClick={handleOnChoosePhoto} variant="text" size="medium">
+                  <ChoosePhotoFolderIcon />
+                  CHOOSE PHOTO
+                </ChoosePhotoButton>
+
+                <TakePhotoButton onClick={handleOnTakePhoto} variant="text" size="medium">
+                  <TakePhotoCameraAltIcon />
+                  TAKE PHOTO
+                </TakePhotoButton>
+              </ActionStack>
+            </ImageContainer>
+
+            <input
+              type="file"
+              ref={inputRef}
+              accept="image/*"
+              onChange={handleFileChange}
+              style={{ display: "none" }}
+            />
+
+            <input
+              type="file"
+              ref={mobileInputRef}
+              accept="image/*"
+              capture="environment"
+              onChange={handleFileChange}
+              style={{ display: "none" }}
+            />
           </div>
         </Section>
       </ContainerWrapper>
@@ -403,6 +447,49 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
         onClose={handleCloseDialog}
         isOpen={isOpenDialog}
       />
+
+      <WebcamDialog
+        open={isDialogWebcamDialog}
+        fullWidth
+        maxWidth="sm"
+        onTransitionEnter={() => {
+          onStopMediaStream();
+        }}
+        onTransitionExited={() => {
+          onStopMediaStream();
+        }}
+      >
+        <Toolbar>
+          <RightAlignedContainer>
+            <CloseButton onClick={handleCloseDialogWebcam}>
+              <CloseIcon />
+            </CloseButton>
+          </RightAlignedContainer>
+        </Toolbar>
+
+        {!isMediaStreamActive && (
+          <ProgressContainer>
+            <CircularProgress />
+          </ProgressContainer>
+        )}
+
+        <Webcam
+          audio={false}
+          ref={webcamRef}
+          onUserMedia={onStartMediaStream}
+          screenshotFormat="image/png"
+          videoConstraints={{}}
+          style={{
+            ...(!isMediaStreamActive ? { backgroundColor: "#000" } : {}),
+          }}
+        />
+
+        <DialogActionsStyled>
+          <IconButton onClick={handleOnCapturePhoto} disabled={!isMediaStreamActive} size="large">
+            <CameraAltIcon />
+          </IconButton>
+        </DialogActionsStyled>
+      </WebcamDialog>
     </>
   );
 };

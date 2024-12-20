@@ -1,4 +1,4 @@
-import { ArrowBack, Search } from "@mui/icons-material";
+import { ArrowBack, ArrowDropDown, Search } from "@mui/icons-material";
 import {
   ToolbarProps,
   Toolbar,
@@ -62,3 +62,9 @@ export const MenuStyled = styled(Menu)<MenuProps>(({}: { theme: Theme }) => ({
 export const MenuItemStyled = styled(MenuItem)<MenuItemProps>(({ theme }: { theme: Theme }) => ({
   paddingRight: theme.spacing(4),
 }));
+
+export const ArrowDropDownIcon = styled(ArrowDropDown)<IconProps>(
+  ({ theme }: { theme: Theme }) => ({
+    marginLeft: theme.spacing(1),
+  })
+);

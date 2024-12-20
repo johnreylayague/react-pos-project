@@ -19,7 +19,7 @@ const saleSlice = createSlice({
   initialState: {
     isSsearch: false,
     isEdit: false,
-    tabIndex: 0,
+    tabIndex: 1,
     pageData: [],
   } as initialSaleState,
   reducers: {

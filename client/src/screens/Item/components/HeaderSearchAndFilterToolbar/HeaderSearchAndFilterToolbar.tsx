@@ -10,23 +10,25 @@ import {
   ButtonBaseStyled,
   MenuStyled,
   MenuItemStyled,
+  ArrowDropDownIcon,
 } from "./HeaderSearchAndFilterToolbarStyles";
-import { ArrowDropDown as ArrowDropDownIcon } from "@mui/icons-material";
 import { useMenu } from "../../../../hooks/material-ui/useMenu/useMenu";
 import assets from "../../../../assets/assets";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { itemActions } from "../../../../store/item-slice";
-
-const categoryDataList = assets.json.categoryDataList;
+import { storeProps } from "../../../../store";
 
 type HeaderSearchAndFilterToolbarProps = {
+  selectedMenu: { id: number | string; text: string };
   openSearch: () => void;
+  onChangeMenu: (event: React.MouseEvent<HTMLLIElement>) => void;
 };
 
 const HeaderSearchAndFilterToolbar: React.FC<HeaderSearchAndFilterToolbarProps> = (props) => {
-  const { openSearch } = props;
+  const { openSearch, selectedMenu, onChangeMenu } = props;
 
   const dispatch = useDispatch();
+  const categoryList = useSelector((state: storeProps) => state.category.categoryList);
 
   const { isOpen, anchorEl, handleCloseMenu, handleOpenMenu } = useMenu();
 
@@ -51,8 +53,8 @@ const HeaderSearchAndFilterToolbar: React.FC<HeaderSearchAndFilterToolbarProps> 
             aria-expanded={isOpen ? "true" : undefined}
             onClick={handleOpenMenu}
           >
-            All Items
-            <ArrowDropDownIcon sx={() => ({ marginLeft: 1 })} />
+            {selectedMenu.text}
+            <ArrowDropDownIcon />
           </ButtonBaseStyled>
           <MenuStyled
             id="menu"
@@ -68,11 +70,30 @@ const HeaderSearchAndFilterToolbar: React.FC<HeaderSearchAndFilterToolbarProps> 
               horizontal: "left",
             }}
           >
-            <MenuItemStyled onClick={handleCloseMenu}>All items</MenuItemStyled>
-            {categoryDataList.map((category) => {
+            <MenuItemStyled
+              selected={selectedMenu.id === ""}
+              data-id={""}
+              data-category-name={"All items"}
+              onClick={(event: React.MouseEvent<HTMLLIElement>) => {
+                onChangeMenu(event);
+                handleCloseMenu();
+              }}
+            >
+              All items
+            </MenuItemStyled>
+            {categoryList.map((category) => {
               return (
-                <MenuItemStyled key={category.id} onClick={handleCloseMenu}>
-                  {category.categoryName}
+                <MenuItemStyled
+                  key={category.id}
+                  selected={selectedMenu.id === category.id}
+                  data-id={category.id}
+                  data-category-name={category.name}
+                  onClick={(event: React.MouseEvent<HTMLLIElement>) => {
+                    onChangeMenu(event);
+                    handleCloseMenu();
+                  }}
+                >
+                  {category.name}
                 </MenuItemStyled>
               );
             })}

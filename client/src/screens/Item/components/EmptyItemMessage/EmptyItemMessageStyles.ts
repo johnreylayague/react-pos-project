@@ -15,7 +15,7 @@ import { List } from "@mui/icons-material";
 
 export const BoxStyled = styled(Box)<BoxProps>(({ theme }: { theme: Theme }) => ({
   [theme.breakpoints.down("sm")]: {
-    height: "calc(100dvh - 65px)",
+    height: "calc(100dvh - 56px)",
   },
   display: "flex",
   justifyContent: "center",

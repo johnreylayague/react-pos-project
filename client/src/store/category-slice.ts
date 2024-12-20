@@ -1,334 +1,128 @@
-import { createSlice } from "@reduxjs/toolkit";
-import assets from "../assets/assets";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { FormValuesCategory } from "../screens/CategoryCreate/CategoryCreate";
 
-const categoryDataList = [
-  {
-    id: 1,
-    title: "Category 1",
-    quantity: 0,
-    img: assets.images.colorsAndShapes.Apple.Circle,
-    selected: false,
-  },
-  {
-    id: 2,
-    title: "Category 2",
-    quantity: 3,
-    img: assets.images.colorsAndShapes.ButtonBlue.Square,
-    selected: false,
-  },
-  {
-    id: 3,
-    title: "Category 3",
-    quantity: 13,
-    img: assets.images.colorsAndShapes.CoralRedCircle.Circle,
-    selected: false,
-  },
-  {
-    id: 4,
-    title: "Category 4",
-    quantity: 5,
-    img: assets.images.colorsAndShapes.Razzmatazz.Octagon,
-    selected: false,
-  },
-  {
-    id: 5,
-    title: "Category 5",
-    quantity: 1,
-    img: assets.images.colorsAndShapes.Razzmatazz.Hexadecagon,
-    selected: false,
-  },
-  // {
-  //   id: 6,
-  //   title: "Item1",
-  //   quantity: 1,
-  //   img: assets.images.colorsAndShapes.Razzmatazz.Circle,
-  //   selected: false,
-  // },
-  // {
-  //   id: 7,
-  //   title: "Item1",
-  //   quantity: 1,
-  //   img: assets.images.colorsAndShapes.Razzmatazz.Circle,
-  //   selected: false,
-  // },
-  // {
-  //   id: 8,
-  //   title: "Item1",
-  //   quantity: 1,
-  //   img: assets.images.colorsAndShapes.Razzmatazz.Circle,
-  //   selected: false,
-  // },
-  // {
-  //   id: 9,
-  //   title: "Item1",
-  //   quantity: 1,
-  //   img: assets.images.colorsAndShapes.Razzmatazz.Circle,
-  //   selected: false,
-  // },
-  // {
-  //   id: 10,
-  //   title: "Item1",
-  //   quantity: 1,
-  //   img: assets.images.colorsAndShapes.Razzmatazz.Circle,
-  //   selected: false,
-  // },
-  // {
-  //   id: 11,
-  //   title: "Item1",
-  //   quantity: 1,
-  //   img: assets.images.colorsAndShapes.Razzmatazz.Circle,
-  //   selected: false,
-  // },
-  // {
-  //   id: 12,
-  //   title: "Item1",
-  //   quantity: 1,
-  //   img: assets.images.colorsAndShapes.Razzmatazz.Circle,
-  //   selected: false,
-  // },
-  // {
-  //   id: 13,
-  //   title: "Item1",
-  //   quantity: 1,
-  //   img: assets.images.colorsAndShapes.Razzmatazz.Circle,
-  //   selected: false,
-  // },
-  // {
-  //   id: 14,
-  //   title: "Item1",
-  //   quantity: 1,
-  //   img: assets.images.colorsAndShapes.Razzmatazz.Circle,
-  //   selected: false,
-  // },
-  // {
-  //   id: 15,
-  //   title: "Item1",
-  //   quantity: 1,
-  //   img: assets.images.colorsAndShapes.Razzmatazz.Circle,
-  //   selected: false,
-  // },
-  // {
-  //   id: 16,
-  //   title: "Item1",
-  //   quantity: 1,
-  //   img: assets.images.colorsAndShapes.Razzmatazz.Circle,
-  //   selected: false,
-  // },
-  // {
-  //   id: 17,
-  //   title: "Item1",
-  //   quantity: 1,
-  //   img: assets.images.colorsAndShapes.Razzmatazz.Circle,
-  //   selected: false,
-  // },
-];
-
-const colorsDataList = [
-  {
-    id: 1,
-    name: "",
-    imageSrc: assets.images.colorsAndShapes.SoftPeach.Square,
-    imgAlt: "SoftPeach Square",
-    selected: true,
-  },
-  {
-    id: 2,
-    name: "",
-    imageSrc: assets.images.colorsAndShapes.CoralRedCircle.Square,
-    imgAlt: "CoralRedCircle Square",
-    selected: false,
-  },
-  {
-    id: 3,
-    name: "",
-    imageSrc: assets.images.colorsAndShapes.Razzmatazz.Square,
-    imgAlt: "Razzmatazz Square",
-    selected: false,
-  },
-  {
-    id: 4,
-    name: "",
-    imageSrc: assets.images.colorsAndShapes.VividGamboge.Square,
-    imgAlt: "VividGamboge Square",
-    selected: false,
-  },
-  {
-    id: 5,
-    name: "",
-    imageSrc: assets.images.colorsAndShapes.Pear.Square,
-    imgAlt: "Pear Square",
-    selected: false,
-  },
-  {
-    id: 6,
-    name: "",
-    imageSrc: assets.images.colorsAndShapes.Apple.Square,
-    imgAlt: "Apple Square",
-    selected: false,
-  },
-  {
-    id: 7,
-    name: "",
-    imageSrc: assets.images.colorsAndShapes.ButtonBlue.Square,
-    imgAlt: "ButtonBlue Square",
-    selected: false,
-  },
-  {
-    id: 8,
-    name: "",
-    imageSrc: assets.images.colorsAndShapes.DarkOrchid.Square,
-    imgAlt: "DarkOrchid Square",
-    selected: false,
-  },
-];
-
-export type categoryProps = {
-  id: number;
-  title: string;
-  quantity: number;
-  img: string;
-  selected: boolean;
-};
-
-export type categoryColorDataProps = {
+export type categoryList = {
   id: number;
   name: string;
-  imageSrc: string;
-  imgAlt: string;
-  selected: boolean;
+  colorId: number | string;
+  isSelected: boolean;
 };
 
 export type initialCategoryState = {
   isDeleting: boolean;
   isSelectionInProgress: boolean;
   isSelectionMode: boolean;
-  categoryData: categoryProps[];
-  colorData: categoryColorDataProps[];
   selectedCount: number;
   isSelecting: boolean;
-  isSearch: boolean;
-  searchValue: string;
-};
-
-const toggleSelected = (
-  state: initialCategoryState,
-  action: { payload: { categoryId: number; selected: boolean } }
-) => {
-  const { categoryId, selected } = action.payload;
-
-  const updatedCategoryData = state.categoryData.map((category) => {
-    if (category.id === categoryId) {
-      return { ...category, selected };
-    } else {
-      return { ...category };
-    }
-  });
-
-  const count = updatedCategoryData.filter((category) => category.selected).length;
-  const updatedIsDeleting = count === 0 ? false : true;
-
-  state.isDeleting = updatedIsDeleting;
-  state.categoryData = updatedCategoryData;
-  state.selectedCount = count;
-};
-
-const initialState: initialCategoryState = {
-  isSelectionMode: false,
-  isSelectionInProgress: false,
-  categoryData: categoryDataList,
-  selectedCount: 0,
-  colorData: colorsDataList,
-  isDeleting: false,
-  isSelecting: false,
-  isSearch: false,
-  searchValue: "",
+  searchInputValue: string;
+  categoryList: categoryList[];
 };
 
 const categorySlice = createSlice({
   name: "category",
-  initialState,
+  initialState: {
+    searchInputValue: "",
+    isSelectionMode: false,
+    isSelectionInProgress: false,
+    selectedCount: 0,
+    categoryList: [
+      { id: 1, name: "Category 1", colorId: 3, isSelected: false },
+      { id: 2, name: "Category 2", colorId: 4, isSelected: false },
+      { id: 3, name: "Category 3", colorId: 2, isSelected: false },
+    ],
+  } as initialCategoryState,
   reducers: {
-    searchInputChange: (state, action) => {
-      state.searchValue = action.payload;
+    updateCategory: (
+      state,
+      action: { payload: { categoryId: number; data: FormValuesCategory } }
+    ) => {
+      const categoryId = action.payload.categoryId;
+      const payload = action.payload.data;
+
+      const findCategoryIndex = state.categoryList.findIndex(
+        (category) => category.id === categoryId
+      );
+
+      if (findCategoryIndex === -1) {
+        console.log("Connot findIndex on Item !");
+      }
+
+      if (findCategoryIndex !== -1) {
+        state.categoryList[findCategoryIndex] = {
+          ...state.categoryList[findCategoryIndex],
+          ...payload,
+        };
+      }
     },
-    selectColorPicker: (state, action: { payload: { colorId: number } }) => {
-      const { colorId } = action.payload;
+    deleteCategory: (state, action: { payload: number }) => {
+      const payload = action.payload;
+      const prevStateCategory = state.categoryList;
 
-      const updatedColorData = state.colorData.map((color) => {
-        if (color.id === colorId) {
-          return { ...color, selected: true };
-        } else {
-          return { ...color, selected: false };
-        }
-      });
-
-      state.colorData = updatedColorData;
+      state.categoryList = prevStateCategory.filter((category) => category.id !== payload);
     },
+    addCategory: (state, action: PayloadAction<FormValuesCategory>) => {
+      const payload = action.payload;
+      const newCategoryId = state.categoryList.length + 1;
 
-    categoryIsSearch: (state, action) => {
-      state.isSearch = action.payload;
+      state.categoryList.push({ id: newCategoryId, isSelected: false, ...payload });
+    },
+    addItemCategory: (state, action: PayloadAction<FormValuesCategory & { id: number }>) => {
+      const payload = action.payload;
+      state.categoryList.push({ isSelected: false, ...payload });
+    },
+    onChangeSearchInputValue: (state, action) => {
+      const payload = action.payload;
+      state.searchInputValue = payload;
+    },
+    deleteSelectedItem: (state) => {
+      state.categoryList = state.categoryList.filter((item) => !item.isSelected);
     },
     closeDeleting: (state) => {
       state.isSelectionMode = false;
       state.isSelectionInProgress = false;
-
-      state.isDeleting = false;
-      state.categoryData = categoryDataList;
+      state.categoryList = state.categoryList.map((item) => ({ ...item, isSelected: false }));
       state.selectedCount = 0;
-      state.isSelecting = false;
-      state.isSearch = false;
     },
-    newToggleSelected: (state, action) => toggleSelected(state, action),
-    selectMode: (state, action) => {
-      const prevIsSelecting = state.isSelecting;
-
-      state.isSelecting = state.isDeleting;
-
-      if (prevIsSelecting && state.isDeleting) {
-        toggleSelected(state, action);
-      }
-    },
-    selectionMode(state, action: { payload: { itemId: number; isSelected: boolean } }) {
+    selectionMode(state, action: { payload: { categoryId: number; isSelected: boolean } }) {
       const prevIsSelectionInProgress = state.isSelectionInProgress;
 
       state.isSelectionInProgress = state.isSelectionMode;
 
       if (prevIsSelectionInProgress && state.isSelectionMode) {
-        const { itemId, isSelected } = action.payload;
+        const { categoryId, isSelected } = action.payload;
 
-        const updatedItemData = state.categoryData.map((item) => {
-          if (item.id === itemId) {
-            return { ...item, selected: isSelected };
-          } else {
-            return { ...item };
+        const updatedItemData = state.categoryList.map((category) => {
+          if (category.id === categoryId) {
+            return { ...category, isSelected: isSelected };
           }
+          return { ...category };
         });
 
-        const selectedItemCount = updatedItemData.filter((item) => item.selected).length;
+        const selectedItemCount = updatedItemData.filter((category) => category.isSelected).length;
         const hasSelectedItems = selectedItemCount > 0;
 
         state.isSelectionMode = hasSelectedItems;
         state.isSelectionInProgress = hasSelectedItems;
-        state.categoryData = updatedItemData;
+        state.categoryList = updatedItemData;
         state.selectedCount = selectedItemCount;
       }
     },
-    toggleSelection(state, action: { payload: { itemId: number; isSelected: boolean } }) {
-      const { itemId, isSelected } = action.payload;
+    toggleSelection(state, action: { payload: { categoryId: number; isSelected: boolean } }) {
+      const { categoryId, isSelected } = action.payload;
 
-      const updatedItemData = state.categoryData.map((item) => {
-        if (item.id === itemId) {
-          return { ...item, selected: isSelected };
+      const updatedItemData = state.categoryList.map((category) => {
+        if (category.id === categoryId) {
+          return { ...category, isSelected: isSelected };
         } else {
-          return { ...item };
+          return { ...category };
         }
       });
 
-      const selectedItemCount = updatedItemData.filter((item) => item.selected).length;
+      const selectedItemCount = updatedItemData.filter((item) => item.isSelected).length;
       const hasSelectedItems = selectedItemCount > 0;
 
       state.isSelectionMode = hasSelectedItems;
-      state.categoryData = updatedItemData;
+      state.categoryList = updatedItemData;
       state.selectedCount = selectedItemCount;
     },
   },

@@ -15,6 +15,9 @@ import {
 import { Close as CloseIcon } from "@mui/icons-material";
 import ListItemShiftHistory from "../ListItemShiftHistory/ListItemShiftHistory";
 import Loading from "../Loading/Loading";
+import { useToggle } from "../../../../hooks/components/useToggle/useToggle";
+import { useSelector } from "react-redux";
+import { storeProps } from "../../../../store";
 
 const ButtonClose = styled(IconButton)<IconButtonProps>(({ theme }: { theme: Theme }) => ({
   marginLeft: `-${theme.spacing(1)}`,
@@ -40,15 +43,22 @@ type DialogShiftListsProps = {
 };
 const DialogShiftLists: React.FC<DialogShiftListsProps> = (props) => {
   const { onClose, onShowShiftReport, title } = props;
-  const [isLoading, setIsLoading] = React.useState(true);
+
+  const shiftList = useSelector((state: storeProps) => state.shift.shiftList);
+
+  const {
+    isOpenToggle: isLoading,
+    handleCloseToggle: handleCloseLoading,
+    handleOpenToggle: handleOpenLoading,
+  } = useToggle(true);
 
   React.useEffect(() => {
     setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
+      handleCloseLoading();
+    }, 250);
 
     return () => {
-      setIsLoading(true);
+      handleOpenLoading();
     };
   }, []);
 
@@ -66,9 +76,17 @@ const DialogShiftLists: React.FC<DialogShiftListsProps> = (props) => {
 
       <Fade in={!isLoading}>
         <ListStyled disablePadding>
-          {Array.from({ length: 50 }).map((_, index) => {
-            return <ListItemShiftHistory key={index} onShowShiftReport={onShowShiftReport} />;
-          })}
+          {shiftList
+            .filter((shift) => shift.isShiftCompleted)
+            .map((shift) => {
+              return (
+                <ListItemShiftHistory
+                  key={shift.id}
+                  shiftData={shift}
+                  onShowShiftReport={onShowShiftReport}
+                />
+              );
+            })}
         </ListStyled>
       </Fade>
     </>

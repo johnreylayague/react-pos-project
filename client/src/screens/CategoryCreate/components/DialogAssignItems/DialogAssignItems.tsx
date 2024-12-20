@@ -1,8 +1,12 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import FilterSearchBar from "../DialogFilterSearchBar/DialogFilterSearchBar";
 import SelectableListItem from "../DialogSelectableListItem/DialogSelectableListItem";
 import { ListStyled, DialogStyled } from "./DialogAssignItemsStyles";
 import Header from "../DialogHeader/DialogHeader";
+import { useDispatch, useSelector } from "react-redux";
+import { storeProps } from "../../../../store";
+import { categoryActions } from "../../../../store/category-slice";
+import { itemListProps } from "../../../../store/item-slice";
 
 type categoryProps = {
   id: number;
@@ -13,19 +17,20 @@ type categoryProps = {
 };
 
 type DialogAssignItemsProps = {
+  selectedItemList: itemListProps[];
   open: boolean;
+  onClickSelect: (event: React.MouseEvent<HTMLDivElement>) => void;
+  onChangeSelect: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onClose: () => void;
   onSave: () => void;
-  categoryData: categoryProps[];
 };
 
 const DialogAssignItems: React.FC<DialogAssignItemsProps> = (props) => {
-  const { categoryData, onClose, onSave, open } = props;
+  const { onClose, onSave, open, selectedItemList, onChangeSelect, onClickSelect } = props;
 
   return (
     <DialogStyled
       open={open}
-      onClose={onClose}
       maxWidth="sm"
       fullWidth
       aria-labelledby="alert-dialog-title"
@@ -36,8 +41,15 @@ const DialogAssignItems: React.FC<DialogAssignItemsProps> = (props) => {
       <FilterSearchBar onClose={() => {}} onSearch={() => {}} />
 
       <ListStyled>
-        {categoryData.map((item) => {
-          return <SelectableListItem key={item.id} categoryData={item} />;
+        {selectedItemList.map((item) => {
+          return (
+            <SelectableListItem
+              onChange={onChangeSelect}
+              onClick={onClickSelect}
+              key={item.id}
+              itemData={item}
+            />
+          );
         })}
       </ListStyled>
     </DialogStyled>

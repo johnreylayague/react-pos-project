@@ -1,15 +1,19 @@
 import React from "react";
 import { SelectChangeEvent } from "@mui/material";
-import { Dispatch, UnknownAction } from "@reduxjs/toolkit";
-import { ControllerRenderProps, UseFormSetValue, UseFormWatch } from "react-hook-form";
-import { itemActions } from "../../store/item-slice";
+import { ControllerRenderProps, UseFormSetValue } from "react-hook-form";
 import { FormValuesItem } from "../../screens/ItemEdit/ItemEdit";
-import { NavigateFunction } from "react-router-dom";
+import { useDialog } from "../material-ui/useDialog/useDialog";
 
 export const useInteractionHandlers = (
   setValueItem: UseFormSetValue<FormValuesItem>,
   onOpenDialogCreateCategory: () => void
 ) => {
+  const {
+    isOpenDialog: isDialogDelete,
+    handleOpenDialog: onOpenDialogDelete,
+    handleCloseDialog: onCloseDialogDelete,
+  } = useDialog();
+
   const handleSelectChangeColor = (event: React.MouseEvent<HTMLButtonElement>) => {
     const colorId = event.currentTarget.getAttribute("data-color-id");
 
@@ -39,7 +43,7 @@ export const useInteractionHandlers = (
 
   const handleCategoryChange = (
     event: SelectChangeEvent<unknown>,
-    field: ControllerRenderProps<FormValuesItem, "category">
+    field: ControllerRenderProps<FormValuesItem, "categoryId">
   ) => {
     if (event.target.value === "addCategory") {
       onOpenDialogCreateCategory();
@@ -49,5 +53,12 @@ export const useInteractionHandlers = (
     field.onChange(event);
   };
 
-  return { handleCategoryChange, handleSelectChangeShape, handleSelectChangeColor };
+  return {
+    handleCategoryChange,
+    handleSelectChangeShape,
+    handleSelectChangeColor,
+    onOpenDialogDelete,
+    onCloseDialogDelete,
+    isDialogDelete,
+  };
 };

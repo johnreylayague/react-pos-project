@@ -1,11 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import HeaderFormAction from "../../components/common/elements/Header/HeaderFormAction/HeaderFormAction";
 import ContainerWrapper from "./components/ContainerWrapper/ContainerWrapper.tsx";
 import Section from "./components/Section/Section.tsx";
-import { Collapse, Switch, Typography } from "@mui/material";
+import {
+  Box,
+  CircularProgress,
+  Collapse,
+  IconButton,
+  Switch,
+  Toolbar,
+  Typography,
+} from "@mui/material";
 import InputField from "./components/InputField/InputField.tsx";
 import { Grid2 as Grid, useMediaQuery, useTheme } from "@mui/material";
-import ImageUploadActions from "./components/ImageUploadActions/ImageUploadActions.tsx";
 import ShapeListItem from "./components/ShapeListItem/ShapeListItem.tsx";
 import ColorListItem from "./components/ColorListItem/ColorListItem.tsx";
 import RepresentationSelector from "./components/RepresentationSelector/RepresentationSelector.tsx";
@@ -14,36 +21,62 @@ import SelectField from "./components/SelectField/SelectField.tsx";
 import SoldByOptionSelector from "./components/SoldByOptionSelector/SoldByOptionSelector.tsx";
 import DialogCategoryCreate from "./components/DialogCategoryCreate/DialogCategoryCreate.tsx";
 import ConfirmationDialog from "../../components/common/elements/Dialog/ConfirmationDialog/ConfirmationDialog.tsx";
-import { useDialog } from "../../hooks/material-ui/useDialog/useDialog.tsx";
-import { BoxStyled, DeleteActionButton, DeleteIconStyled } from "./ItemEditStyles.ts";
+import {
+  ActionStack,
+  AvatarStyled,
+  BoxStyled,
+  CameraAltIcon,
+  ChoosePhotoButton,
+  ChoosePhotoFolderIcon,
+  CloseButton,
+  CloseIcon,
+  DeleteActionButton,
+  DeleteIconStyled,
+  DialogActionsStyled,
+  ImageContainer,
+  ImageIcon,
+  ImageWrapper,
+  ProgressContainer,
+  RemoveImageButton,
+  RightAlignedContainer,
+  TakePhotoButton,
+  TakePhotoCameraAltIcon,
+  WebcamDialog,
+} from "./ItemEditStyles.ts";
 import assets, { ColorDataProps, ShapeDataProps } from "../../assets/assets.ts";
 import { Controller, useForm } from "react-hook-form";
 import { useInteractionHandlers } from "../../hooks/ItemEdit/useInteractionHandlers.ts";
 import NumericInputField from "../../components/vendor/react-number-formatter/NumericInputField/NumericInputField.tsx";
 import { useActions } from "../../hooks/ItemEdit/useActions.ts";
-import { validationItemRules, validationCategoryRules } from "./ItemEditValidationRules.ts.ts";
+import { validationItemRules, validationCategoryRules } from "./ItemEditValidationRules.ts";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { storeProps } from "../../store/index.ts";
+import Webcam from "react-webcam";
+import { isMobile } from "react-device-detect";
+import { useRepresentationInteractionHandlers } from "../../hooks/ItemEdit/useRepresentationInteractionHandlers.ts";
+import { useDialog } from "../../hooks/material-ui/useDialog/useDialog.tsx";
 
 export type FormValuesCategory = {
   name: string;
+  colorId: string | number;
 };
 
 export type FormValuesItem = {
   id: number | string;
   name: string;
-  category: string;
+  categoryId: number | string;
   soldby: string;
   price: string;
   cost: string;
   sku: string;
   barcode: string;
   trackstock: boolean;
-  representation: string;
+  representation: "colorAndShape" | "image";
   image: string;
-  colorId: number;
-  shapeId: number;
+  colorAndShapeImage: string;
+  colorId: number | string;
+  shapeId: number | string;
   instock: number;
 };
 
@@ -63,10 +96,12 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
   const {
     handleSubmit: handleSubmitCategory,
     control: controlCategory,
+    reset: resetCategory,
     formState: { errors: errorsCategory },
   } = useForm<FormValuesCategory>({
     defaultValues: {
       name: "",
+      colorId: "",
     },
   });
 
@@ -81,7 +116,7 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
     defaultValues: {
       id: "",
       name: "",
-      category: "",
+      categoryId: "",
       soldby: "each",
       price: "0",
       cost: "0",
@@ -90,8 +125,8 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
       trackstock: false,
       instock: 0,
       representation: "colorAndShape",
-      colorId: 1,
-      shapeId: 1,
+      colorId: "",
+      shapeId: "",
       image: "",
     },
   });
@@ -117,25 +152,44 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
   }, [watchItem("trackstock")]);
 
   const {
-    isOpenDialog: isDialogDelete,
-    handleOpenDialog: onOpenDialogDelete,
-    handleCloseDialog: onCloseDialogDelete,
-  } = useDialog();
-
-  const {
     isOpenDialog: isDialogCreateCategory,
     handleOpenDialog: onOpenDialogCreateCategory,
     handleCloseDialog: onCloseDialogCreateCategory,
   } = useDialog();
 
-  const { handleCategoryChange, handleSelectChangeColor, handleSelectChangeShape } =
-    useInteractionHandlers(setValueItem, onOpenDialogCreateCategory);
+  const {
+    handleCategoryChange,
+    handleSelectChangeColor,
+    handleSelectChangeShape,
+    onCloseDialogDelete,
+    onOpenDialogDelete,
+    isDialogDelete,
+  } = useInteractionHandlers(setValueItem, onOpenDialogCreateCategory);
+
+  const {
+    isMediaStreamActive,
+    isDialogWebcamDialog,
+    inputRef,
+    mobileInputRef,
+    webcamRef,
+    handleFileChange,
+    handleOnCapturePhoto,
+    handleOnChoosePhoto,
+    handleOnTakePhoto,
+    handleCloseDialogWebcam,
+    onStartMediaStream,
+    onStopMediaStream,
+    handleOnRemoveImage,
+  } = useRepresentationInteractionHandlers(setValueItem, isMobile);
 
   const { handleOnSubmitCategory, handleOnSubmitItem, handleOnDeleteItem } = useActions(
+    setValueItem,
     navigate,
     dispatch,
     isBelowSmallScreen,
-    params
+    params,
+    onCloseDialogCreateCategory,
+    resetCategory
   );
 
   return (
@@ -167,7 +221,7 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
             />
 
             <Controller
-              name="category"
+              name="categoryId"
               control={controlItem}
               rules={validationItemRules.category}
               render={({ field }) => (
@@ -352,7 +406,56 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
           </div>
 
           <div hidden={watchItem("representation") !== "image"}>
-            <ImageUploadActions />
+            <ImageContainer direction={"row"} spacing={2}>
+              {!watchItem("image") && (
+                <AvatarStyled variant="square">
+                  <ImageIcon />
+                </AvatarStyled>
+              )}
+
+              {watchItem("image") && (
+                <ImageWrapper>
+                  <RemoveImageButton size="small" onClick={handleOnRemoveImage}>
+                    <CloseIcon />
+                  </RemoveImageButton>
+
+                  <AvatarStyled
+                    src={watchItem("image")}
+                    variant="square"
+                    slotProps={{ img: { draggable: false } }}
+                  />
+                </ImageWrapper>
+              )}
+
+              <ActionStack spacing={2}>
+                <ChoosePhotoButton onClick={handleOnChoosePhoto} variant="text" size="medium">
+                  <ChoosePhotoFolderIcon />
+                  CHOOSE PHOTO
+                </ChoosePhotoButton>
+
+                <TakePhotoButton onClick={handleOnTakePhoto} variant="text" size="medium">
+                  <TakePhotoCameraAltIcon />
+                  TAKE PHOTO
+                </TakePhotoButton>
+              </ActionStack>
+            </ImageContainer>
+
+            <input
+              type="file"
+              ref={inputRef}
+              accept="image/*"
+              onChange={handleFileChange}
+              style={{ display: "none" }}
+            />
+
+            <input
+              type="file"
+              ref={mobileInputRef}
+              accept="image/*"
+              capture="environment"
+              onChange={handleFileChange}
+              style={{ display: "none" }}
+            />
           </div>
         </Section>
 
@@ -385,6 +488,49 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
         onClose={onCloseDialogCreateCategory}
         isOpen={isDialogCreateCategory}
       />
+
+      <WebcamDialog
+        open={isDialogWebcamDialog}
+        fullWidth
+        maxWidth="sm"
+        onTransitionEnter={() => {
+          onStopMediaStream();
+        }}
+        onTransitionExited={() => {
+          onStopMediaStream();
+        }}
+      >
+        <Toolbar>
+          <RightAlignedContainer>
+            <CloseButton onClick={handleCloseDialogWebcam}>
+              <CloseIcon />
+            </CloseButton>
+          </RightAlignedContainer>
+        </Toolbar>
+
+        {!isMediaStreamActive && (
+          <ProgressContainer>
+            <CircularProgress />
+          </ProgressContainer>
+        )}
+
+        <Webcam
+          audio={false}
+          ref={webcamRef}
+          onUserMedia={onStartMediaStream}
+          screenshotFormat="image/png"
+          videoConstraints={{}}
+          style={{
+            ...(!isMediaStreamActive ? { backgroundColor: "#000" } : {}),
+          }}
+        />
+
+        <DialogActionsStyled>
+          <IconButton onClick={handleOnCapturePhoto} disabled={!isMediaStreamActive} size="large">
+            <CameraAltIcon />
+          </IconButton>
+        </DialogActionsStyled>
+      </WebcamDialog>
 
       <ConfirmationDialog
         title="Delete category"

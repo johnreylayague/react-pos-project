@@ -9,11 +9,11 @@ export const validationItemRules = {
   price: { required: "Price is required." },
   cost: { required: "Cost is required." },
   sku: {
-    required: "SKU is required.",
+    // required: "SKU is required.",
     maxLength: { value: 50, message: "SKU cannot exceed 50 characters." },
   },
   barcode: {
-    required: "Barcode is required.",
+    // required: "Barcode is required.",
     maxLength: { value: 50, message: "Barcode cannot exceed 50 characters." },
   },
   instock: {
@@ -24,7 +24,7 @@ export const validationItemRules = {
 
 export const validationCategoryRules = {
   name: {
-    required: "Category name is required.",
+    required: "This field connot be blank",
     maxLength: { value: 50, message: "Category name cannot exceed 50 characters." },
   },
 };

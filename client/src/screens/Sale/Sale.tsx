@@ -32,7 +32,7 @@ const Sale: React.FC<SaleProps> = (props) => {
   const isThemeMobileScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const isSearch = useSelector((state: storeProps) => state.sale.isSsearch);
   const isEdit = useSelector((state: storeProps) => state.sale.isEdit);
-  const isShift = useSelector((state: storeProps) => state.shift.isShift);
+  const currentActiveShift = useSelector((state: storeProps) => state.shift.currentActiveShift);
 
   const {
     isOpenDialog: isOpenDialogShiftRequest,
@@ -70,6 +70,7 @@ const Sale: React.FC<SaleProps> = (props) => {
     if (isOpenDialogDelete) {
       dispatch(saleActions.handleOnRemoveTabPage());
     }
+
     onCloseDialogDelete();
   };
 
@@ -79,7 +80,7 @@ const Sale: React.FC<SaleProps> = (props) => {
         <ContentContainer>
           {isSearch ? <HeaderSearchItem /> : <HeaderFilterItem />}
 
-          {isShift ? (
+          {currentActiveShift.id ? (
             <TabContent
               onInteractionHandlers={interactionHandlers}
               onOpenDialogAddItemAndCategory={onOpenDialogAddItemAndCategory}
@@ -100,10 +101,16 @@ const Sale: React.FC<SaleProps> = (props) => {
             <React.Fragment>
               <TicketHeader />
 
-              {isShift && <SelectedItemList onOpenDialog={onOpenDialogSelectedItem} />}
+              {currentActiveShift.id && (
+                <SelectedItemList onOpenDialog={onOpenDialogSelectedItem} />
+              )}
 
               <ActionBox>
-                <ContainedButton component={Link} to={"/ticket/charge"} disabled={!isShift}>
+                <ContainedButton
+                  component={Link}
+                  to={"/ticket/charge"}
+                  disabled={!currentActiveShift.id}
+                >
                   CHARGE
                 </ContainedButton>
               </ActionBox>

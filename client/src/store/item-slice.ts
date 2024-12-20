@@ -24,7 +24,7 @@ export type categoryDataListProps = {
 export type itemListProps = {
   id: number;
   name: string;
-  category: string;
+  categoryId: number | string;
   soldby: string;
   price: string;
   cost: string;
@@ -32,10 +32,11 @@ export type itemListProps = {
   barcode: string;
   trackstock: boolean;
   isSelected: boolean;
-  representation: string;
+  representation: "colorAndShape" | "image";
+  colorAndShapeImage: string;
   image: string;
-  colorId: number;
-  shapeId: number;
+  colorId: number | string;
+  shapeId: number | string;
   instock: number;
 };
 
@@ -57,45 +58,62 @@ const itemSlice = createSlice({
     isSearch: false,
     isSelectionMode: false,
     isSelectionInProgress: false,
+    selectedCount: 0,
     itemList: [
       {
         id: 1,
         name: "Candy",
         price: "12.00",
-        category: "",
+        categoryId: "",
         soldby: "each",
         cost: "3.00",
         sku: "3",
         barcode: "123",
-        image: assets.images.colorsAndShapes.Apple.Circle,
-        trackstock: false,
+        colorAndShapeImage: assets.images.colorsAndShapes.Apple.Circle,
+        image: "",
+        trackstock: true,
         representation: "colorAndShape",
-        instock: 0,
-        colorId: 1,
-        shapeId: 1,
+        instock: 1,
+        colorId: 6,
+        shapeId: 2,
         isSelected: false,
       },
       {
         id: 2,
         name: "Sugar",
         price: "24.00",
-        category: "",
+        categoryId: "",
         soldby: "weight",
         cost: "24.00",
         sku: "123",
         barcode: "123",
-        image: assets.images.colorsAndShapes.DarkOrchid.Square,
+        colorAndShapeImage: assets.images.colorsAndShapes.DarkOrchid.Square,
+        image: "",
         trackstock: false,
         representation: "colorAndShape",
         instock: 0,
-        colorId: 1,
+        colorId: 8,
         shapeId: 1,
         isSelected: false,
       },
     ],
-    selectedCount: 0,
   } as initialItemState,
   reducers: {
+    updateItemCategoryId: (
+      state,
+      action: { payload: { categoryId: number; itemList: number[] } }
+    ) => {
+      const prevItemList = state.itemList;
+      const categoryId = action.payload.categoryId;
+      const itemList = action.payload.itemList;
+
+      state.itemList = prevItemList.map((item) => {
+        if (itemList.includes(item.id)) {
+          return { ...item, categoryId: categoryId };
+        }
+        return item;
+      });
+    },
     addIsSelectedItem: (state) => {
       state.itemList = state.itemList.map((item) => ({ ...item, isSelected: false }));
     },
@@ -130,25 +148,25 @@ const itemSlice = createSlice({
 
       const findColorById = colorData.find((color) => color.id === payload.colorId);
       const findShapeById = shapeData.find((shape) => shape.id === payload.shapeId);
-      const removedWordBorder = findShapeById?.shape.replace("Border", "");
-
       const findColorAndShapeByIdAndShape = colorAndShape.find(
         (colorAndShape) =>
-          colorAndShape.color === findColorById?.color && colorAndShape.shape === removedWordBorder
+          colorAndShape.color === findColorById?.color &&
+          colorAndShape.shape === findShapeById?.shape
       );
-
       const updatedImage = findColorAndShapeByIdAndShape ? findColorAndShapeByIdAndShape.image : "";
+
+      const representation: "colorAndShape" | "image" = !payload.image ? "colorAndShape" : "image";
 
       const updatedItem: itemListProps = {
         ...payload,
-        image: updatedImage,
+        colorAndShapeImage: updatedImage,
         id: convertPayloadId,
+        representation: representation,
         isSelected: false,
       };
 
       if (findItemIdByIndex !== -1) {
         state.itemList[findItemIdByIndex] = { ...updatedItem };
-        console.log(updatedItem);
       }
 
       if (findItemIdByIndex === -1) {
@@ -160,7 +178,26 @@ const itemSlice = createSlice({
       const prevItemList = state.itemList;
       const newItemId = prevItemList.length + 1;
 
-      const newItem: itemListProps = { ...payload, id: newItemId, isSelected: false };
+      const findColorById = colorData.find((color) => color.id === payload.colorId);
+      const findShapeById = shapeData.find((shape) => shape.id === payload.shapeId);
+
+      const findColorAndShapeByIdAndShape = colorAndShape.find(
+        (colorAndShape) =>
+          colorAndShape.color === findColorById?.color &&
+          colorAndShape.shape === findShapeById?.shape
+      );
+
+      const updatedImage = findColorAndShapeByIdAndShape ? findColorAndShapeByIdAndShape.image : "";
+
+      const representation: "colorAndShape" | "image" = !payload.image ? "colorAndShape" : "image";
+
+      const newItem: itemListProps = {
+        ...payload,
+        id: newItemId,
+        isSelected: false,
+        colorAndShapeImage: updatedImage,
+        representation: representation,
+      };
 
       state.itemList.push(newItem);
     },

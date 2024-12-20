@@ -12,16 +12,17 @@ import {
 
 type HeaderSearchAndFilterToolbarProps = {
   title: string;
+  backButton: string;
   openSearch: () => void;
 };
 const HeaderSearchAndFilterToolbar: React.FC<HeaderSearchAndFilterToolbarProps> = (props) => {
-  const { title, openSearch } = props;
+  const { title, openSearch, backButton } = props;
 
   return (
     <>
       <AppBar component="div" elevation={0} color="success" position="static">
         <ToolbarStyled>
-          <BackButton component={Link} to=".." relative="path">
+          <BackButton component={Link} to={backButton} relative="path">
             <ArrowBackIconStyled />
           </BackButton>
 

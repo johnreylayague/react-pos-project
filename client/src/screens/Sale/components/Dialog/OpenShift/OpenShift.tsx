@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  Container,
-  FormControl,
-  FormHelperText,
-  Input,
-  InputLabel,
-  Typography,
-} from "@mui/material";
+import { Container, Typography } from "@mui/material";
 import OutlinedButton from "../../../../../components/common/elements/Button/OutlinedButton/OutlinedButton";
 import { useDispatch } from "react-redux";
 import { shiftActions } from "../../../../../store/shift-slice";
@@ -19,6 +12,12 @@ import {
   StackStyled,
 } from "./OpenShiftStyles";
 import PesosInputField from "../../../../../components/vendor/react-number-formatter/PesosInputField/PesosInputField";
+import { Controller, useForm } from "react-hook-form";
+import InputField from "../../../../../components/common/elements/Input/InputField/InputField";
+
+export type FormValuesOpenShift = {
+  amount: string;
+};
 
 type OpenShiftProps = {
   isOpen: boolean;
@@ -28,18 +27,23 @@ type OpenShiftProps = {
 const OpenShift: React.FC<OpenShiftProps> = (props) => {
   const { isOpen, onClose, isThemeMobileScreen } = props;
 
-  const [amount, setAmount] = React.useState<number>(0);
   const dispatch = useDispatch();
 
-  const handleOnOpenShift = () => {
-    dispatch(shiftActions.handleOnOpenShift());
+  const {
+    handleSubmit,
+    control,
+    reset,
+    formState: { errors },
+  } = useForm<FormValuesOpenShift>({
+    defaultValues: {
+      amount: "0.00",
+    },
+  });
+
+  const handleOnOpenShift = (data: FormValuesOpenShift) => {
+    dispatch(shiftActions.openShift(data));
+    reset();
     onClose();
-  };
-
-  const handleOnChangeInputField = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Number.parseInt(event.target.value);
-
-    setAmount(value);
   };
 
   return (
@@ -60,22 +64,21 @@ const OpenShift: React.FC<OpenShiftProps> = (props) => {
             Specify the cash amount in your drawer at the start of the shift
           </Typography>
 
-          <FormControl color="success" fullWidth variant="standard">
-            <InputLabel color="success">Amount</InputLabel>
+          <Controller
+            name="amount"
+            control={control}
+            rules={{}}
+            render={({ field }) => (
+              <InputField
+                inputProps={{ ...field, inputComponent: PesosInputField as any }}
+                helperText={errors.amount?.message}
+                isShowHelperText={!!errors.amount?.message}
+                label="Amount"
+              />
+            )}
+          />
 
-            <Input
-              color="success"
-              inputComponent={PesosInputField as any}
-              onChange={handleOnChangeInputField}
-              value={amount}
-            />
-
-            <FormHelperText error hidden>
-              Amount is required and cannot be empty.
-            </FormHelperText>
-          </FormControl>
-
-          <OutlinedButton onClick={handleOnOpenShift}>OPEN SHIFT</OutlinedButton>
+          <OutlinedButton onClick={handleSubmit(handleOnOpenShift)}>OPEN SHIFT</OutlinedButton>
         </StackStyled>
       </Container>
     </DialogStyled>

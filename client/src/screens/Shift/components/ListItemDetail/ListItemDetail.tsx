@@ -11,8 +11,11 @@ import React from "react";
 
 const ListItemTextPrimary = styled(ListItemText, {
   shouldForwardProp: (props) => props !== "data-is-highlight",
-})<ListItemTextProps & { ["data-is-highlight"]: boolean; children: string }>(
-  ({ theme, ...props }: { theme: Theme } & { "data-is-highlight": boolean; children: string }) => ({
+})<ListItemTextProps & { ["data-is-highlight"]: boolean; children: React.ReactNode }>(
+  ({
+    theme,
+    ...props
+  }: { theme: Theme } & { "data-is-highlight": boolean; children: React.ReactNode }) => ({
     ...(props["data-is-highlight"]
       ? ({ "& .MuiListItemText-primary": { fontWeight: "bold" } } as CSSObject)
       : {}),
@@ -21,11 +24,8 @@ const ListItemTextPrimary = styled(ListItemText, {
 
 const ListItemTextSecondary = styled(ListItemText, {
   shouldForwardProp: (props) => props !== "data-is-highlight",
-})<ListItemTextProps & { ["data-is-highlight"]: boolean; children: string[] }>(
-  ({
-    theme,
-    ...props
-  }: { theme: Theme } & { "data-is-highlight": boolean; children: string[] }) => ({
+})<ListItemTextProps & { ["data-is-highlight"]: boolean }>(
+  ({ theme, ...props }: { theme: Theme } & { "data-is-highlight": boolean }) => ({
     ...(props["data-is-highlight"]
       ? ({ "& .MuiListItemText-primary": { fontWeight: "bold" } } as CSSObject)
       : {}),
@@ -34,7 +34,7 @@ const ListItemTextSecondary = styled(ListItemText, {
 );
 
 type ListItemDetailProps = {
-  children: string;
+  children: React.ReactNode;
   secondary?: string;
   primaryHighlight?: boolean;
   secondaryHighlight?: boolean;
@@ -51,7 +51,7 @@ const ListItemDetail: React.FC<ListItemDetailProps> = (props) => {
 
   const listItemTextSecondaryContent = secondary && (
     <ListItemTextSecondary data-is-highlight={secondaryHighlight}>
-      ₱{secondary}
+      {secondary}
     </ListItemTextSecondary>
   );
 

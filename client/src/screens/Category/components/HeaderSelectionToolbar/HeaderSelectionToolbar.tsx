@@ -4,12 +4,12 @@ import { AppBarStyled, TotalSelectedText } from "./HeaderSelectionToolbar";
 import { Delete as DeleteIcon, Close as CloseIcon } from "@mui/icons-material";
 
 type HeaderSelectionToolbarProps = {
+  openDialogDelete: () => void;
+  totalSelectedItem: number;
   onClose: () => void;
-  openDialog: () => void;
-  totalSelectedCategory: number;
 };
 const HeaderSelectionToolbar: React.FC<HeaderSelectionToolbarProps> = (props) => {
-  const { onClose, totalSelectedCategory, openDialog } = props;
+  const { onClose, openDialogDelete, totalSelectedItem } = props;
 
   return (
     <>
@@ -19,9 +19,9 @@ const HeaderSelectionToolbar: React.FC<HeaderSelectionToolbarProps> = (props) =>
             <CloseIcon />
           </IconButton>
 
-          <TotalSelectedText component="h6">{totalSelectedCategory}</TotalSelectedText>
+          <TotalSelectedText component="h6">{totalSelectedItem}</TotalSelectedText>
 
-          <IconButton onClick={openDialog}>
+          <IconButton onClick={openDialogDelete}>
             <DeleteIcon />
           </IconButton>
         </Toolbar>

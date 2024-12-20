@@ -16,7 +16,7 @@ export type InteractionEventHandlers = {
   onMouseLeave?: (event: InteractionEvent) => void;
 };
 
-export const useCategoryInteractionHandlers = () => {
+export const useListItemInteractionHandlers = (handleOnCloseSearch: () => void) => {
   const isSelectionMode = useSelector((state: storeProps) => state.category.isSelectionMode);
   const categoryData = useSelector((state: storeProps) => state.category.categoryData);
 
@@ -44,7 +44,7 @@ export const useCategoryInteractionHandlers = () => {
       const parsedIsSelected = JSON.parse(isSelected);
 
       dispatch(
-        categoryActions.selectionMode({ itemId: parsedItemId, isSelected: parsedIsSelected })
+        categoryActions.selectionMode({ categoryId: parsedItemId, isSelected: parsedIsSelected })
       );
 
       return;
@@ -70,10 +70,11 @@ export const useCategoryInteractionHandlers = () => {
       holdTimeout.current = setTimeout(() => {
         dispatch(
           categoryActions.toggleSelection({
-            itemId: parsedItemId,
+            categoryId: parsedItemId,
             isSelected: !parsedSelected,
           })
         );
+        handleOnCloseSearch();
       }, 1000);
     }
   };
@@ -97,7 +98,7 @@ export const useCategoryInteractionHandlers = () => {
       const parsedIsSelected = JSON.parse(isSelected);
 
       dispatch(
-        categoryActions.selectionMode({ itemId: parsedItemId, isSelected: !parsedIsSelected })
+        categoryActions.selectionMode({ categoryId: parsedItemId, isSelected: !parsedIsSelected })
       );
 
       return;

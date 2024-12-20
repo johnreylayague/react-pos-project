@@ -28,6 +28,7 @@ const TabContent: React.FC<TabContentProps> = (props) => {
   const isEdit = useSelector((store: storeProps) => store.sale.isEdit);
   const tabIndex = useSelector((store: storeProps) => store.sale.tabIndex);
   const pageData = useSelector((store: storeProps) => store.sale.pageData);
+  const itemList = useSelector((store: storeProps) => store.item.itemList);
 
   return (
     <BoxStyled>

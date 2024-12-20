@@ -9,15 +9,17 @@ import {
   Zoom,
 } from "@mui/material";
 import { CheckIconStyled, AvatarStyled } from "./ColorPickerStyles";
-import { categoryColorDataProps } from "../../../../store/category-slice";
+import assets from "../../../../assets/assets";
+
+const colorData = assets.json.colorData;
 
 type CategoryColorPickerProps = {
-  colorData: categoryColorDataProps[];
+  watch: any;
   onChangeSelected: (event: React.MouseEvent<HTMLButtonElement>) => void;
 };
 
 const ColorPicker: React.FC<CategoryColorPickerProps> = (props) => {
-  const { colorData, onChangeSelected } = props;
+  const { watch, onChangeSelected } = props;
 
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.between("xs", "sm"));
@@ -41,10 +43,10 @@ const ColorPicker: React.FC<CategoryColorPickerProps> = (props) => {
                 <AvatarStyled
                   imgProps={{ draggable: false }}
                   variant="rounded"
-                  alt={color.imgAlt}
-                  src={color.imageSrc}
+                  alt={color.color}
+                  src={color.image}
                 />
-                <Zoom in={color.selected}>
+                <Zoom in={watch("colorId") === color.id}>
                   <CheckIconStyled />
                 </Zoom>
               </ButtonBase>

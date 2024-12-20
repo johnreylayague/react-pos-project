@@ -1,17 +1,8 @@
 import React from "react";
-import { styled, Dialog, DialogProps, Theme } from "@mui/material";
 import ShiftLists from "../DialogShiftLists/DialogShiftLists";
 import ShiftReport from "../DialogShiftReport/DialogShiftReport";
-
-const DialogStyled = styled(Dialog)<DialogProps>(({}: { theme: Theme }) => ({
-  "& .MuiPaper-root": {
-    borderRadius: 0,
-    my: 0,
-  },
-  "& .MuiDialog-paper": {
-    height: "100%",
-  },
-}));
+import { useToggle } from "../../../../hooks/components/useToggle/useToggle";
+import { DialogStyled } from "./DialogShiftHistoryStyles";
 
 type DialogCloseShiftProps = {
   isOpen: boolean;
@@ -22,28 +13,7 @@ type DialogCloseShiftProps = {
 const DialogShiftHistory: React.FC<DialogCloseShiftProps> = (props) => {
   const { isOpen, onClose, isSmallScreen } = props;
 
-  const [dialogState, setDialogState] = React.useState({
-    isShowShiftLists: true,
-    isShowShiftReport: false,
-    isShowLoading: false,
-  });
-
-  const handleShowShiftReport = () => {
-    setDialogState((prevDialogState) => {
-      return { ...prevDialogState, isShowShiftLists: false, isShowShiftReport: true };
-    });
-  };
-
-  const handleHideShiftReport = () => {
-    setDialogState((prevDialogState) => {
-      return {
-        ...prevDialogState,
-        isShowShiftLists: true,
-        isShowShiftReport: false,
-        isShowLoading: false,
-      };
-    });
-  };
+  const { isOpenToggle, handleCloseToggle, handleOpenToggle } = useToggle(true);
 
   return (
     <DialogStyled
@@ -53,13 +23,11 @@ const DialogShiftHistory: React.FC<DialogCloseShiftProps> = (props) => {
       fullScreen={isSmallScreen}
       disableEscapeKeyDown
     >
-      {dialogState.isShowShiftLists && (
-        <ShiftLists title="Shifts" onShowShiftReport={handleShowShiftReport} onClose={onClose} />
+      {isOpenToggle && (
+        <ShiftLists title="Shifts" onShowShiftReport={handleCloseToggle} onClose={onClose} />
       )}
 
-      {dialogState.isShowShiftReport && (
-        <ShiftReport title="Shift report" onClose={handleHideShiftReport} />
-      )}
+      {!isOpenToggle && <ShiftReport title="Shift report" onClose={handleOpenToggle} />}
     </DialogStyled>
   );
 };

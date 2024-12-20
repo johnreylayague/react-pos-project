@@ -16,7 +16,7 @@ export type InteractionEventHandlers = {
   onMouseLeave?: (event: InteractionEvent) => void;
 };
 
-export const useItemInteractionHandlers = () => {
+export const useItemInteractionHandlers = (handleOnCloseSearch: () => void) => {
   const isSelectionMode = useSelector((state: storeProps) => state.item.isSelectionMode);
 
   const holdTimeout = useRef<number | null>(null);
@@ -71,6 +71,7 @@ export const useItemInteractionHandlers = () => {
             isSelected: !parsedSelected,
           })
         );
+        handleOnCloseSearch();
       }, 1000);
     }
   };

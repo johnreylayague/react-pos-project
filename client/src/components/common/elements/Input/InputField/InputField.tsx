@@ -34,17 +34,15 @@ const InputField: React.FC<InputFieldProps> = (props) => {
     wrapperComponent,
   } = props;
 
+  const color = isShowHelperText ? "error" : "success";
+
   const content = (
-    <FormControl variant="standard" fullWidth {...formControlProps}>
-      <InputLabel color="success" {...inputLabelProps}>
+    <FormControl color={color} variant="standard" fullWidth {...formControlProps}>
+      <InputLabel color={color} {...inputLabelProps}>
         {label}
       </InputLabel>
-      <Input aria-describedby="category-name-helper-text" color="success" {...inputProps} />
-      <FormHelperText
-        id="category-name-helper-text"
-        hidden={!isShowHelperText}
-        {...formHelperTextProps}
-      >
+      <Input color={color} {...inputProps} />
+      <FormHelperText error hidden={!isShowHelperText} {...formHelperTextProps}>
         {helperText}
       </FormHelperText>
     </FormControl>

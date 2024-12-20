@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { List } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
 import { Link } from "react-router-dom";
@@ -27,8 +27,10 @@ const Item: React.FC<ItemsProps> = (props) => {
   const isSelectionMode = useSelector((state: storeProps) => state.item.isSelectionMode);
   const totalSelectedItem = useSelector((state: storeProps) => state.item.selectedCount);
   const searchInputValue = useSelector((state: storeProps) => state.item.searchInputValue);
-
-  const { interactionHandlers } = useItemInteractionHandlers();
+  const [selectedMenu, setSelectedMenu] = useState<{ id: number | string; text: string }>({
+    id: "",
+    text: "All Items",
+  });
 
   const {
     isOpenDialog: isOpenDialogDelete,
@@ -36,16 +38,41 @@ const Item: React.FC<ItemsProps> = (props) => {
     handleCloseDialog: handleCloseDialogDelete,
   } = useDialog();
 
-  const { handleCloseSelection, handleDeleteSelectionItem } = useHeaderSelectionInteractionHandlers(
-    dispatch,
-    handleCloseDialogDelete
-  );
-
   const {
     isOpenToggle: isOpenSearch,
     handleCloseToggle: handleOnCloseSearch,
     handleOpenToggle: handleOnOpenSearch,
   } = useToggle();
+
+  const { interactionHandlers } = useItemInteractionHandlers(handleOnCloseSearch);
+
+  const { handleCloseSelection, handleDeleteSelectionItem } = useHeaderSelectionInteractionHandlers(
+    dispatch,
+    handleCloseDialogDelete
+  );
+
+  const handleOnChangeMenu = (event: React.MouseEvent<HTMLLIElement>) => {
+    const menuId = event.currentTarget.getAttribute("data-id");
+    const categoryName = event.currentTarget.getAttribute("data-category-name");
+
+    if (menuId && categoryName) {
+      const convertedMenuId = Number.parseInt(menuId);
+      setSelectedMenu({
+        id: convertedMenuId,
+        text: categoryName,
+      });
+    }
+
+    if (!categoryName) {
+      console.log("CategoryName does not exist.");
+    }
+
+    if (!menuId) {
+      setSelectedMenu({ id: "", text: "All items" });
+    }
+  };
+
+  const filterItemByCategoryId = itemList.filter((item) => item.categoryId === selectedMenu.id);
 
   return (
     <>
@@ -56,50 +83,16 @@ const Item: React.FC<ItemsProps> = (props) => {
           openDialogDelete={handleOpenDialogDelete}
         />
       )}
-      {isOpenSearch && (
+      {!isSelectionMode && isOpenSearch && (
         <HeaderSearchToolbar searchInputValue={searchInputValue} backButton={handleOnCloseSearch} />
       )}
       {!isSelectionMode && !isOpenSearch && (
-        <HeaderSearchAndFilterToolbar openSearch={handleOnOpenSearch} />
-      )}
-
-      {!isOpenSearch && itemList.length !== 0 && (
-        <List>
-          {itemList.map((item) => {
-            return (
-              <ItemListItem
-                key={item.id}
-                itemData={item}
-                onInteractionHandlers={interactionHandlers}
-              />
-            );
-          })}
-        </List>
-      )}
-      {!isOpenSearch && itemList.length === 0 && (
-        <EmptyItemNotification
-          mainMessage="You have no items yet"
-          subMessage="Add items to start organizing your collection."
+        <HeaderSearchAndFilterToolbar
+          openSearch={handleOnOpenSearch}
+          selectedMenu={selectedMenu}
+          onChangeMenu={handleOnChangeMenu}
         />
       )}
-
-      {isOpenSearch &&
-        itemList.filter((item) => item.name.toLowerCase().includes(searchInputValue.toLowerCase()))
-          .length !== 0 && (
-          <List>
-            {itemList
-              .filter((item) => item.name.toLowerCase().includes(searchInputValue.toLowerCase()))
-              .map((item) => {
-                return (
-                  <ItemListItem
-                    key={item.id}
-                    itemData={item}
-                    onInteractionHandlers={interactionHandlers}
-                  />
-                );
-              })}
-          </List>
-        )}
 
       {isOpenSearch &&
         itemList.filter((item) => item.name.toLowerCase().includes(searchInputValue.toLowerCase()))
@@ -108,6 +101,46 @@ const Item: React.FC<ItemsProps> = (props) => {
             No existing items found.
           </ResultMessage>
         )}
+
+      {itemList.length === 0 ||
+        (selectedMenu.id !== "" && filterItemByCategoryId.length === 0 && (
+          <EmptyItemNotification
+            mainMessage="You have no items yet"
+            subMessage="Add items to start organizing your collection."
+          />
+        ))}
+
+      {itemList.length !== 0 && selectedMenu.id === "" && (
+        <List>
+          {itemList
+            .filter((item) => item.name.toLowerCase().includes(searchInputValue.toLowerCase()))
+            .map((item) => {
+              return (
+                <ItemListItem
+                  key={item.id}
+                  itemData={item}
+                  onInteractionHandlers={interactionHandlers}
+                />
+              );
+            })}
+        </List>
+      )}
+
+      {itemList.length !== 0 && selectedMenu.id !== "" && filterItemByCategoryId.length !== 0 && (
+        <List>
+          {filterItemByCategoryId
+            .filter((item) => item.name.toLowerCase().includes(searchInputValue.toLowerCase()))
+            .map((item) => {
+              return (
+                <ItemListItem
+                  key={item.id}
+                  itemData={item}
+                  onInteractionHandlers={interactionHandlers}
+                />
+              );
+            })}
+        </List>
+      )}
 
       <FabButton to={"/item/create"} component={Link}>
         <AddIcon />

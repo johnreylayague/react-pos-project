@@ -3,16 +3,15 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  ListItemIcon,
   ListItemText,
   FormHelperText,
-  SelectChangeEvent,
   SelectProps,
 } from "@mui/material";
 import React from "react";
-import { DividerStyled } from "./SelectFieldStyles";
-import { Add as AddIcon } from "@mui/icons-material";
+import { DividerStyled, ListItemIconStyled, AddIcon } from "./SelectFieldStyles";
 import CloneElement from "../CloneElement/CloneElement";
+import { useSelector } from "react-redux";
+import { storeProps } from "../../../../store";
 
 type SelectFieldProps = {
   wrapperComponent?: React.ReactNode;
@@ -20,6 +19,8 @@ type SelectFieldProps = {
 };
 const SelectField: React.FC<SelectFieldProps> = (props) => {
   const { selectProps, wrapperComponent } = props;
+
+  const categoryList = useSelector((state: storeProps) => state.category.categoryList);
 
   const content = (
     <FormControl variant="standard" fullWidth>
@@ -40,13 +41,17 @@ const SelectField: React.FC<SelectFieldProps> = (props) => {
         }}
       >
         <MenuItem value={""}>No category</MenuItem>
-        <MenuItem value={"10"}>Ten</MenuItem>
-        <MenuItem value={"20"}>Twenty</MenuItem>
-        <DividerStyled component="li" />
+        {categoryList.map((category) => {
+          return (
+            <MenuItem key={category.id} value={category.id}>
+              {category.name}
+            </MenuItem>
+          );
+        })}
         <MenuItem value={"addCategory"}>
-          <ListItemIcon sx={(_theme) => ({ "&.MuiListItemIcon-root": { minWidth: 22 } })}>
-            <AddIcon sx={{ color: "#000", fontSize: 16 }} />
-          </ListItemIcon>
+          <ListItemIconStyled>
+            <AddIcon />
+          </ListItemIconStyled>
           <ListItemText>Add Category</ListItemText>
         </MenuItem>
       </Select>

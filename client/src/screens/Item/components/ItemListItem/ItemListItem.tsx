@@ -37,11 +37,15 @@ const ItemListItem: React.FC<ItemListItemProps> = (props) => {
         >
           <ListItemAvatarStyled>
             <SelectableAvatar
-              imageSrc={itemData.image}
+              imageSrc={
+                itemData.representation === "colorAndShape"
+                  ? itemData.colorAndShapeImage
+                  : itemData.image
+              }
               itemName={itemData.name}
               selected={itemData.isSelected}
               timeout={350}
-              variant={"square"}
+              variant={itemData.representation === "colorAndShape" ? "square" : "circular"}
             />
           </ListItemAvatarStyled>
           <ListItemTitle secondary={itemStock}>{itemData.name}</ListItemTitle>
@@ -51,31 +55,6 @@ const ItemListItem: React.FC<ItemListItemProps> = (props) => {
       <Divider variant="inset" component="li" />
     </>
   );
-  // return (
-  //   <>
-  //     <ListItemStyled>
-  //       <ListItemButtonStyled
-  //         selected={itemData.selected}
-  //         data-selected={itemData.selected}
-  //         data-item-id={itemData.id}
-  //         {...onInteractionHandlers}
-  //       >
-  //         <ListItemAvatarStyled>
-  //           <SelectableAvatar
-  //             imageSrc={itemData.imageSrc}
-  //             itemName={itemData.itemName}
-  //             selected={itemData.selected}
-  //             timeout={350}
-  //             variant={"circular"}
-  //           />
-  //         </ListItemAvatarStyled>
-  //         <ListItemTitle secondary={itemStock}>{itemData.itemName}</ListItemTitle>
-  //         <ListItemStock>{itemData.itemPrice}</ListItemStock>
-  //       </ListItemButtonStyled>
-  //     </ListItemStyled>
-  //     <Divider variant="inset" component="li" />
-  //   </>
-  // );
 };
 
 export default ItemListItem;
