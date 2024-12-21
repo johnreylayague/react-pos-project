@@ -1,10 +1,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { FormValuesCategory } from "../screens/CategoryCreate/CategoryCreate";
+import { FormValuesCategory as FormValuesCategoryEdit } from "../screens/CategoryEdit/CategoryEdit";
+import { convertToNumber } from "../utils/typescriptHelpers";
 
 export type categoryList = {
   id: number;
   name: string;
-  colorId: number | string;
+  colorId: number;
   isSelected: boolean;
 };
 
@@ -34,41 +36,50 @@ const categorySlice = createSlice({
   reducers: {
     updateCategory: (
       state,
-      action: { payload: { categoryId: number; data: FormValuesCategory } }
+      action: { payload: { indexId: number; data: FormValuesCategoryEdit }; type: string }
     ) => {
-      const categoryId = action.payload.categoryId;
+      const indexId = action.payload.indexId;
       const payload = action.payload.data;
 
-      const findCategoryIndex = state.categoryList.findIndex(
-        (category) => category.id === categoryId
-      );
+      const converetedCategoryId = convertToNumber("string", payload.id);
+      const converetedColorId = convertToNumber("string", payload.colorId);
 
-      if (findCategoryIndex === -1) {
-        console.log("Connot findIndex on Item !");
-      }
-
-      if (findCategoryIndex !== -1) {
-        state.categoryList[findCategoryIndex] = {
-          ...state.categoryList[findCategoryIndex],
-          ...payload,
-        };
-      }
+      state.categoryList[indexId] = {
+        id: converetedCategoryId,
+        colorId: converetedColorId,
+        isSelected: false,
+        name: payload.name,
+      };
     },
     deleteCategory: (state, action: { payload: number }) => {
       const payload = action.payload;
-      const prevStateCategory = state.categoryList;
 
-      state.categoryList = prevStateCategory.filter((category) => category.id !== payload);
+      state.categoryList = state.categoryList.filter((category) => category.id !== payload);
     },
-    addCategory: (state, action: PayloadAction<FormValuesCategory>) => {
+    addCategory: (state, action: { payload: FormValuesCategory; type: string }) => {
       const payload = action.payload;
-      const newCategoryId = state.categoryList.length + 1;
 
-      state.categoryList.push({ id: newCategoryId, isSelected: false, ...payload });
+      const converetedColorId = convertToNumber("string", payload.colorId);
+
+      const nextAvailableCategoryId = state.categoryList.length + 1;
+
+      state.categoryList.push({
+        id: nextAvailableCategoryId,
+        name: payload.name,
+        colorId: converetedColorId,
+        isSelected: false,
+      });
     },
     addItemCategory: (state, action: PayloadAction<FormValuesCategory & { id: number }>) => {
       const payload = action.payload;
-      state.categoryList.push({ isSelected: false, ...payload });
+      const converetedColorId = convertToNumber("string", payload.colorId);
+
+      state.categoryList.push({
+        id: payload.id,
+        name: payload.name,
+        colorId: converetedColorId,
+        isSelected: false,
+      });
     },
     onChangeSearchInputValue: (state, action) => {
       const payload = action.payload;

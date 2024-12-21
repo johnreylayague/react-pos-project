@@ -1,8 +1,13 @@
-import { ListProps, List, Dialog, DialogProps } from "@mui/material";
+import { ListProps, List, Dialog, DialogProps, TypographyProps, Typography } from "@mui/material";
 import { styled, Theme } from "@mui/material/styles";
 
 export const ListStyled = styled(List)<ListProps>(({}: { theme: Theme }) => ({
   overflowY: "auto",
+}));
+
+export const EmptyMessage = styled(Typography)<TypographyProps>(({ theme }: { theme: Theme }) => ({
+  textAlign: "center",
+  paddingTop: theme.spacing(3),
 }));
 
 export const DialogStyled = styled(Dialog)<DialogProps>(({ theme }: { theme: Theme }) => ({

@@ -19,6 +19,8 @@ import {
   Avatar,
   StackProps,
   Stack,
+  AlertProps,
+  Alert,
 } from "@mui/material";
 
 export const BoxStyled = styled(Box)<BoxProps>(({ theme }: { theme: Theme }) => ({
@@ -135,4 +137,8 @@ export const RemoveImageButton = styled(IconButton)<IconButtonProps>(
 
 export const ImageWrapper = styled(Box)<BoxProps>(({}: { theme: Theme }) => ({
   position: "relative",
+}));
+
+export const AlertSnackBar = styled(Alert)<AlertProps>(({}: { theme: Theme }) => ({
+  width: "100%",
 }));

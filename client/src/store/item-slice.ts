@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import assets from "../assets/assets";
 import { FormValuesItem } from "../screens/ItemCreate/ItemCreate";
 import { FormValuesItem as FormValuesEditItem } from "../screens/ItemEdit/ItemEdit";
@@ -101,21 +101,48 @@ const itemSlice = createSlice({
   reducers: {
     updateItemCategoryId: (
       state,
-      action: { payload: { categoryId: number; itemList: number[] } }
+      action: PayloadAction<{ categoryId: number; itemList: number[] }>
     ) => {
       const prevItemList = state.itemList;
       const categoryId = action.payload.categoryId;
       const itemList = action.payload.itemList;
 
-      state.itemList = prevItemList.map((item) => {
-        if (itemList.includes(item.id)) {
-          return { ...item, categoryId: categoryId };
-        }
-        return item;
-      });
+      state.itemList = prevItemList.map((item) =>
+        itemList.includes(item.id) ? { ...item, categoryId: categoryId } : item
+      );
     },
     addIsSelectedItem: (state) => {
       state.itemList = state.itemList.map((item) => ({ ...item, isSelected: false }));
+    },
+    updatedIsSelectedItemToFalse: (state) => {
+      state.itemList = state.itemList.map((item) => ({ ...item, isSelected: false }));
+    },
+    updateCategorySelection: (state, action: { payload: number; type: string }) => {
+      const categoryId = action.payload;
+
+      state.itemList = state.itemList.map((item) =>
+        item.categoryId === categoryId
+          ? { ...item, isSelected: true }
+          : { ...item, isSelected: false }
+      );
+    },
+    updatedIsSelectedItem: (
+      state,
+      action: { payload: { itemId: number; isChecked?: boolean | undefined }; type: string }
+    ) => {
+      const itemId = action.payload.itemId;
+      const isChecked = action.payload.isChecked;
+
+      if (typeof isChecked !== "undefined") {
+        state.itemList = state.itemList.map((item) =>
+          itemId === item.id ? { ...item, isSelected: isChecked } : item
+        );
+        return;
+      }
+
+      state.itemList = state.itemList.map((item) =>
+        itemId === item.id ? { ...item, isSelected: !item.isSelected } : item
+      );
     },
     onChangeSearchInputValue: (state, action: { payload: string }) => {
       const payload = action.payload;

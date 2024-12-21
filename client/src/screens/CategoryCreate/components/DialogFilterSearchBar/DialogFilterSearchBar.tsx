@@ -1,24 +1,31 @@
 import React from "react";
 import { SearchBarContainer } from "./DialogFilterSearchBarStyles";
-import { IconButton, InputBase } from "@mui/material";
+import { IconButton, InputBase, Toolbar } from "@mui/material";
 import { Search as SearchIcon, Close as CloseIcon } from "@mui/icons-material";
 
 type DialogFilterSearchBarProps = {
-  onSearch: () => void;
-  onClose: () => void;
+  onChangeSearchInput: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onClearSearchInput: () => void;
+  searchValue: string;
 };
 const DialogFilterSearchBar: React.FC<DialogFilterSearchBarProps> = (props) => {
-  const { onClose, onSearch } = props;
+  const { onChangeSearchInput, searchValue, onClearSearchInput } = props;
 
   return (
     <SearchBarContainer spacing={2} direction={"row"}>
-      <IconButton onClick={onSearch}>
-        <SearchIcon />
-      </IconButton>
-      <InputBase placeholder="Search item" fullWidth />
-      <IconButton onClick={onClose}>
-        <CloseIcon />
-      </IconButton>
+      <SearchIcon />
+      <InputBase
+        placeholder="Search item"
+        value={searchValue}
+        onChange={onChangeSearchInput}
+        fullWidth
+      />
+
+      {searchValue && (
+        <IconButton onClick={onClearSearchInput}>
+          <CloseIcon />
+        </IconButton>
+      )}
     </SearchBarContainer>
   );
 };

@@ -1,14 +1,23 @@
-import React from "react";
-import { UseFormSetValue, UseFormWatch } from "react-hook-form";
-import { FormValuesCategory } from "../../screens/CategoryEdit/CategoryEdit";
-import { itemActions } from "../../store/item-slice";
-import { useDispatch } from "react-redux";
-import { notificationProps } from "../material-ui/useSnackbar/useSnackbar";
+import { UseFormSetValue } from "react-hook-form";
+import { FormValuesCategory } from "../../screens/CategoryCreate/CategoryCreate";
 import { convertToNumber } from "../../utils/typescriptHelpers";
+import { notificationProps } from "../material-ui/useSnackbar/useSnackbar";
+import { useDispatch, useSelector } from "react-redux";
+import { storeProps } from "../../store";
+import { itemActions } from "../../store/item-slice";
 
-export const useInteractionHandlers = (
+type useInteractionHandlersProps = (
   setValue: UseFormSetValue<FormValuesCategory>,
   handleOpenSnackbar: ({ message, severity }: notificationProps) => void
+) => {
+  handleColorSelectionChange: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  handleOnChangeSelect: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleOnClickSelect: (event: React.MouseEvent<HTMLDivElement>) => void;
+};
+
+export const useInteractionHandlers: useInteractionHandlersProps = (
+  setValue,
+  handleOpenSnackbar
 ) => {
   const dispatch = useDispatch();
 
@@ -17,7 +26,7 @@ export const useInteractionHandlers = (
 
     if (!colorId) {
       handleOpenSnackbar({
-        message: "'data-color-id' attribute is missing or undefined.",
+        message: "'data-color-ids' attribute is missing or undefined",
         severity: "error",
       });
       return;
@@ -61,9 +70,5 @@ export const useInteractionHandlers = (
     dispatch(itemActions.updatedIsSelectedItem({ itemId: convertedItemId }));
   };
 
-  return {
-    handleColorSelectionChange,
-    handleOnClickSelect,
-    handleOnChangeSelect,
-  };
+  return { handleColorSelectionChange, handleOnChangeSelect, handleOnClickSelect };
 };

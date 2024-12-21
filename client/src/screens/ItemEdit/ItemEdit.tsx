@@ -3,10 +3,12 @@ import HeaderFormAction from "../../components/common/elements/Header/HeaderForm
 import ContainerWrapper from "./components/ContainerWrapper/ContainerWrapper.tsx";
 import Section from "./components/Section/Section.tsx";
 import {
+  Alert,
   Box,
   CircularProgress,
   Collapse,
   IconButton,
+  Snackbar,
   Switch,
   Toolbar,
   Typography,
@@ -56,6 +58,7 @@ import Webcam from "react-webcam";
 import { isMobile } from "react-device-detect";
 import { useRepresentationInteractionHandlers } from "../../hooks/ItemEdit/useRepresentationInteractionHandlers.ts";
 import { useDialog } from "../../hooks/material-ui/useDialog/useDialog.tsx";
+import { useSnackbar } from "../../hooks/material-ui/useSnackbar/useSnackbar.ts";
 
 export type FormValuesCategory = {
   name: string;
@@ -151,6 +154,8 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
     }
   }, [watchItem("trackstock")]);
 
+  const { snackbar, handleCloseSnackbar, handleOpenSnackbar } = useSnackbar();
+
   const {
     isOpenDialog: isDialogCreateCategory,
     handleOpenDialog: onOpenDialogCreateCategory,
@@ -191,6 +196,12 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
     onCloseDialogCreateCategory,
     resetCategory
   );
+
+  const handleOnUserMediaError = () =>
+    handleOpenSnackbar({
+      message: "Unable to access the webcam. Please check your device settings and permissions.",
+      severity: "error",
+    });
 
   return (
     <>
@@ -518,8 +529,8 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
           audio={false}
           ref={webcamRef}
           onUserMedia={onStartMediaStream}
+          onUserMediaError={handleOnUserMediaError}
           screenshotFormat="image/png"
-          videoConstraints={{}}
           style={{
             ...(!isMediaStreamActive ? { backgroundColor: "#000" } : {}),
           }}
@@ -539,6 +550,17 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
         onClose={onCloseDialogDelete}
         onDelete={handleOnDeleteItem}
       />
+
+      <Snackbar
+        open={snackbar.isOpenSnackbar}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        autoHideDuration={5000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.alert.severity} variant="filled">
+          {snackbar.alert.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

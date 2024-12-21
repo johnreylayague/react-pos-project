@@ -62,6 +62,7 @@ function Routes() {
           <Route path="category" element={<CategoryPage />} />
         </Route>
         {/* CATEGORY */}
+
         <Route path="item/category/edit/:categoryId" element={<CategoryEditPage />} />
         <Route path="item/category/create" element={<CategoryCreatePage />} />
         {/* ITEM */}

@@ -102,13 +102,12 @@ const Item: React.FC<ItemsProps> = (props) => {
           </ResultMessage>
         )}
 
-      {itemList.length === 0 ||
-        (selectedMenu.id !== "" && filterItemByCategoryId.length === 0 && (
-          <EmptyItemNotification
-            mainMessage="You have no items yet"
-            subMessage="Add items to start organizing your collection."
-          />
-        ))}
+      {itemList.length === 0 || (selectedMenu.id !== "" && filterItemByCategoryId.length === 0) ? (
+        <EmptyItemNotification
+          mainMessage="You have no items yet"
+          subMessage="Add items to start organizing your collection."
+        />
+      ) : null}
 
       {itemList.length !== 0 && selectedMenu.id === "" && (
         <List>

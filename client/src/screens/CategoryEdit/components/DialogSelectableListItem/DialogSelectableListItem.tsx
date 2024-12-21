@@ -8,20 +8,32 @@ import {
   Divider,
 } from "@mui/material";
 import React from "react";
-import { itemListProps } from "../../../../store/item-slice";
 
 type DialogSelectableListItemProps = {
   onClick: (event: React.MouseEvent<HTMLDivElement>) => void;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  itemData: itemListProps;
+  itemName: string;
+  itemRepresentation: string;
+  itemColorAndShapeImage: string;
+  itemImage: string;
+  itemId: number;
+  itemIsSelected: boolean;
 };
 const DialogSelectableListItem: React.FC<DialogSelectableListItemProps> = (props) => {
-  const { itemData, onChange, onClick } = props;
+  const {
+    onChange,
+    onClick,
+    itemColorAndShapeImage,
+    itemImage,
+    itemName,
+    itemRepresentation,
+    itemId,
+    itemIsSelected,
+  } = props;
 
-  const image =
-    itemData.representation === "colorAndShape" ? itemData.colorAndShapeImage : itemData.image;
+  const image = itemRepresentation === "colorAndShape" ? itemColorAndShapeImage : itemImage;
 
-  const variant = itemData.representation === "colorAndShape" ? "square" : "circular";
+  const variant = itemRepresentation === "colorAndShape" ? "square" : "circular";
 
   return (
     <React.Fragment>
@@ -31,20 +43,20 @@ const DialogSelectableListItem: React.FC<DialogSelectableListItemProps> = (props
             color="success"
             inputProps={
               {
-                "data-id": itemData.id,
+                "data-id": itemId,
               } as React.HtmlHTMLAttributes<HTMLInputElement>
             }
-            checked={itemData.isSelected}
+            checked={itemIsSelected}
             onChange={onChange}
           />
         }
         disablePadding
       >
-        <ListItemButton onClick={onClick} data-id={itemData.id}>
+        <ListItemButton onClick={onClick} data-id={itemId}>
           <ListItemAvatar>
-            <Avatar variant={variant} alt={itemData.name} src={image} />
+            <Avatar variant={variant} alt={itemName} src={image} />
           </ListItemAvatar>
-          <Typography noWrap>{itemData.name}</Typography>
+          <Typography noWrap>{itemName}</Typography>
         </ListItemButton>
       </ListItem>
       <Divider variant="inset" component="li" />

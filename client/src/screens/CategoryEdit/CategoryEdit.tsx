@@ -1,6 +1,6 @@
-import { GlobalStyles, Interpolation, Theme } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Alert, GlobalStyles, Interpolation, Snackbar, Theme } from "@mui/material";
+import React, { useEffect } from "react";
+import { useParams } from "react-router-dom";
 import ColorPicker from "./components/ColorPicker/ColorPicker";
 import DialogAssignItems from "./components/DialogAssignItems/DialogAssignItems";
 import { categoryGlobalStyles } from "./CategoryGlobalStyles";
@@ -25,8 +25,11 @@ import { useInteractionHandlers } from "../../hooks/CategoryEdit/useInteractionH
 import { useDialog } from "../../hooks/material-ui/useDialog/useDialog.tsx";
 import { useActions } from "../../hooks/CategoryEdit/useActions.ts";
 import ConfirmationDialog from "../../components/common/elements/Dialog/ConfirmationDialog/ConfirmationDialog.tsx";
+import { useSnackbar } from "../../hooks/material-ui/useSnackbar/useSnackbar.ts";
+import { convertToNumber } from "../../utils/typescriptHelpers.ts";
 
 export type FormValuesCategory = {
+  id: number | string;
   name: string;
   colorId: number | string;
 };
@@ -36,9 +39,8 @@ const CategoryEdit: React.FC<CategoryEditProps> = (props) => {
   const {} = props;
 
   const params = useParams<{ categoryId: string }>();
-  const itemList = useSelector((state: storeProps) => state.item.itemList);
+
   const categoryList = useSelector((state: storeProps) => state.category.categoryList);
-  const [selectedItemList, setSelectedItemList] = useState(itemList);
 
   const {
     handleSubmit,
@@ -46,40 +48,36 @@ const CategoryEdit: React.FC<CategoryEditProps> = (props) => {
     setValue,
     watch,
     reset,
+    setError,
     formState: { errors },
   } = useForm<FormValuesCategory>({
     defaultValues: {
+      id: "",
       name: "",
       colorId: "",
     },
   });
 
+  const { snackbar, handleCloseSnackbar, handleOpenSnackbar } = useSnackbar();
+
   useEffect(() => {
-    setSelectedItemList((prevState) => {
-      const updatedItemList = prevState.map((item) => {
-        return { ...item, isSelected: false };
+    const categoryId = convertToNumber("string", params.categoryId);
+    const findCategoryById = categoryList.find((category) => category.id === categoryId);
+
+    if (!findCategoryById) {
+      handleOpenSnackbar({
+        message: "Invalid category ID provided.",
+        severity: "error",
       });
+      return;
+    }
 
-      return updatedItemList;
+    reset({
+      id: findCategoryById.id,
+      name: findCategoryById.name,
+      colorId: findCategoryById.colorId,
     });
-
-    if (!params.categoryId) {
-      console.log("Connot find categoryId");
-    }
-
-    if (params.categoryId) {
-      const categoryId = Number.parseFloat(params.categoryId);
-      const findCategoryById = categoryList.find((category) => category.id === categoryId);
-
-      if (findCategoryById) {
-        reset({ name: findCategoryById.name, colorId: findCategoryById.colorId });
-      }
-
-      if (!findCategoryById) {
-        console.log("Connot find category object");
-      }
-    }
-  }, [setSelectedItemList, setValue]);
+  }, [setValue]);
 
   const {
     isOpenDialog: isOpenDialogAssignItems,
@@ -93,19 +91,21 @@ const CategoryEdit: React.FC<CategoryEditProps> = (props) => {
     handleOpenDialog: handleOpenDialogDelete,
   } = useDialog();
 
-  const {
-    handleColorSelectionChange,
-    handleOnAssignItems,
-    handleOnChangeSelect,
-    handleOnClickSelect,
-  } = useInteractionHandlers(setValue, handleOnOpenDialogAssignItems, setSelectedItemList);
+  const { handleColorSelectionChange, handleOnChangeSelect, handleOnClickSelect } =
+    useInteractionHandlers(setValue, handleOpenSnackbar);
 
-  const { handleOnSaveAssignItems, handleOnSave, handleOnDelete } = useActions(
+  const {
+    handleOnSaveAssignItems,
+    handleSaveCategory,
+    handleOnDelete,
+    handleOnCreateItem,
+    handleOnAssignItems,
+  } = useActions(
+    handleOpenSnackbar,
+    setError,
     watch,
     handleOnCloseDialogAssignItems,
-    selectedItemList,
-    categoryList,
-    params
+    handleOnOpenDialogAssignItems
   );
 
   return (
@@ -115,7 +115,7 @@ const CategoryEdit: React.FC<CategoryEditProps> = (props) => {
       <HeaderFormAction
         title="Edit Category"
         onNavigateBack="/item/category"
-        onSave={handleSubmit(handleOnSave)}
+        onSave={handleSubmit(handleSaveCategory)}
       />
 
       <ContainerStyled maxWidth="md">
@@ -142,12 +142,10 @@ const CategoryEdit: React.FC<CategoryEditProps> = (props) => {
             <DividerStyled />
 
             <ButtonActions>
-              <OutlinedButton onClick={handleOnAssignItems}>ASSIGN ITEMS</OutlinedButton>
-              <OutlinedButton
-                component={Link}
-                to="/item/create"
-                state={{ from: location.pathname }}
-              >
+              <OutlinedButton onClick={handleSubmit(handleOnAssignItems)}>
+                ASSIGN ITEMS
+              </OutlinedButton>
+              <OutlinedButton onClick={handleSubmit(handleOnCreateItem)}>
                 CREATE ITEM
               </OutlinedButton>
             </ButtonActions>
@@ -163,7 +161,6 @@ const CategoryEdit: React.FC<CategoryEditProps> = (props) => {
       <DialogAssignItems
         onClickSelect={handleOnClickSelect}
         onChangeSelect={handleOnChangeSelect}
-        selectedItemList={selectedItemList}
         open={isOpenDialogAssignItems}
         onClose={handleOnCloseDialogAssignItems}
         onSave={handleOnSaveAssignItems}
@@ -176,117 +173,24 @@ const CategoryEdit: React.FC<CategoryEditProps> = (props) => {
         onClose={handleCloseDialogDelete}
         onDelete={handleOnDelete}
       />
+
+      <Snackbar
+        open={snackbar.isOpenSnackbar}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        autoHideDuration={2000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbar.alert.severity}
+          variant="filled"
+          sx={() => ({ width: "100%" })}
+        >
+          {snackbar.alert.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 };
 
 export default CategoryEdit;
-// import { GlobalStyles, Interpolation, Theme } from "@mui/material";
-// import React from "react";
-// import { Link } from "react-router-dom";
-// import InputField from "./components/InputField/InputField";
-// import ColorPicker from "./components/ColorPicker/ColorPicker";
-// import ConfirmationDialog from "../../components/common/elements/Dialog/ConfirmationDialog/ConfirmationDialog.tsx";
-// import DialogAssignItems from "./components/DialogAssignItems/DialogAssignItems";
-// import { categoryGlobalStyles } from "./CategoryGlobalStyles";
-// import OutlinedButton from "../../components/common/elements/Button/OutlinedButton/OutlinedButton";
-// import {
-//   ButtonActions,
-//   FieldGroup,
-//   DividerStyled,
-//   Form,
-//   DeleteActionButton,
-//   DeleteIconStyled,
-//   ContainerStyled,
-//   StackStyled,
-// } from "./CategoryEditStyles";
-// import { useConfirmationDialog } from "../../hooks/useConfirmationDialog.ts";
-// import { useAssignItemsActions } from "../../hooks/CategoryEdit/useAssignItemsActions.ts";
-// import { useCategoryActions } from "../../hooks/CategoryEdit/useCategoryActions.ts";
-// import HeaderFormAction from "../../components/common/elements/Header/HeaderFormAction/HeaderFormAction.tsx";
-
-// type CategoryEditProps = {};
-// const CategoryEdit: React.FC<CategoryEditProps> = (props) => {
-//   const {} = props;
-
-//   const {
-//     handleCloseDialog: closeConfirmationDialog,
-//     handleDeleteAction: handleConfirmDeleteAction,
-//     handleOpenDialog: openConfirmationDialog,
-//     isDialogOpen: isConfirmationDialogOpen,
-//   } = useConfirmationDialog();
-
-//   // const {
-//   //   categoryData,
-//   //   isDialogOpen: isAssignItemsDialogOpen,
-//   //   handleCloseDialog: handleAssignItemsCloseDialog,
-//   //   handleOpenDialog: handleAssignItemsOpenDialog,
-//   //   handleSaveAction: handleAssignItemsSaveAction,
-//   // } = useAssignItemsActions();
-
-//   // const { colorData, handleColorSelectionChange, handleOnSaveCategory, handleDeleteCategory } =
-//   //   useAssignItemsActions();
-
-//   return (
-//     <>
-//       <GlobalStyles styles={categoryGlobalStyles as Interpolation<Theme>} />
-
-//       <HeaderFormAction
-//         title="Edit Category"
-//         onNavigateBack="/item/category"
-//         onSave={handleOnSaveCategory}
-//       />
-
-//       <ContainerStyled maxWidth="md">
-//         <StackStyled spacing={3}>
-//           <Form>
-//             <FieldGroup spacing={4}>
-//               <InputField
-//                 labelText="Category name"
-//                 errorText="This field cannot be blank"
-//                 isError={false}
-//               />
-
-//               <ColorPicker colorData={colorData} onChangeSelected={handleColorSelectionChange} />
-//             </FieldGroup>
-
-//             <DividerStyled />
-
-//             <ButtonActions>
-//               <OutlinedButton onClick={handleAssignItemsOpenDialog}>ASSIGN ITEMS</OutlinedButton>
-//               <OutlinedButton
-//                 component={Link}
-//                 to="/item/create"
-//                 state={{ from: location.pathname }}
-//               >
-//                 CREATE ITEM
-//               </OutlinedButton>
-//             </ButtonActions>
-//           </Form>
-
-//           <DeleteActionButton onClick={openConfirmationDialog}>
-//             <DeleteIconStyled />
-//             DELETE CATEGORY
-//           </DeleteActionButton>
-//         </StackStyled>
-//       </ContainerStyled>
-
-//       <DialogAssignItems
-//         open={isAssignItemsDialogOpen}
-//         categoryData={categoryData}
-//         onClose={handleAssignItemsCloseDialog}
-//         onSave={handleAssignItemsSaveAction}
-//       />
-
-//       <ConfirmationDialog
-//         title="Delete category"
-//         description="Are you sure you want to delete the category?"
-//         open={isConfirmationDialogOpen}
-//         onClose={closeConfirmationDialog}
-//         onDelete={handleConfirmDeleteAction(closeConfirmationDialog)}
-//       />
-//     </>
-//   );
-// };
-
-// export default CategoryEdit;

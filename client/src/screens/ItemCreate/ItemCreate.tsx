@@ -2,11 +2,19 @@ import React, { useEffect, useState } from "react";
 import HeaderFormAction from "../../components/common/elements/Header/HeaderFormAction/HeaderFormAction";
 import ContainerWrapper from "./components/ContainerWrapper/ContainerWrapper.tsx";
 import Section from "./components/Section/Section.tsx";
-import { CircularProgress, Collapse, IconButton, Switch, Toolbar, Typography } from "@mui/material";
+import {
+  Alert,
+  CircularProgress,
+  Collapse,
+  IconButton,
+  Snackbar,
+  Switch,
+  Toolbar,
+  Typography,
+} from "@mui/material";
 import InputField from "./components/InputField/InputField.tsx";
 import { useDispatch, useSelector } from "react-redux";
 import { Grid2 as Grid, useMediaQuery, useTheme } from "@mui/material";
-import ImageUploadActions from "./components/ImageUploadActions/ImageUploadActions.tsx";
 import ShapeListItem from "./components/ShapeListItem/ShapeListItem.tsx";
 import ColorListItem from "./components/ColorListItem/ColorListItem.tsx";
 import RepresentationSelector from "./components/RepresentationSelector/RepresentationSelector.tsx";
@@ -14,7 +22,7 @@ import { NumberFormatter } from "./components/NumberFormatter/NumberFormatter.ts
 import SelectField from "./components/SelectField/SelectField.tsx";
 import SoldByOptionSelector from "./components/SoldByOptionSelector/SoldByOptionSelector.tsx";
 import DialogCategoryCreate from "./components/DialogCategoryCreate/DialogCategoryCreate.tsx";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { useDialog } from "../../hooks/material-ui/useDialog/useDialog.tsx";
 import NumericInputField from "../../components/vendor/react-number-formatter/NumericInputField/NumericInputField.tsx";
@@ -45,12 +53,19 @@ import { useRepresentationInteractionHandlers } from "../../hooks/ItemCreate/use
 import { isMobile } from "react-device-detect";
 import Webcam from "react-webcam";
 import { useInteractionHandlers } from "../../hooks/ItemCreate/useInteractionHandlers.ts";
+import { storeProps } from "../../store/index.ts";
+import { useSnackbar } from "../../hooks/material-ui/useSnackbar/useSnackbar.ts";
 
 type LocationState = {
   pathname: string;
   search: string;
   hash: string;
-  state: null | { from: string };
+  state: null | {
+    from: {
+      newCategoryId: number;
+      previousPath: string;
+    };
+  };
   key: string;
 };
 
@@ -124,6 +139,33 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
     },
   });
 
+  const { snackbar, handleCloseSnackbar, handleOpenSnackbar } = useSnackbar();
+
+  const categoryList = useSelector((state: storeProps) => state.category.categoryList);
+
+  useEffect(() => {
+    const categoryId = location.state?.from.newCategoryId;
+
+    if (!categoryId) {
+      return;
+    }
+
+    const findCategoryById = categoryList.find((category) => category.id === categoryId);
+
+    if (!findCategoryById?.id) {
+      console.log("Error: Category with the specified ID not found.");
+      return;
+    }
+
+    setValueItem("categoryId", findCategoryById.id);
+  }, [setValueItem]);
+
+  const defaultBackPath = isBelowSmallScreen ? "../index" : "..";
+
+  const navigationBackPath = location.state?.from.previousPath
+    ? location.state.from.previousPath
+    : defaultBackPath;
+
   const { isOpenDialog, handleCloseDialog, handleOpenDialog } = useDialog();
 
   const { handleCategoryChange, handleSelectChangeColor, handleSelectChangeShape } =
@@ -154,16 +196,19 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
     resetCategory
   );
 
+  const handleOnUserMediaError = () =>
+    handleOpenSnackbar({
+      message: "Unable to access the webcam. Please check your device settings and permissions.",
+      severity: "error",
+    });
+
   return (
     <>
       <HeaderFormAction
-        onNavigateBack={
-          location.state ? location.state.from : isBelowSmallScreen ? "../index" : ".."
-        }
+        onNavigateBack={navigationBackPath}
         onSave={handleSubmitItem(handleOnSubmitItem)}
         title="Create item"
       />
-
       <ContainerWrapper>
         <Section>
           <Grid container rowSpacing={3} columnSpacing={6}>
@@ -423,7 +468,6 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
           </div>
         </Section>
       </ContainerWrapper>
-
       <DialogCategoryCreate
         title="Create category"
         onSave={handleSubmitCategory(handleOnSubmitCategory)}
@@ -447,7 +491,6 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
         onClose={handleCloseDialog}
         isOpen={isOpenDialog}
       />
-
       <WebcamDialog
         open={isDialogWebcamDialog}
         fullWidth
@@ -477,8 +520,8 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
           audio={false}
           ref={webcamRef}
           onUserMedia={onStartMediaStream}
+          onUserMediaError={handleOnUserMediaError}
           screenshotFormat="image/png"
-          videoConstraints={{}}
           style={{
             ...(!isMediaStreamActive ? { backgroundColor: "#000" } : {}),
           }}
@@ -490,6 +533,17 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
           </IconButton>
         </DialogActionsStyled>
       </WebcamDialog>
+
+      <Snackbar
+        open={snackbar.isOpenSnackbar}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        autoHideDuration={5000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.alert.severity} variant="filled">
+          {snackbar.alert.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

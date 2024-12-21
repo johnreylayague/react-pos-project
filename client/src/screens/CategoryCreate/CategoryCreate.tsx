@@ -1,6 +1,5 @@
-import { GlobalStyles, Interpolation, Theme } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Alert, GlobalStyles, Interpolation, Snackbar, Theme } from "@mui/material";
+import React, { useEffect } from "react";
 import HeaderFormAction from "../../components/common/elements/Header/HeaderFormAction/HeaderFormAction";
 import { categoryGlobalStyles } from "./CategoryGlobalStyles";
 import OutlinedButton from "../../components/common/elements/Button/OutlinedButton/OutlinedButton";
@@ -14,19 +13,19 @@ import {
 } from "./CategoryCreateStyles";
 import ColorPicker from "./components/ColorPicker/ColorPicker";
 import DialogAssignItems from "./components/DialogAssignItems/DialogAssignItems";
-import { useAssignItemsActions } from "../../hooks/CategoryEdit/useAssignItemsActions";
-import { useCategoryActions } from "../../hooks/CategoryEdit/useCategoryActions";
+import { useActions } from "../../hooks/CategoryCreate/useActions";
 import { Controller, useForm } from "react-hook-form";
 import InputField from "../../components/common/elements/Input/InputField/InputField";
 import assets from "../../assets/assets";
 import { validationCategoryRules } from "./CategoryCreateValidationRules";
-import { useSelector } from "react-redux";
-import { storeProps } from "../../store";
 import { useDialog } from "../../hooks/material-ui/useDialog/useDialog";
+import { useSnackbar } from "../../hooks/material-ui/useSnackbar/useSnackbar";
+import { useInteractionHandlers } from "../../hooks/CategoryCreate/useInteractionHandlers";
 
 const colorData = assets.json.colorData;
 
 export type FormValuesCategory = {
+  id?: number | string;
   name: string;
   colorId: number | string;
 };
@@ -35,10 +34,6 @@ type CreateCategoryProps = {};
 
 const CreateCategory: React.FC<CreateCategoryProps> = (props) => {
   const {} = props;
-
-  const itemList = useSelector((state: storeProps) => state.item.itemList);
-  const categoryList = useSelector((state: storeProps) => state.category.categoryList);
-  const [selectedItemList, setSelectedItemList] = useState(itemList);
 
   const {
     handleSubmit,
@@ -49,30 +44,27 @@ const CreateCategory: React.FC<CreateCategoryProps> = (props) => {
     formState: { errors },
   } = useForm<FormValuesCategory>({
     defaultValues: {
+      id: "",
       name: "",
       colorId: "",
     },
   });
 
+  const { snackbar, handleCloseSnackbar, handleOpenSnackbar } = useSnackbar();
+
   useEffect(() => {
-    setSelectedItemList((prevState) => {
-      const updatedItemList = prevState.map((item) => {
-        return { ...item, isSelected: false };
-      });
-
-      return updatedItemList;
-    });
-
     const findIsDefault = colorData.find((color) => color.isDefault);
 
-    if (findIsDefault) {
-      setValue("colorId", findIsDefault.id);
+    if (!findIsDefault) {
+      handleOpenSnackbar({
+        message: "No default color found in the provided data.",
+        severity: "error",
+      });
+      return;
     }
 
-    if (!findIsDefault) {
-      console.log("ColorId does not exist!");
-    }
-  }, [setSelectedItemList, setValue]);
+    setValue("colorId", findIsDefault.id);
+  }, [setValue]);
 
   const {
     isOpenDialog: isOpenDialogAssignItems,
@@ -80,16 +72,23 @@ const CreateCategory: React.FC<CreateCategoryProps> = (props) => {
     handleOpenDialog: handleOnOpenDialogAssignItems,
   } = useDialog();
 
-  const { handleSaveAction, handleOnChangeSelect, handleOnClickSelect } = useAssignItemsActions(
-    selectedItemList,
-    categoryList,
-    watch,
-    setSelectedItemList,
-    handleOnCloseDialogAssignItems
-  );
+  const { handleColorSelectionChange, handleOnChangeSelect, handleOnClickSelect } =
+    useInteractionHandlers(setValue, handleOpenSnackbar);
 
-  const { handleColorSelectionChange, handleOnSaveCategory, handleOnAssignItems, buttonSaveRef } =
-    useCategoryActions(setValue, handleOnOpenDialogAssignItems, setError, watch, categoryList);
+  const {
+    handleOnSaveCategory,
+    handleOnAssignItems,
+    buttonSaveRef,
+    handleOnCreateItem,
+    handleOnSaveAssignItems,
+  } = useActions(
+    handleOnOpenDialogAssignItems,
+    setError,
+    watch,
+    setValue,
+    handleOnCloseDialogAssignItems,
+    handleOpenSnackbar
+  );
 
   return (
     <>
@@ -129,11 +128,7 @@ const CreateCategory: React.FC<CreateCategoryProps> = (props) => {
               <OutlinedButton onClick={handleSubmit(handleOnAssignItems)}>
                 ASSIGN ITEMS
               </OutlinedButton>
-              <OutlinedButton
-                component={Link}
-                to="/item/create"
-                state={{ from: location.pathname }}
-              >
+              <OutlinedButton onClick={handleSubmit(handleOnCreateItem)}>
                 CREATE ITEM
               </OutlinedButton>
             </ButtonActions>
@@ -144,11 +139,21 @@ const CreateCategory: React.FC<CreateCategoryProps> = (props) => {
       <DialogAssignItems
         onClickSelect={handleOnClickSelect}
         onChangeSelect={handleOnChangeSelect}
-        selectedItemList={selectedItemList}
         open={isOpenDialogAssignItems}
         onClose={handleOnCloseDialogAssignItems}
-        onSave={handleSaveAction}
+        onSave={handleOnSaveAssignItems}
       />
+
+      <Snackbar
+        open={snackbar.isOpenSnackbar}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        autoHideDuration={2000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.alert.severity} variant="filled">
+          {snackbar.alert.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 };
