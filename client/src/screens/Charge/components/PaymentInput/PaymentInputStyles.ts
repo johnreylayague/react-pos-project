@@ -8,6 +8,7 @@ export const PaymentsIcon = styled(Payments)<IconProps>(({ theme }: { theme: The
   },
   marginRight: theme.spacing(2),
   color: theme.palette.action.active,
+  marginTop: theme.spacing(2),
 }));
 
 export const InputStyled = styled(Input)<InputProps>(({ theme }: { theme: Theme }) => ({
@@ -17,5 +18,5 @@ export const InputStyled = styled(Input)<InputProps>(({ theme }: { theme: Theme 
 
 export const PaymentWrapper = styled(Box)<BoxProps>(({}: { theme: Theme }) => ({
   display: "flex",
-  alignItems: "center",
+  alignItems: "flex-start",
 }));

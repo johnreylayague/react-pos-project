@@ -17,7 +17,7 @@ const ReceiptInfo: React.FC<ReceiptInfoProps> = (props) => {
         <ListItemText>Employee: {employeeName} </ListItemText>
       </ListItem>
       <ListItem disablePadding>
-        <ListItemText>POS: POS {posId}</ListItemText>
+        <ListItemText>POS: {posId}</ListItemText>
       </ListItem>
       <DividerStyled component={"li"} />
     </>

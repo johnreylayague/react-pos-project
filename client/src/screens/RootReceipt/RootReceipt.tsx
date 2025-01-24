@@ -1,20 +1,5 @@
 import React from "react";
-import {
-  Box,
-  InputBase,
-  useMediaQuery,
-  useTheme,
-  styled,
-  InputBaseProps,
-  Theme,
-  BoxProps,
-  CSSObject,
-  IconProps,
-  List,
-  ListProps,
-  Divider,
-} from "@mui/material";
-import { Search } from "@mui/icons-material";
+import { useMediaQuery, useTheme, Divider } from "@mui/material";
 import { Outlet, useLocation } from "react-router-dom";
 import { receiptActions } from "../../store/receipt-slice.ts";
 import { drawerActions } from "../../store/drawer-slice.ts";
@@ -23,74 +8,14 @@ import { storeProps } from "../../store/index.ts";
 import Header from "./components/Header/Header.tsx";
 import ReceiptListItem from "./components/ReceiptListItem/ReceiptListItem.tsx";
 import ReceiptList from "./components/ReceiptList/ReceiptList.tsx";
-
-const sideBarWidth = {
-  xs: "100%",
-  sm: "100%",
-  md: 290,
-  lg: 490,
-};
-
-const SidebarContainer = styled(Box, {
-  shouldForwardProp: (props) => props !== "data-show-sidebar",
-})<BoxProps & { ["data-show-sidebar"]?: boolean }>(
-  ({ theme, ...props }: { theme: Theme; ["data-show-sidebar"]?: boolean }) => ({
-    [theme.breakpoints.down("md")]: {
-      maxWidth: sideBarWidth.md,
-    } as CSSObject,
-    [theme.breakpoints.down("sm")]: {
-      ...(!props["data-show-sidebar"] ? ({ display: "none" } as CSSObject) : {}),
-      maxWidth: sideBarWidth.sm,
-    } as CSSObject,
-    maxWidth: sideBarWidth.lg,
-    flex: 1,
-    flexShrink: 0,
-    display: "flex",
-    flexDirection: "column",
-  })
-);
-
-const ContentContainer = styled(Box, {
-  shouldForwardProp: (props) => props !== "data-show-sidebar",
-})<BoxProps & { ["data-show-sidebar"]?: boolean }>(
-  ({ theme, ...props }: { theme: Theme; ["data-show-sidebar"]?: boolean }) => ({
-    [theme.breakpoints.down("md")]: {
-      maxWidth: `calc(100vw - ${sideBarWidth.md}px)`,
-    } as CSSObject,
-    [theme.breakpoints.down("sm")]: {
-      ...(props["data-show-sidebar"] ? ({ display: "none" } as CSSObject) : {}),
-      backgroundColor: "#fff",
-      maxWidth: sideBarWidth.sm,
-    },
-    maxWidth: `calc(100vw - ${sideBarWidth.lg}px)`,
-    backgroundColor: "#f5f5f5",
-    flex: 1,
-    flexShrink: 0,
-  })
-);
-
-const InputSearch = styled(InputBase)<InputBaseProps>(({ theme }: { theme: Theme }) => ({
-  "&.MuiInputBase-root": {
-    borderRight: `1px solid ${theme.palette.divider}`,
-  },
-  width: "100%",
-  padding: `${theme.spacing(2)} ${theme.spacing(3)}`,
-}));
-
-const SearchIcon = styled(Search)<IconProps>(({ theme }: { theme: Theme }) => ({
-  marginRight: theme.spacing(3),
-}));
-
-const RootContainer = styled(Box)<BoxProps>(({}: { theme: Theme }) => ({
-  display: "flex",
-  height: "100dvh",
-}));
-
-const ListStyled = styled(List)<ListProps>(({ theme }: { theme: Theme }) => ({
-  overflowY: "auto",
-  borderRight: `1px solid ${theme.palette.divider}`,
-  flexGrow: 1,
-}));
+import {
+  ContentContainer,
+  InputSearch,
+  ListStyled,
+  RootContainer,
+  SearchIcon,
+  SidebarContainer,
+} from "./RootReceiptStyles.ts";
 
 const RootReceipt = () => {
   const dispatch = useDispatch();
@@ -98,6 +23,8 @@ const RootReceipt = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
+  const receiptList = useSelector((state: storeProps) => state.sale.receipt);
+  const shiftList = useSelector((state: storeProps) => state.shift.shiftList);
   const isShowSideBar = useSelector((state: storeProps) => state.receipt.isShowSideBar);
 
   React.useEffect(() => {
@@ -114,6 +41,29 @@ const RootReceipt = () => {
     dispatch(drawerActions.handleToggleDrawer(true));
   };
 
+  const transactionDateKey = Object.values(
+    receiptList.reduce((acc, receipt) => {
+      const datePart = new Date(receipt.transactionDate).toISOString().split("T")[0];
+
+      if (!acc[datePart]) {
+        const generatedId = Math.floor(Math.random() * 10000000);
+
+        const findShiftListById = shiftList.find((shift) => shift.id === receipt.shiftId);
+
+        const shiftNumber = findShiftListById?.shiftNumber ? findShiftListById.shiftNumber : 0;
+
+        acc[datePart] = {
+          id: generatedId,
+          userId: 1,
+          shiftNumber: shiftNumber,
+          transactionDate: receipt.transactionDate,
+        };
+      }
+
+      return acc;
+    }, {} as { [key: string]: { id: number; userId: number; shiftNumber: number; transactionDate: string } })
+  );
+
   return (
     <>
       <RootContainer>
@@ -121,25 +71,77 @@ const RootReceipt = () => {
           <Header onToggleNavigation={handleOnToggleDrawer} />
           <InputSearch placeholder="Search" startAdornment={<SearchIcon />} />
           <ListStyled subheader={<li />}>
-            {Array.from({ length: 5 }).map((_, index) => (
-              <ReceiptList key={index} dateHeader={`Saturday, April 2${index}, 2024`}>
-                {Array.from({ length: 5 }).map((_, index, array) => {
-                  const RowCount = index + 1;
-                  return (
-                    <React.Fragment key={index}>
-                      <ReceiptListItem
-                        link={`${index}`}
-                        paymentAmount={`${index}.00`}
-                        receiptTransactionNumber={`${index}000`}
-                        refundtransactionNumber={`${index + 5}000`}
-                        time={`1${index}:5${index}AM`}
-                      />
-                      {array.length !== RowCount && <Divider variant="inset" component="li" />}
-                    </React.Fragment>
-                  );
-                })}
-              </ReceiptList>
-            ))}
+            {transactionDateKey
+              .sort(
+                (a, b) =>
+                  new Date(b.transactionDate).getTime() - new Date(a.transactionDate).getTime()
+              )
+              .map((transactionReceipt) => {
+                const parsedDate = new Date(transactionReceipt.transactionDate);
+
+                const formattedDate = parsedDate.toLocaleDateString("en-US", {
+                  weekday: "long",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                });
+
+                return (
+                  <ReceiptList key={transactionReceipt.id} dateHeader={formattedDate}>
+                    {receiptList
+                      .filter(
+                        (receiptList) =>
+                          new Date(receiptList.transactionDate).toISOString().split("T")[0] ===
+                          new Date(transactionReceipt.transactionDate).toISOString().split("T")[0]
+                      )
+                      .sort(
+                        (a, b) =>
+                          new Date(b.transactionDate).getTime() -
+                          new Date(a.transactionDate).getTime()
+                      )
+                      .map((receipt, index, array) => {
+                        const RowCount = index + 1;
+
+                        const parsedDate = new Date(receipt.transactionDate);
+
+                        const formattedShiftStartDate = parsedDate.toLocaleTimeString("en-US", {
+                          hour: "numeric",
+                          minute: "2-digit",
+                          hour12: true,
+                        });
+
+                        const receiptTransactionNumber = receiptList.find(
+                          (receiptRow) => receiptRow.id === receipt.refundedReceiptId
+                        );
+
+                        const shiftNumber = shiftList.find(
+                          (shift) => shift.id === receiptTransactionNumber?.shiftId
+                        );
+
+                        const refundtransactionNumber = receipt.refunded
+                          ? {
+                              refundtransactionNumber: `${shiftNumber?.shiftNumber}-${receiptTransactionNumber?.receiptNumber}`,
+                            }
+                          : {};
+
+                        return (
+                          <React.Fragment key={receipt.id}>
+                            <ReceiptListItem
+                              link={`${receipt.id}`}
+                              paymentAmount={receipt.totalAmount}
+                              receiptTransactionNumber={`${transactionReceipt.shiftNumber}-${receipt.receiptNumber}`}
+                              {...refundtransactionNumber}
+                              time={formattedShiftStartDate}
+                            />
+                            {array.length !== RowCount && (
+                              <Divider variant="inset" component="li" />
+                            )}
+                          </React.Fragment>
+                        );
+                      })}
+                  </ReceiptList>
+                );
+              })}
           </ListStyled>
         </SidebarContainer>
 

@@ -13,15 +13,26 @@ import CustomTabPanel from "../CustomTabPanel/CustomTabPanel.tsx";
 import SearchMode from "./SearchMode.tsx";
 import TabsMode from "./TabsMode.tsx";
 import DetailedListItem from "./DetailedListItem.tsx";
+import DetailedListCategory from "./DetailedListCategory.tsx";
+import { useSelector } from "react-redux";
+import { storeProps } from "../../../../store/index.ts";
+import assets from "../../../../assets/assets.ts";
+
+const colorData = assets.json.colorData;
 
 type DialogAddItemAndCategoryProps = {
+  onSelectedItem: (event: React.MouseEvent<HTMLDivElement>) => void;
+  onAddCategory: (event: React.MouseEvent<HTMLDivElement>) => void;
   onCloseDialog: () => void;
   isOpenDialog: boolean;
   isThemeMobileScreen: boolean;
 };
 
 const DialogAddItemAndCategory: React.FC<DialogAddItemAndCategoryProps> = (props) => {
-  const { onCloseDialog, isOpenDialog, isThemeMobileScreen } = props;
+  const { onCloseDialog, isOpenDialog, isThemeMobileScreen, onSelectedItem, onAddCategory } = props;
+
+  const itemList = useSelector((state: storeProps) => state.item.itemList);
+  const categoryList = useSelector((state: storeProps) => state.category.categoryList);
 
   const {
     isOpenToggle: isOpenSearch,
@@ -30,6 +41,12 @@ const DialogAddItemAndCategory: React.FC<DialogAddItemAndCategoryProps> = (props
   } = useToggle();
 
   const { tabIndex, handleTabChange } = useTabs();
+
+  const updatedCategoryList = categoryList.map((category) => {
+    const itemCount = itemList.filter((item) => item.categoryId === category.id).length;
+    const colorImage = colorData.find((color) => color.id === category.colorId)?.image;
+    return { ...category, itemCount: itemCount, image: colorImage };
+  });
 
   return (
     <>
@@ -57,14 +74,17 @@ const DialogAddItemAndCategory: React.FC<DialogAddItemAndCategoryProps> = (props
 
         <CustomTabPanel value={tabIndex} index={0}>
           <List disablePadding>
-            {Array.from({ length: 3 }).map((_, index) => {
+            {itemList.map((item) => {
               return (
                 <DetailedListItem
-                  key={index}
-                  label={`Item ${index}`}
-                  itemPrice="1.00"
-                  alt="alt name"
-                  imageSrc=""
+                  key={item.id}
+                  onSelectedItem={onSelectedItem}
+                  itemId={item.id}
+                  itemName={item.name}
+                  itemPrice={item.price}
+                  itemImageSrc={item.image}
+                  itemColorAndShapeImage={item.colorAndShapeImage}
+                  itemRepresentation={item.representation}
                 />
               );
             })}
@@ -73,14 +93,15 @@ const DialogAddItemAndCategory: React.FC<DialogAddItemAndCategoryProps> = (props
 
         <CustomTabPanel value={tabIndex} index={1}>
           <List disablePadding>
-            {Array.from({ length: 5 }).map((_, index) => {
+            {updatedCategoryList.map((category) => {
               return (
-                <DetailedListItem
-                  key={index}
-                  label={`Item ${index}`}
-                  categoryCount={index}
-                  alt="alt name"
-                  imageSrc=""
+                <DetailedListCategory
+                  key={category.id}
+                  categoryId={category.id}
+                  onAddCategory={onAddCategory}
+                  categoryName={category.name}
+                  categoryImage={category.image}
+                  categoryItemCount={category.itemCount}
                 />
               );
             })}

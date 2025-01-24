@@ -1,90 +1,53 @@
 import React from "react";
-import {
-  styled,
-  Theme,
-  IconButton,
-  List,
-  Toolbar,
-  Typography,
-  IconButtonProps,
-  TypographyProps,
-  ToolbarProps,
-  Container,
-  Divider,
-  DividerProps,
-  ListSubheader,
-  ListSubheaderProps,
-  ContainerProps,
-} from "@mui/material";
+import { List, Divider } from "@mui/material";
 import { ArrowBack as ArrowBackIcon } from "@mui/icons-material";
 import ListItemDetail from "../ListItemDetail/ListItemDetail";
 import { useSelector } from "react-redux";
 import { storeProps } from "../../../../store";
 import { formatDateTime, formatToPesos } from "../../../../utils/format";
-import { convertToType } from "../../../../utils/typescriptHelpers";
-
-const ButtonClose = styled(IconButton)<IconButtonProps>(({ theme }: { theme: Theme }) => ({
-  marginLeft: `-${theme.spacing(1)}`,
-}));
-
-const ToolbarStyled = styled(Toolbar)<ToolbarProps>(({ theme }: { theme: Theme }) => ({
-  borderBottom: `1px solid ${theme.palette.divider}`,
-}));
-
-const DialogTitleText = styled(Typography)<TypographyProps>(({ theme }: { theme: Theme }) => ({
-  ...theme.typography.h6,
-  marginLeft: theme.spacing(3),
-}));
-
-const ListSubheaderStyled = styled(ListSubheader)<ListSubheaderProps>(
-  ({ theme }: { theme: Theme }) => ({
-    color: theme.palette.success.main,
-  })
-);
-
-const DividerStyled = styled(Divider)<DividerProps>(({ theme }: { theme: Theme }) => ({
-  [theme.breakpoints.down("sm")]: {
-    marginLeft: `-${theme.spacing(2)}`,
-    marginRight: `-${theme.spacing(2)}`,
-  },
-  marginLeft: `-${theme.spacing(3)}`,
-  marginRight: `-${theme.spacing(3)}`,
-}));
-
-const ContainerStyled = styled(Container)<ContainerProps>(({}: { theme: Theme }) => ({
-  overflowY: "auto",
-}));
+import {
+  ButtonClose,
+  ContainerStyled,
+  DialogTitleText,
+  DividerStyled,
+  ListSubheaderStyled,
+  ToolbarStyled,
+} from "./DialogShiftReportStyles";
 
 type DialogShiftReportProps = { title: string; onClose: () => void };
 const DialogShiftReport: React.FC<DialogShiftReportProps> = (props) => {
   const { onClose, title } = props;
 
-  const selectedShiftReport = useSelector((state: storeProps) => state.shift.selectedShiftReport);
-
-  const convertedShiftStartDate = convertToType(
-    "string",
-    selectedShiftReport.shiftStartDate,
-    new Date(selectedShiftReport.shiftStartDate)
-  );
-  const convertedShiftEndDate = convertToType(
-    "string",
-    selectedShiftReport.shiftEndDate,
-    new Date(selectedShiftReport.shiftEndDate)
+  const selectedReportShiftId = useSelector(
+    (state: storeProps) => state.shift.selectedReportShiftId
   );
 
-  const shiftStartDate = formatDateTime(convertedShiftStartDate);
-  const shiftEndDate = formatDateTime(convertedShiftEndDate);
-  const startingCash = formatToPesos(selectedShiftReport.startingCash);
-  const cashPayments = formatToPesos(selectedShiftReport.cashPayments);
-  const cashRefunds = formatToPesos(selectedShiftReport.cashRefunds);
-  const paidIn = formatToPesos(selectedShiftReport.paidIn);
-  const paidOut = formatToPesos(selectedShiftReport.paidOut);
-  const expectedCashAmount = formatToPesos(selectedShiftReport.expectedCashAmount);
-  const actualCashAmount = formatToPesos(selectedShiftReport.actualCashAmount);
-  const grossSales = formatToPesos(selectedShiftReport.grossSales);
-  const refunds = formatToPesos(selectedShiftReport.refunds);
-  const netSales = formatToPesos(selectedShiftReport.netSales);
-  const difference = formatToPesos(selectedShiftReport.difference);
+  const shiftList = useSelector((state: storeProps) => state.shift.shiftList);
+
+  const findSelectedShiftReport = shiftList.find(
+    (shift) => shift.id === selectedReportShiftId && shift.isShiftClosed
+  );
+
+  if (!findSelectedShiftReport) {
+    return null;
+  }
+
+  const shiftStartDate = formatDateTime(findSelectedShiftReport.openedAt);
+  const shiftEndDate = formatDateTime(findSelectedShiftReport.closedAt);
+  const startingCash = formatToPesos(findSelectedShiftReport.startingCashAmount);
+  const cashPayments = formatToPesos(findSelectedShiftReport.totalCashPayments);
+  const cashRefunds = formatToPesos(findSelectedShiftReport.totalCashRefunds);
+  const paidIn = formatToPesos(findSelectedShiftReport.totalPaidIn);
+  const paidOut = formatToPesos(findSelectedShiftReport.totalPaidOut);
+  const expectedCashAmount = formatToPesos(findSelectedShiftReport.expectedCashBalance);
+  const actualCashAmount = formatToPesos(findSelectedShiftReport.actualCashAmount);
+  const grossSales = formatToPesos(findSelectedShiftReport.totalGrossSales);
+  const refunds = formatToPesos(findSelectedShiftReport.totalRefundAmount);
+  const netSales = formatToPesos(findSelectedShiftReport.totalNetSales);
+  const difference = formatToPesos(findSelectedShiftReport.cashDifference);
+  const shiftNumber = findSelectedShiftReport.shiftNumber;
+  const openedBy = findSelectedShiftReport.openedBy;
+  const closedBy = findSelectedShiftReport.closedBy;
 
   return (
     <>
@@ -99,13 +62,9 @@ const DialogShiftReport: React.FC<DialogShiftReportProps> = (props) => {
       <ContainerStyled>
         {/* Shift Overview */}
         <List>
-          <ListItemDetail>Shift number: {selectedShiftReport.id}</ListItemDetail>
-          <ListItemDetail secondary={shiftStartDate}>
-            Shift opened: {selectedShiftReport.shiftOpened}
-          </ListItemDetail>
-          <ListItemDetail secondary={shiftEndDate}>
-            Shift closed: {selectedShiftReport.shiftOpened}
-          </ListItemDetail>
+          <ListItemDetail>Shift number: {shiftNumber}</ListItemDetail>
+          <ListItemDetail secondary={shiftStartDate}>Shift opened: {openedBy}</ListItemDetail>
+          <ListItemDetail secondary={shiftEndDate}>Shift closed: {closedBy}</ListItemDetail>
         </List>
 
         <DividerStyled />

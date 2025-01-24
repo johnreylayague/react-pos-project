@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useMediaQuery, useTheme } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { drawerActions } from "../../store/drawer-slice.ts";
@@ -16,7 +16,7 @@ const Shift: React.FC<ShiftProps> = (props) => {
 
   const dispatch = useDispatch();
   const theme = useTheme();
-  const currentActiveShift = useSelector((state: storeProps) => state.shift.currentActiveShift);
+  const currentActiveShiftId = useSelector((state: storeProps) => state.shift.currentActiveShiftId);
   const isThemeMobileScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   const {
@@ -43,9 +43,9 @@ const Shift: React.FC<ShiftProps> = (props) => {
         onOpenShiftHistory={handleOpenDialogShiftHistory}
       />
 
-      {!currentActiveShift.id && <OpenShift />}
+      {!currentActiveShiftId && <OpenShift />}
 
-      {currentActiveShift.id && <ShiftManagementPanel onCloseShift={handleOpenDialogCloseShift} />}
+      {currentActiveShiftId && <ShiftManagementPanel onCloseShift={handleOpenDialogCloseShift} />}
 
       <DialogShiftHistory
         isOpen={isOpenDialogShiftHistory}

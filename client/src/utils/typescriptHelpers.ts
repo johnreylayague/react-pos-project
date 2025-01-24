@@ -14,5 +14,10 @@ export const convertToType = (targetType: typeofProps, value: any, newValue?: an
 
 type convertToNumberProps = (targetType: typeofProps, value: any) => number;
 export const convertToNumber: convertToNumberProps = (targetType, value) => {
-  return typeof value === targetType ? Number.parseFloat(value) : value;
+  return typeof value === targetType ? parseFloat(value) : value;
+};
+
+type convertToParseFloatToFixedProps = (value: any) => number;
+export const convertToParseFloatToFixed: convertToParseFloatToFixedProps = (value) => {
+  return typeof value === "string" ? parseFloat(value).toFixed(2) : value;
 };

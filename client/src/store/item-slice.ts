@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import assets from "../assets/assets";
-import { FormValuesItem } from "../screens/ItemCreate/ItemCreate";
-import { FormValuesItem as FormValuesEditItem } from "../screens/ItemEdit/ItemEdit";
+import { FormValuesItem } from "../screens/ItemCreate/FormValues";
+import { FormValuesItem as FormValuesEditItem } from "../screens/ItemEdit/ItemEditFormValues";
 
 const colorAndShape = assets.json.colorAndShapes;
 const shapeData = assets.json.shapeData;
@@ -38,6 +38,7 @@ export type itemListProps = {
   colorId: number | string;
   shapeId: number | string;
   instock: number;
+  sequenceId: number | string;
 };
 
 export type initialItemState = {
@@ -59,6 +60,7 @@ const itemSlice = createSlice({
     isSelectionMode: false,
     isSelectionInProgress: false,
     selectedCount: 0,
+    selectedListId: "",
     itemList: [
       {
         id: 1,
@@ -76,29 +78,41 @@ const itemSlice = createSlice({
         instock: 1,
         colorId: 6,
         shapeId: 2,
+        sequenceId: 2,
         isSelected: false,
       },
       {
         id: 2,
         name: "Sugar",
         price: "24.00",
-        categoryId: "",
+        categoryId: 1,
         soldby: "weight",
         cost: "24.00",
         sku: "123",
         barcode: "123",
         colorAndShapeImage: assets.images.colorsAndShapes.DarkOrchid.Square,
         image: "",
-        trackstock: false,
+        trackstock: true,
         representation: "colorAndShape",
-        instock: 0,
+        instock: 5,
         colorId: 8,
         shapeId: 1,
+        sequenceId: 5,
         isSelected: false,
       },
     ],
   } as initialItemState,
   reducers: {
+    updateSelectedListId: (state, action: { payload: { itemId: number; sequenceId: number } }) => {
+      const itemId = action.payload.itemId;
+      const sequenceId = action.payload.sequenceId;
+
+      const findItemById = state.itemList.find((item) => item.id === itemId);
+
+      if (findItemById) {
+        state.itemList.push({ ...findItemById, sequenceId: sequenceId });
+      }
+    },
     updateItemCategoryId: (
       state,
       action: PayloadAction<{ categoryId: number; itemList: number[] }>
@@ -110,6 +124,15 @@ const itemSlice = createSlice({
       state.itemList = prevItemList.map((item) =>
         itemList.includes(item.id) ? { ...item, categoryId: categoryId } : item
       );
+    },
+    updatedIsSelectedTrue: (state, action: { payload: number }) => {
+      const itemId = action.payload;
+
+      const updatedItemList = state.itemList.map((item) => ({
+        ...(item.id === itemId ? { ...item, isSelected: true } : { ...item, isSelected: false }),
+      }));
+
+      state.itemList = updatedItemList;
     },
     addIsSelectedItem: (state) => {
       state.itemList = state.itemList.map((item) => ({ ...item, isSelected: false }));
@@ -151,27 +174,14 @@ const itemSlice = createSlice({
     deleteSelectedItem: (state) => {
       state.itemList = state.itemList.filter((item) => !item.isSelected);
     },
-    deleteItem: (state, action: { payload: string }) => {
-      const payload = action.payload;
+    deleteItem: (state, action: { payload: number }) => {
+      const itemId = action.payload;
 
-      const itemId = payload ? Number.parseInt(payload) : payload;
-
-      if (typeof itemId === "number") {
-        state.itemList = state.itemList.filter((item) => item.id !== itemId);
-      }
-
-      if (typeof itemId !== "number") {
-        console.log("ItemId is not a number");
-      }
+      state.itemList = state.itemList.filter((item) => item.id !== itemId);
     },
     updateItem: (state, action: { payload: FormValuesEditItem }) => {
       const payload = action.payload;
       const prevItemList = state.itemList;
-
-      const findItemIdByIndex = prevItemList.findIndex((item) => item.id === payload.id);
-
-      const convertPayloadId =
-        typeof payload.id === "number" ? payload.id : Number.parseInt(payload.id);
 
       const findColorById = colorData.find((color) => color.id === payload.colorId);
       const findShapeById = shapeData.find((shape) => shape.id === payload.shapeId);
@@ -182,23 +192,23 @@ const itemSlice = createSlice({
       );
       const updatedImage = findColorAndShapeByIdAndShape ? findColorAndShapeByIdAndShape.image : "";
 
-      const representation: "colorAndShape" | "image" = !payload.image ? "colorAndShape" : "image";
+      const representation: "colorAndShape" | "image" = !payload.image
+        ? "colorAndShape"
+        : payload.representation;
 
-      const updatedItem: itemListProps = {
+      const findItemIdByIndex = prevItemList.findIndex((item) => item.id === payload.id);
+
+      const convertPayloadId =
+        typeof payload.id === "number" ? payload.id : Number.parseInt(payload.id);
+
+      state.itemList[findItemIdByIndex] = {
         ...payload,
         colorAndShapeImage: updatedImage,
         id: convertPayloadId,
+        sequenceId: "",
         representation: representation,
         isSelected: false,
       };
-
-      if (findItemIdByIndex !== -1) {
-        state.itemList[findItemIdByIndex] = { ...updatedItem };
-      }
-
-      if (findItemIdByIndex === -1) {
-        console.log("Connot findIndex on Item !");
-      }
     },
     addItem: (state, action: { payload: FormValuesItem }) => {
       const payload = action.payload;
@@ -224,6 +234,7 @@ const itemSlice = createSlice({
         isSelected: false,
         colorAndShapeImage: updatedImage,
         representation: representation,
+        sequenceId: "",
       };
 
       state.itemList.push(newItem);

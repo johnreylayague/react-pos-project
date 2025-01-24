@@ -58,15 +58,15 @@ export const useActions: useActionsProps = (
     const categoryId = watch("id");
 
     const findCategoryById = categoryList.find((category) => category.id === categoryId);
-    const filterCategoryById = categoryList.filter(
-      (category) => category.id !== categoryId && category.name === categoryName
-    );
-    const findIndexCategoryById = categoryList.findIndex((category) => category.id === categoryId);
 
     if (!findCategoryById?.id) {
       handleOpenSnackbar({ message: "Invalid category ID provided", severity: "error" });
       return;
     }
+
+    const filterCategoryById = categoryList.filter(
+      (category) => category.id !== categoryId && category.name === categoryName
+    );
 
     if (filterCategoryById.length > 0) {
       setError("name", {
@@ -76,8 +76,10 @@ export const useActions: useActionsProps = (
       return;
     }
 
+    const findIndexCategoryById = categoryList.findIndex((category) => category.id === categoryId);
+
     if (findIndexCategoryById < 0) {
-      handleOpenSnackbar({ message: "Category index not found.", severity: "error" });
+      handleOpenSnackbar({ message: "Category index not found", severity: "error" });
       return;
     }
 

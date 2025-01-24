@@ -14,7 +14,7 @@ import {
   ListSubheaderStyled,
   PaperStyled,
 } from "./ShiftManagementPanelStyles";
-import { convertToType } from "../../../../utils/typescriptHelpers";
+import { computeFieldTotal, computeTotalFromMultiplication } from "../../../../utils/computeUtils";
 
 type ShiftManagementPanelProps = {
   onCloseShift: () => void;
@@ -22,26 +22,74 @@ type ShiftManagementPanelProps = {
 
 const ShiftManagementPanel: React.FC<ShiftManagementPanelProps> = (props) => {
   const { onCloseShift } = props;
-  const currentActiveShift = useSelector((state: storeProps) => state.shift.currentActiveShift);
 
-  const convertedStartingCash = formatToPesos(currentActiveShift.startingCash);
-  const convertedCashPayments = formatToPesos("0");
-  const cashRefunds = formatToPesos("0");
-  const paidIn = formatToPesos("0");
-  const paidOut = formatToPesos("0");
-  const expectedCashAmount = formatToPesos("0");
-  const grossSales = formatToPesos("0");
-  const refund = formatToPesos("0");
-  const netSales = formatToPesos("0");
-  const cash = formatToPesos("0");
+  const currentActiveShiftId = useSelector((state: storeProps) => state.shift.currentActiveShiftId);
+  const shiftList = useSelector((state: storeProps) => state.shift.shiftList);
+  const purchasedItems = useSelector((state: storeProps) => state.sale.purchasedItems);
+  const receipt = useSelector((state: storeProps) => state.sale.receipt);
+  const cashManagementList = useSelector((state: storeProps) => state.shift.cashManagementList);
 
-  const convertedShiftStartDate = convertToType(
-    "string",
-    currentActiveShift.shiftStartDate,
-    new Date(currentActiveShift.shiftStartDate)
+  const filterByPayTypeAndShift = (payType: "PayIn" | "PayOut") =>
+    cashManagementList.filter(
+      (cashManagement) =>
+        cashManagement.shiftId === currentActiveShiftId && cashManagement.payType === payType
+    );
+
+  const filterByIsRefunded = (refunded: boolean) =>
+    receipt.filter(
+      (receipt) => receipt.shiftId === currentActiveShiftId && receipt.refunded === refunded
+    );
+
+  const totalPayInForActiveShift = computeFieldTotal(
+    filterByPayTypeAndShift("PayIn"),
+    "cashPayment"
   );
 
-  const shiftStartDateTime = formatDateTime(convertedShiftStartDate);
+  const totalPayOutForActiveShift = computeFieldTotal(
+    filterByPayTypeAndShift("PayOut"),
+    "cashPayment"
+  );
+
+  const filteredReceiptByActiveShiftAndNotRefunded = receipt
+    .filter((receipt) => receipt.shiftId === currentActiveShiftId && !receipt.refunded)
+    .map((receipt) => receipt.id);
+
+  const filteredItems = purchasedItems.filter((item) =>
+    filteredReceiptByActiveShiftAndNotRefunded.includes(item.receiptId)
+  );
+
+  const accumulatedGrossSales = computeTotalFromMultiplication(filteredItems, "price", "count");
+
+  const accumulatedCashRefunds = computeFieldTotal(filterByIsRefunded(true), "totalAmount");
+
+  const activeShift = shiftList.find(
+    (shift) => shift.id === currentActiveShiftId && !shift.isShiftClosed
+  );
+
+  const activeShiftStartingCashAmount = activeShift ? activeShift.startingCashAmount : "0";
+
+  const shiftStartingCashAmount = parseFloat(activeShiftStartingCashAmount) || 0;
+
+  const accumulatedNetSales = accumulatedGrossSales - accumulatedCashRefunds;
+
+  const totalCashInOut = totalPayInForActiveShift - totalPayOutForActiveShift;
+
+  const accumulatedExpectedCashAmount =
+    shiftStartingCashAmount + accumulatedNetSales + totalCashInOut;
+
+  const shiftNumber = activeShift ? activeShift.shiftNumber : 0;
+  const openedBy = activeShift ? activeShift.openedBy : "";
+  const openedAt = activeShift ? activeShift.openedAt : "";
+
+  const shiftStartDateTime = formatDateTime(openedAt);
+  const startingCashAmount = formatToPesos(shiftStartingCashAmount);
+  const totalCashPayments = formatToPesos(accumulatedGrossSales);
+  const totalCashRefunds = formatToPesos(accumulatedCashRefunds);
+  const totalPaidIn = formatToPesos(totalPayInForActiveShift);
+  const totalPaidOut = formatToPesos(totalPayOutForActiveShift);
+  const actualCashBalance = formatToPesos(accumulatedExpectedCashAmount);
+  const totalGrossSales = formatToPesos(accumulatedGrossSales);
+  const totalNetSales = formatToPesos(accumulatedNetSales);
 
   return (
     <ContainerStyled maxWidth="md">
@@ -56,22 +104,20 @@ const ShiftManagementPanel: React.FC<ShiftManagementPanelProps> = (props) => {
 
         {/* Shift Info */}
         <ListStyled>
-          <ListItemDetail>Shift number: {currentActiveShift.shiftNumber}</ListItemDetail>
-          <ListItemDetail secondary={shiftStartDateTime}>
-            Shift opened: {currentActiveShift.shiftOpened}
-          </ListItemDetail>
+          <ListItemDetail>Shift number: {shiftNumber}</ListItemDetail>
+          <ListItemDetail secondary={shiftStartDateTime}>Shift opened: {openedBy}</ListItemDetail>
         </ListStyled>
 
         <DividerStyled />
 
         {/* Cash drawer */}
         <List subheader={<ListSubheaderStyled disableGutters>Cash drawer</ListSubheaderStyled>}>
-          <ListItemDetail secondary={convertedStartingCash}>Starting cash</ListItemDetail>
-          <ListItemDetail secondary={convertedCashPayments}>Cash payments</ListItemDetail>
-          <ListItemDetail secondary={cashRefunds}>Cash refunds</ListItemDetail>
-          <ListItemDetail secondary={paidIn}>Paid in</ListItemDetail>
-          <ListItemDetail secondary={paidOut}>Paid out</ListItemDetail>
-          <ListItemDetail secondary={expectedCashAmount} primaryHighlight secondaryHighlight>
+          <ListItemDetail secondary={startingCashAmount}>Starting cash</ListItemDetail>
+          <ListItemDetail secondary={totalCashPayments}>Cash payments</ListItemDetail>
+          <ListItemDetail secondary={totalCashRefunds}>Cash refunds</ListItemDetail>
+          <ListItemDetail secondary={totalPaidIn}>Paid in</ListItemDetail>
+          <ListItemDetail secondary={totalPaidOut}>Paid out</ListItemDetail>
+          <ListItemDetail secondary={actualCashBalance} primaryHighlight secondaryHighlight>
             Expected cash amount
           </ListItemDetail>
         </List>
@@ -80,20 +126,19 @@ const ShiftManagementPanel: React.FC<ShiftManagementPanelProps> = (props) => {
 
         {/* Sales summary */}
         <List subheader={<ListSubheaderStyled disableGutters>Sales summary</ListSubheaderStyled>}>
-          <ListItemDetail secondary={grossSales} primaryHighlight secondaryHighlight>
+          <ListItemDetail secondary={totalGrossSales} primaryHighlight secondaryHighlight>
             Gross sales
           </ListItemDetail>
-          <ListItemDetail secondary={refund}>Refund</ListItemDetail>
+          <ListItemDetail secondary={totalCashRefunds}>Refund</ListItemDetail>
         </List>
 
         <Divider />
 
         {/* Net sales and Cash */}
         <List>
-          <ListItemDetail secondary={netSales} primaryHighlight>
+          <ListItemDetail secondary={totalNetSales} primaryHighlight>
             Net sales
           </ListItemDetail>
-          <ListItemDetail secondary={cash}>Cash</ListItemDetail>
         </List>
       </PaperStyled>
     </ContainerStyled>

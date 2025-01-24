@@ -19,10 +19,10 @@ const TabNavigation: React.FC<TabNavigationProps> = (props) => {
   const { isThemeMobileScreen, onChangeTab, onOpenMenuListFilterIterms, pageData, tabIndex } =
     props;
 
-  const currentActiveShift = useSelector((state: storeProps) => state.shift.currentActiveShift);
+  const currentActiveShiftId = useSelector((state: storeProps) => state.shift.currentActiveShiftId);
 
   const nextTabIndex = pageData.length + 1;
-  const tab = !currentActiveShift.id ? false : tabIndex;
+  const tab = !currentActiveShiftId ? false : tabIndex;
 
   return (
     <TabsStyled
@@ -37,7 +37,7 @@ const TabNavigation: React.FC<TabNavigationProps> = (props) => {
         label={"Favorite"}
         id={`simple-tab-${0}`}
         aria-controls={`simple-tab-${0}`}
-        disabled={!currentActiveShift.id}
+        disabled={!currentActiveShiftId}
       />
 
       {pageData.map((page) => {
@@ -47,7 +47,7 @@ const TabNavigation: React.FC<TabNavigationProps> = (props) => {
             label={page.pageName}
             id={`simple-tab-${page.tabId}`}
             aria-controls={`simple-tab-${page.tabId}`}
-            disabled={!currentActiveShift.id}
+            disabled={!currentActiveShiftId}
           />
         );
       })}
@@ -63,7 +63,7 @@ const TabNavigation: React.FC<TabNavigationProps> = (props) => {
           : {})}
         id={`simple-tab-${nextTabIndex}`}
         aria-controls={`simple-tab-${nextTabIndex}`}
-        disabled={!currentActiveShift.id}
+        disabled={!currentActiveShiftId}
       />
     </TabsStyled>
   );

@@ -1,36 +1,28 @@
 import React from "react";
 import { ListItemButton, ListItemAvatar, ListItemText, Divider } from "@mui/material";
-import { shiftActions, shiftProps } from "../../../../store/shift-slice";
+import { shiftActions } from "../../../../store/shift-slice";
 import { formatStartTime, formatShiftDateRange } from "../../../../utils/format";
 import { AccessTimeIcon, AvatarStyled, ListItemStyled } from "./ListItemShiftHistoryStyles";
-import { convertToType } from "../../../../utils/typescriptHelpers";
 import { useDispatch } from "react-redux";
 
-type ListItemShiftHistoryProps = { onShowShiftReport: () => void; shiftData: shiftProps };
+type ListItemShiftHistoryProps = {
+  onShowShiftReport: () => void;
+  shiftId: number;
+  shiftOpenedAt: string;
+  shiftClosedAt: string;
+};
 
 const ListItemShiftHistory: React.FC<ListItemShiftHistoryProps> = (props) => {
-  const { onShowShiftReport, shiftData } = props;
+  const { onShowShiftReport, shiftOpenedAt, shiftClosedAt, shiftId } = props;
 
   const dispatch = useDispatch();
 
-  const convertedShiftStartDate = convertToType(
-    "string",
-    shiftData.shiftStartDate,
-    new Date(shiftData.shiftStartDate)
-  );
-
-  const convertedShiftEndDate = convertToType(
-    "string",
-    shiftData.shiftEndDate,
-    new Date(shiftData.shiftEndDate)
-  );
-
-  const shiftStartTime = formatStartTime(convertedShiftStartDate);
-  const shiftEndTime = formatStartTime(convertedShiftEndDate);
-  const shiftDateRange = formatShiftDateRange(convertedShiftStartDate, convertedShiftEndDate);
+  const shiftStartTime = formatStartTime(shiftOpenedAt);
+  const shiftEndTime = formatStartTime(shiftClosedAt);
+  const shiftDateRange = formatShiftDateRange(shiftOpenedAt, shiftClosedAt);
 
   const handleOnShowReport = () => {
-    dispatch(shiftActions.selected(shiftData));
+    dispatch(shiftActions.setSelectedShiftId(shiftId));
     onShowShiftReport();
   };
 

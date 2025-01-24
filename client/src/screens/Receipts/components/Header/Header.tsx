@@ -1,52 +1,16 @@
-import { ArrowBack } from "@mui/icons-material";
-import {
-  AppBar,
-  Toolbar,
-  IconButton,
-  Typography,
-  ButtonBase,
-  styled,
-  Theme,
-  IconProps,
-  IconButtonProps,
-  ButtonBaseProps,
-  TypographyProps,
-} from "@mui/material";
+import { AppBar, Toolbar } from "@mui/material";
 import React from "react";
-import { Link, LinkProps } from "react-router-dom";
-
-const BackButton = styled(IconButton)<IconButtonProps & LinkProps>(
-  ({ theme }: { theme: Theme }) => ({
-    [theme.breakpoints.up("sm")]: {
-      display: "none",
-    },
-    marginRight: theme.spacing(2),
-    marginLeft: `-${theme.spacing(1)}`,
-  })
-);
-
-const ArrowBackIcon = styled(ArrowBack)<IconProps>(({ theme }: { theme: Theme }) => ({
-  color: theme.palette.common.white,
-}));
-
-const TransactionNumber = styled(Typography)<TypographyProps>(({}: { theme: Theme }) => ({
-  flexGrow: 1,
-}));
-
-const RefundButton = styled(ButtonBase)<ButtonBaseProps & LinkProps>(
-  ({ theme }: { theme: Theme }) => ({
-    ...theme.typography.body1,
-    minHeight: "inherit",
-    padding: theme.spacing(2),
-  })
-);
+import { Link } from "react-router-dom";
+import { ArrowBackIcon, BackButton, RefundButton, TransactionNumber } from "./HeaderStyles";
 
 type HeaderProps = {
   transactionNumber: string;
   backNavigation: string;
+  goToRefundNavigation: string;
+  refunded: boolean;
 };
 const Header: React.FC<HeaderProps> = (props) => {
-  const { transactionNumber, backNavigation } = props;
+  const { transactionNumber, backNavigation, goToRefundNavigation, refunded } = props;
 
   return (
     <AppBar elevation={0} position="static" color="success">
@@ -59,9 +23,11 @@ const Header: React.FC<HeaderProps> = (props) => {
           {transactionNumber}
         </TransactionNumber>
 
-        <RefundButton component={Link} to="/receipt/1/refund">
-          REFUND
-        </RefundButton>
+        {!refunded && (
+          <RefundButton to={goToRefundNavigation} component={Link}>
+            REFUND
+          </RefundButton>
+        )}
       </Toolbar>
     </AppBar>
   );

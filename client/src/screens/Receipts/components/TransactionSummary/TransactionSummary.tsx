@@ -39,9 +39,10 @@ const CashWrapper = styled(ListItem)<ListItemProps>(({}: { theme: Theme }) => ({
 type TransactionSummaryProps = {
   totalAmount: string;
   cashAmount: string;
+  change?: string;
 };
 const TransactionSummary: React.FC<TransactionSummaryProps> = (props) => {
-  const { cashAmount, totalAmount } = props;
+  const { cashAmount, totalAmount, change } = props;
 
   return (
     <>
@@ -56,6 +57,13 @@ const TransactionSummary: React.FC<TransactionSummaryProps> = (props) => {
         <ListItemText>Cash</ListItemText>
         <CashAmount>{cashAmount}</CashAmount>
       </CashWrapper>
+
+      {change && (
+        <CashWrapper disablePadding>
+          <ListItemText>Cange</ListItemText>
+          <CashAmount>{change}</CashAmount>
+        </CashWrapper>
+      )}
 
       <DividerStyled component={"li"} />
     </>

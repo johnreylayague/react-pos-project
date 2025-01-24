@@ -3,15 +3,23 @@ import React from "react";
 import { Delete as DeleteIcon } from "@mui/icons-material";
 import { AppBarStyled, MoreVertIcon, Title, MenuStyled } from "./TicketHeaderStyles";
 import { useMenu } from "../../../../hooks/material-ui/useMenu/useMenu";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { storeProps } from "../../../../store";
+import { saleActions } from "../../../../store/sale-slice";
 
 type TicketHeaderProps = {};
 const TicketHeader: React.FC<TicketHeaderProps> = (props) => {
   const {} = props;
 
-  const isShift = useSelector((state: storeProps) => state.shift.isShift);
+  const currentActiveShiftId = useSelector((state: storeProps) => state.shift.currentActiveShiftId);
+  const dispatch = useDispatch();
+
   const { anchorEl, handleCloseMenu, handleOpenMenu, isOpen } = useMenu();
+
+  const handleOnclearTicketAndCloseMenu = () => {
+    dispatch(saleActions.clearTicket());
+    handleCloseMenu();
+  };
 
   return (
     <AppBarStyled elevation={0} position="static">
@@ -37,7 +45,7 @@ const TicketHeader: React.FC<TicketHeaderProps> = (props) => {
             horizontal: "left",
           }}
         >
-          <MenuItem onClick={handleCloseMenu} disabled={!isShift}>
+          <MenuItem onClick={handleOnclearTicketAndCloseMenu} disabled={!currentActiveShiftId}>
             <ListItemIcon>
               <DeleteIcon fontSize="small" />
             </ListItemIcon>

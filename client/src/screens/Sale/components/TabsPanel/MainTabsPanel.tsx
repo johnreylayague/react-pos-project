@@ -39,6 +39,7 @@ const MainTabsPanel: React.FC<MainTabsPanelProps> = (props) => {
 
   const handleOnChangeTab = (_event: React.SyntheticEvent, value: number) => {
     dispatch(saleActions.handleOnChangeTab(value));
+    dispatch(saleActions.updateSelectedCategoryId(""));
   };
 
   const handleAddPage = () => {

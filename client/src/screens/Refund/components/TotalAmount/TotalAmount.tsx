@@ -1,6 +1,7 @@
 import { Divider, List } from "@mui/material";
 import React from "react";
 import ListItemDetailText from "../ListItemDetailText/ListItemDetailText";
+import { formatToPesos } from "../../../../utils/format";
 
 type TotalAmountProps = {
   isShowDivider: boolean;
@@ -15,7 +16,11 @@ const TotalAmount: React.FC<TotalAmountProps> = (props) => {
       {isShowDivider && <Divider />}
 
       <List>
-        <ListItemDetailText secondary={secondaryText} primaryHighlight secondaryHighlight>
+        <ListItemDetailText
+          secondary={formatToPesos(secondaryText)}
+          primaryHighlight
+          secondaryHighlight
+        >
           {primaryText}
         </ListItemDetailText>
       </List>

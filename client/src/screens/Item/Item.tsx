@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { List } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
 import { Link } from "react-router-dom";
@@ -16,6 +16,7 @@ import { useHeaderSelectionInteractionHandlers } from "../../hooks/Items/useHead
 import HeaderSearchAndFilterToolbar from "./components/HeaderSearchAndFilterToolbar/HeaderSearchAndFilterToolbar";
 import HeaderSearchToolbar from "./components/HeaderSearchToolbar/HeaderSearchToolbar";
 import { ResultMessage } from "./ItemStyles";
+import { itemActions } from "../../store/item-slice";
 
 type ItemsProps = {};
 
@@ -31,6 +32,10 @@ const Item: React.FC<ItemsProps> = (props) => {
     id: "",
     text: "All Items",
   });
+
+  useEffect(() => {
+    dispatch(itemActions.updatedIsSelectedItemToFalse());
+  }, [dispatch]);
 
   const {
     isOpenDialog: isOpenDialogDelete,

@@ -1,10 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect } from "react";
 import HeaderFormAction from "../../components/common/elements/Header/HeaderFormAction/HeaderFormAction";
 import ContainerWrapper from "./components/ContainerWrapper/ContainerWrapper.tsx";
 import Section from "./components/Section/Section.tsx";
 import {
   Alert,
-  Box,
   CircularProgress,
   Collapse,
   IconButton,
@@ -45,9 +44,8 @@ import {
   TakePhotoCameraAltIcon,
   WebcamDialog,
 } from "./ItemEditStyles.ts";
-import assets, { ColorDataProps, ShapeDataProps } from "../../assets/assets.ts";
+import assets from "../../assets/assets.ts";
 import { Controller, useForm } from "react-hook-form";
-import { useInteractionHandlers } from "../../hooks/ItemEdit/useInteractionHandlers.ts";
 import NumericInputField from "../../components/vendor/react-number-formatter/NumericInputField/NumericInputField.tsx";
 import { useActions } from "../../hooks/ItemEdit/useActions.ts";
 import { validationItemRules, validationCategoryRules } from "./ItemEditValidationRules.ts";
@@ -56,32 +54,19 @@ import { useNavigate, useParams } from "react-router-dom";
 import { storeProps } from "../../store/index.ts";
 import Webcam from "react-webcam";
 import { isMobile } from "react-device-detect";
-import { useRepresentationInteractionHandlers } from "../../hooks/ItemEdit/useRepresentationInteractionHandlers.ts";
+import { useInteractionHandlers } from "../../hooks/ItemEdit/useInteractionHandlers.ts";
 import { useDialog } from "../../hooks/material-ui/useDialog/useDialog.tsx";
 import { useSnackbar } from "../../hooks/material-ui/useSnackbar/useSnackbar.ts";
+import {
+  itemEdit,
+  FormValuesItem,
+  FormValuesCategory,
+  categoryCreate,
+} from "./ItemEditFormValues.ts";
+import { convertToNumber } from "../../utils/typescriptHelpers.ts";
 
-export type FormValuesCategory = {
-  name: string;
-  colorId: string | number;
-};
-
-export type FormValuesItem = {
-  id: number | string;
-  name: string;
-  categoryId: number | string;
-  soldby: string;
-  price: string;
-  cost: string;
-  sku: string;
-  barcode: string;
-  trackstock: boolean;
-  representation: "colorAndShape" | "image";
-  image: string;
-  colorAndShapeImage: string;
-  colorId: number | string;
-  shapeId: number | string;
-  instock: number;
-};
+const colorData = assets.json.colorData;
+const shapeData = assets.json.shapeData;
 
 type ItemCreateProps = {};
 const ItemCreate: React.FC<ItemCreateProps> = (props) => {
@@ -92,8 +77,6 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
   const dispatch = useDispatch();
   const isBelowSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const itemList = useSelector((state: storeProps) => state.item.itemList);
-  const [colorData, _setColorData] = useState<ColorDataProps[] | []>(assets.json.colorData);
-  const [shapeData, _setShapeData] = useState<ShapeDataProps[] | []>(assets.json.shapeData);
   const params = useParams<{ itemId: string }>();
 
   const {
@@ -102,10 +85,7 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
     reset: resetCategory,
     formState: { errors: errorsCategory },
   } = useForm<FormValuesCategory>({
-    defaultValues: {
-      name: "",
-      colorId: "",
-    },
+    defaultValues: categoryCreate,
   });
 
   const {
@@ -114,38 +94,25 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
     setValue: setValueItem,
     watch: watchItem,
     reset: resetItem,
+    setError: setErrorItem,
     formState: { errors: errorsItem },
   } = useForm<FormValuesItem>({
-    defaultValues: {
-      id: "",
-      name: "",
-      categoryId: "",
-      soldby: "each",
-      price: "0",
-      cost: "0",
-      sku: "",
-      barcode: "",
-      trackstock: false,
-      instock: 0,
-      representation: "colorAndShape",
-      colorId: "",
-      shapeId: "",
-      image: "",
-    },
+    defaultValues: itemEdit,
   });
 
   useEffect(() => {
-    const itemId = params.itemId ? Number.parseInt(params.itemId) : params.itemId;
+    const itemId = convertToNumber("string", params.itemId);
     const findItemById = itemList.find((item) => item.id === itemId);
 
-    if (findItemById) {
-      resetItem(findItemById);
+    if (!findItemById) {
+      handleOpenSnackbar({
+        message: "Invalid Item ID provided",
+        severity: "error",
+      });
+      return;
     }
 
-    if (!findItemById) {
-      const itemRedirectPath = isBelowSmallScreen ? "/item/index" : "/item";
-      navigate(itemRedirectPath);
-    }
+    resetItem(findItemById);
   }, [resetItem, navigate]);
 
   useEffect(() => {
@@ -157,51 +124,59 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
   const { snackbar, handleCloseSnackbar, handleOpenSnackbar } = useSnackbar();
 
   const {
+    isOpenDialog: isDialogWebcamDialog,
+    handleCloseDialog: handleCloseDialogWebcam,
+    handleOpenDialog: handleOpenDialogWebcam,
+  } = useDialog();
+
+  const {
     isOpenDialog: isDialogCreateCategory,
     handleOpenDialog: onOpenDialogCreateCategory,
     handleCloseDialog: onCloseDialogCreateCategory,
   } = useDialog();
 
   const {
-    handleCategoryChange,
-    handleSelectChangeColor,
-    handleSelectChangeShape,
-    onCloseDialogDelete,
-    onOpenDialogDelete,
-    isDialogDelete,
-  } = useInteractionHandlers(setValueItem, onOpenDialogCreateCategory);
+    isOpenDialog: isDialogDelete,
+    handleOpenDialog: onOpenDialogDelete,
+    handleCloseDialog: onCloseDialogDelete,
+  } = useDialog();
 
   const {
-    isMediaStreamActive,
-    isDialogWebcamDialog,
     inputRef,
+    isMediaStreamActive,
     mobileInputRef,
     webcamRef,
+    handleCategoryChange,
     handleFileChange,
     handleOnCapturePhoto,
     handleOnChoosePhoto,
-    handleOnTakePhoto,
-    handleCloseDialogWebcam,
-    onStartMediaStream,
-    onStopMediaStream,
     handleOnRemoveImage,
-  } = useRepresentationInteractionHandlers(setValueItem, isMobile);
+    handleOnTakePhoto,
+    handleOnUserMediaError,
+    handleSelectChangeColor,
+    handleSelectChangeShape,
+    handleOnStartMediaStream,
+    handleOnStopMediaStream,
+  } = useInteractionHandlers(
+    setValueItem,
+    isMobile,
+    handleOpenSnackbar,
+    handleOpenDialogWebcam,
+    handleCloseDialogWebcam,
+    onOpenDialogCreateCategory
+  );
 
   const { handleOnSubmitCategory, handleOnSubmitItem, handleOnDeleteItem } = useActions(
+    watchItem,
     setValueItem,
     navigate,
     dispatch,
     isBelowSmallScreen,
-    params,
     onCloseDialogCreateCategory,
-    resetCategory
+    resetCategory,
+    handleOpenSnackbar,
+    setErrorItem
   );
-
-  const handleOnUserMediaError = () =>
-    handleOpenSnackbar({
-      message: "Unable to access the webcam. Please check your device settings and permissions.",
-      severity: "error",
-    });
 
   return (
     <>
@@ -505,10 +480,10 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
         fullWidth
         maxWidth="sm"
         onTransitionEnter={() => {
-          onStopMediaStream();
+          handleOnStopMediaStream();
         }}
         onTransitionExited={() => {
-          onStopMediaStream();
+          handleOnStopMediaStream();
         }}
       >
         <Toolbar>
@@ -528,7 +503,7 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
         <Webcam
           audio={false}
           ref={webcamRef}
-          onUserMedia={onStartMediaStream}
+          onUserMedia={handleOnStartMediaStream}
           onUserMediaError={handleOnUserMediaError}
           screenshotFormat="image/png"
           style={{
@@ -554,7 +529,7 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
       <Snackbar
         open={snackbar.isOpenSnackbar}
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        autoHideDuration={5000}
+        autoHideDuration={3000}
         onClose={handleCloseSnackbar}
       >
         <Alert onClose={handleCloseSnackbar} severity={snackbar.alert.severity} variant="filled">

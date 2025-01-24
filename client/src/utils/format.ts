@@ -1,20 +1,27 @@
-export const formatToPesos = (value: any) => {
+// Formats a string or number to Philippine Pesos currency format, defaulting to 0 for invalid strings
+export const formatToPesos = (value: string | number) => {
+  const numericValue =
+    typeof value === "string" ? (isNaN(parseFloat(value)) ? 0 : parseFloat(value)) : value;
+
   return new Intl.NumberFormat("en-PH", {
     style: "currency",
     currency: "PHP",
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  }).format(value);
+  }).format(numericValue);
 };
 
-export const formatDateTime = (date: Date) => {
-  const formattedDate = date.toLocaleDateString("en-US", {
+// Formats a given date string into a US date-time format (MM/DD/YY HH:MM AM/PM)
+export const formatDateTime = (date: string) => {
+  const parsedDate = new Date(date);
+
+  const formattedDate = parsedDate.toLocaleDateString("en-US", {
     year: "2-digit",
     month: "2-digit",
     day: "2-digit",
   });
 
-  const formattedTime = date.toLocaleTimeString("en-US", {
+  const formattedTime = parsedDate.toLocaleTimeString("en-US", {
     hour: "2-digit",
     minute: "2-digit",
     hour12: true,
@@ -22,8 +29,10 @@ export const formatDateTime = (date: Date) => {
   return `${formattedDate} ${formattedTime}`;
 };
 
-export const formatStartTime = (date: Date) => {
-  const formattedShiftStartDate = date.toLocaleTimeString("en-US", {
+export const formatStartTime = (date: string) => {
+  const parsedDate = new Date(date);
+
+  const formattedShiftStartDate = parsedDate.toLocaleTimeString("en-US", {
     hour: "2-digit",
     minute: "2-digit",
     hour12: true,
@@ -32,8 +41,10 @@ export const formatStartTime = (date: Date) => {
   return formattedShiftStartDate;
 };
 
-export const formatShortDate = (date: Date) => {
-  const formattedDate = date.toLocaleDateString("en-US", {
+export const formatShortDate = (date: string) => {
+  const parsedDate = new Date(date);
+
+  const formattedDate = parsedDate.toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
   });
@@ -41,19 +52,22 @@ export const formatShortDate = (date: Date) => {
   return formattedDate;
 };
 
-export const formatShiftDateRange = (shiftStartDate: Date, shiftEndDate: Date) => {
-  const formattedShiftStartDate = shiftStartDate.toLocaleDateString("en-US", {
+export const formatShiftDateRange = (shiftStartDate: string, shiftEndDate: string) => {
+  const parsedStartDate = new Date(shiftStartDate);
+  const parsedEndDate = new Date(shiftEndDate);
+
+  const formattedShiftStartDate = parsedStartDate.toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
   });
 
-  const formattedShiftEndDate = shiftEndDate.toLocaleDateString("en-US", {
+  const formattedShiftEndDate = parsedEndDate.toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
   });
 
   const formattedShiftDateRange =
-    shiftStartDate.getUTCMonth() === shiftStartDate.getUTCMonth()
+    parsedStartDate.getUTCMonth() === parsedStartDate.getUTCMonth()
       ? formattedShiftStartDate
       : `${formattedShiftStartDate} - ${formattedShiftEndDate}`;
 

@@ -1,0 +1,33 @@
+listitembutton
+change maxlengt sa input kay am edit inig insept element
+http://localhost:5173/item/index - inig search e check
+http://localhost:5173/sale - favorite dialog - categories, og category page - ilisan ang color id to image na dyd
+make the json data reusable
+ang search inig long press sa keyboard mo lagg
+
+-shift-
+id
+shiftNumber
+shiftOpenedUser
+shiftClosedUser
+shiftOpenedDate
+shiftClosedDate
+startingCash  
+cashPayments
+cashRefunds 
+paidIn 
+paidOut
+expectedCashAmount
+actualCashAmount
+Difference
+grossSales 
+refund
+netSales
+cash  
+
+-receipt-
+id
+shiftId
+itemList
+total
+cash

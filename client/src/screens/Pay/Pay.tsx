@@ -1,9 +1,55 @@
 import { ArrowBack as ArrowBackIcon, Check as CheckIcon } from "@mui/icons-material";
 import { AppBar, Button, Container, Divider, IconButton, Toolbar } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Change, NewSaleButton, StackStyled, TotalPaid } from "./PayStyles";
+import { useDispatch, useSelector } from "react-redux";
+import { storeProps } from "../../store";
+import { formatToPesos } from "../../utils/format";
+import { saleActions } from "../../store/sale-slice";
+import { useForm } from "react-hook-form";
+import { useEffect } from "react";
 
-const Pay = () => {
+export type FormValuesSale = {
+  shiftId: number | null;
+};
+
+type PayProps = {};
+const Pay: React.FC<PayProps> = (props) => {
+  const {} = props;
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const ticket = useSelector((state: storeProps) => state.sale.ticket);
+  const currentActiveShiftId = useSelector((state: storeProps) => state.shift.currentActiveShiftId);
+  const calculatedChange = useSelector((state: storeProps) => state.sale.calculatedChange);
+
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+    reset,
+  } = useForm<FormValuesSale>();
+
+  useEffect(() => {
+    reset({
+      shiftId: currentActiveShiftId,
+    });
+  }, []);
+
+  const totalPrice = ticket.reduce((accumulator, ticket) => {
+    accumulator = parseFloat(ticket.accumulatedPrice) + accumulator;
+    return accumulator;
+  }, 0);
+
+  const formattedTotalPrice = formatToPesos(totalPrice);
+
+  const formattedCalculatedChange = formatToPesos(calculatedChange);
+
+  const handleNewSale = (data: FormValuesSale) => {
+    dispatch(saleActions.handleNewSale(data));
+    navigate("/sale");
+  };
+
   return (
     <>
       <AppBar color="success" position="static">
@@ -21,15 +67,19 @@ const Pay = () => {
           divider={<Divider orientation="vertical" flexItem />}
         >
           <div>
-            <TotalPaid secondary={"Total paid"}>₱0.02</TotalPaid>
+            <TotalPaid secondary={"Total paid"}>{formattedTotalPrice}</TotalPaid>
           </div>
 
           <div>
-            <Change secondary={"Change"}>₱0.02</Change>
+            <Change secondary={"Change"}>{formattedCalculatedChange}</Change>
           </div>
         </StackStyled>
 
-        <NewSaleButton to={"/sale"} component={Link} disableElevation startIcon={<CheckIcon />}>
+        <NewSaleButton
+          onClick={handleSubmit(handleNewSale)}
+          disableElevation
+          startIcon={<CheckIcon />}
+        >
           NEW SALE
         </NewSaleButton>
 

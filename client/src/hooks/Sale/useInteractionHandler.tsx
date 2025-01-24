@@ -39,5 +39,10 @@ export const useInteractionHandler = (dispatch: Dispatch) => {
         onMouseLeave: handleOnMouseLeave,
       };
 
-  return { interactionHandlers };
+  return {
+    interactionHandlers,
+    handleOnMouseDown: handleOnMouseDown,
+    handleOnMouseUp: handleOnMouseUp,
+    handleOnMouseLeave: handleOnMouseLeave,
+  };
 };

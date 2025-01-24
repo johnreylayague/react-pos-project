@@ -22,7 +22,7 @@ type colorAndShapesData = {
 
 type FavoritePageCardProps = {
   pageData: pageData[];
-  onOpenDialogAddItemAndCategory: () => void;
+  onOpenDialogAddItemAndCategory: (event: React.MouseEvent<HTMLButtonElement>) => void;
   colorAndShapesData: colorAndShapesData[];
   index: number;
   pageId: number;

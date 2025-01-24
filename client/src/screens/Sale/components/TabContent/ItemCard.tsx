@@ -2,25 +2,15 @@ import React from "react";
 import { Grid2 as Grid } from "@mui/material";
 import ShapeItemButton from "../ShapeItemButton/ShapeItemButton";
 import assets from "../../../../assets/assets";
-
-type favoriteData = {
-  id: number;
-  sequenceId: number;
-  itemName: string;
-  representationId: number;
-};
-
-type colorAndShapesData = {
-  id: number;
-  color: string;
-  shape: string;
-  image: string;
-};
+import { ContentCopy } from "@mui/icons-material";
 
 type ItemCardProps = {
-  favoriteData: favoriteData[];
-  colorAndShapesData: colorAndShapesData[];
-  index: number;
+  sequenceId: number;
+  itemName: string;
+  itemColorAndShapeImage: string;
+  itemImage: string;
+  itemRepresentation: string;
+  itemId?: number;
   onInteractionHandlers?: {
     onTouchStart?: () => void;
     onTouchEnd?: () => void;
@@ -29,19 +19,32 @@ type ItemCardProps = {
     onMouseUp?: () => void;
     onMouseLeave?: () => void;
   };
+  onAddTicketItem?: (itemId: number) => void;
+  onMouseDown?: () => void;
+  onMouseUp?: () => void;
+  onMouseLeave?: () => void;
 };
 const ItemCard: React.FC<ItemCardProps> = (props) => {
-  const { onInteractionHandlers, favoriteData, colorAndShapesData, index } = props;
+  const {
+    onInteractionHandlers,
+    itemName,
+    itemRepresentation,
+    itemColorAndShapeImage,
+    itemImage,
+    sequenceId,
+    onMouseDown,
+    onMouseLeave,
+    onMouseUp,
+    onAddTicketItem,
+    itemId,
+  } = props;
 
-  const item = favoriteData.find((jsonPage) => jsonPage.sequenceId === index);
+  const representationImage =
+    itemRepresentation === "colorAndShape" ? itemColorAndShapeImage : itemImage;
 
-  const representationImage = colorAndShapesData.find(
-    (colorAndShape) => colorAndShape.id === item?.representationId
-  )?.image;
-
-  const itemImage = representationImage
-    ? representationImage
-    : assets.images.colorsAndShapes.SoftPeach.BorderSquare2;
+  const image = !itemName
+    ? assets.images.colorsAndShapes.SoftPeach.BorderSquare2
+    : representationImage;
 
   return (
     <>
@@ -54,9 +57,14 @@ const ItemCard: React.FC<ItemCardProps> = (props) => {
         }}
       >
         <ShapeItemButton
-          onInteractionHandlers={onInteractionHandlers}
-          itemImage={itemImage}
-          itemName={item?.itemName}
+          sequenceId={sequenceId}
+          itemImage={image}
+          itemName={itemName}
+          onAddTicketItem={onAddTicketItem}
+          onMouseDown={onMouseDown}
+          onMouseLeave={onMouseLeave}
+          onMouseUp={onMouseUp}
+          itemId={itemId}
         />
       </Grid>
     </>

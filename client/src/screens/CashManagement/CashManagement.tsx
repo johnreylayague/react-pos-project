@@ -35,6 +35,7 @@ const CashManagement: React.FC<CashManagementPorps> = (props) => {
   const [isDisabled] = React.useState<boolean>(false);
 
   const dispatch = useDispatch();
+  const currentActiveShiftId = useSelector((state: storeProps) => state.shift.currentActiveShiftId);
   const cashManagementList = useSelector((state: storeProps) => state.shift.cashManagementList);
 
   const {
@@ -59,12 +60,16 @@ const CashManagement: React.FC<CashManagementPorps> = (props) => {
     reset();
   };
 
+  const isCashManagementAvailable =
+    cashManagementList.filter((cashManagement) => cashManagement.shiftId === currentActiveShiftId)
+      .length !== 0;
+
   return (
     <>
       <Header title="Cash Management" backTo=".." />
 
       <ContainerStyled maxWidth="md">
-        <PaperStyled>
+        <PaperStyled data-has-cash-management={isCashManagementAvailable}>
           <Stack spacing={3}>
             <Controller
               name="amount"
@@ -108,39 +113,46 @@ const CashManagement: React.FC<CashManagementPorps> = (props) => {
             </BoxStyled>
           </Stack>
 
-          <DividerStyled />
+          {isCashManagementAvailable && (
+            <React.Fragment>
+              <DividerStyled />
 
-          <List
-            subheader={<ListSubheaderStyled disableGutters>Pay in/Pay out</ListSubheaderStyled>}
-          >
-            {cashManagementList
-              .slice()
-              .reverse()
-              .map((cashManagement) => {
-                const convertedPayDate = convertToType(
-                  "string",
-                  cashManagement.payDate,
-                  new Date(cashManagement.payDate)
-                );
-                const cashPayment = formatToPesos(cashManagement.cashPayment);
-                const payDate = formatStartTime(convertedPayDate);
+              <List
+                subheader={<ListSubheaderStyled disableGutters>Pay in/Pay out</ListSubheaderStyled>}
+              >
+                {cashManagementList
+                  .filter((cashManagement) => cashManagement.shiftId === currentActiveShiftId)
+                  .slice()
+                  .reverse()
+                  .map((cashManagement) => {
+                    const convertedPayDate = convertToType(
+                      "string",
+                      cashManagement.payDate,
+                      new Date(cashManagement.payDate)
+                    );
+                    const cashPayment = formatToPesos(cashManagement.cashPayment);
+                    const payDate = formatStartTime(convertedPayDate);
 
-                return (
-                  <ListItem key={cashManagement.id} disableGutters divider>
-                    <PaymentDate>{payDate}</PaymentDate>
-                    <Details>
-                      <Typography component={"div"} noWrap>
-                        {cashManagement.shiftOpened}
-                        {cashManagement.comment && (
-                          <Comment component={"span"}> - {cashManagement.comment}</Comment>
-                        )}
-                      </Typography>
-                    </Details>
-                    <CashPayment>{cashPayment}</CashPayment>
-                  </ListItem>
-                );
-              })}
-          </List>
+                    return (
+                      <ListItem key={cashManagement.id} disableGutters divider>
+                        <PaymentDate>{payDate}</PaymentDate>
+                        <Details>
+                          <Typography component={"div"} noWrap>
+                            {cashManagement.shiftOpened}
+                            {cashManagement.comment && (
+                              <Comment component={"span"}> - {cashManagement.comment}</Comment>
+                            )}
+                          </Typography>
+                        </Details>
+                        <CashPayment>
+                          {cashManagement.payType === "PayIn" ? cashPayment : `-${cashPayment}`}
+                        </CashPayment>
+                      </ListItem>
+                    );
+                  })}
+              </List>
+            </React.Fragment>
+          )}
         </PaperStyled>
       </ContainerStyled>
     </>

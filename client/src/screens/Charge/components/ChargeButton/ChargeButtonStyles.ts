@@ -1,10 +1,9 @@
 import { ButtonBaseProps, ButtonBase, IconProps } from "@mui/material";
 import { styled, Theme } from "@mui/material/styles";
 import { Payments } from "@mui/icons-material";
-import { LinkProps } from "react-router-dom";
 
-export const ButtonBaseStyled = styled(ButtonBase)<ButtonBaseProps & LinkProps>(
-  ({ theme }: { theme: Theme }) => ({
+export const ButtonBaseStyled = styled(ButtonBase)<ButtonBaseProps & { disabled: boolean }>(
+  ({ theme, ...props }: { theme: Theme; disabled: boolean }) => ({
     border: `1px solid ${theme.palette.divider}`,
     padding: `${theme.spacing(2)}`,
     backgroundColor: "#f5f5f5",
@@ -12,6 +11,7 @@ export const ButtonBaseStyled = styled(ButtonBase)<ButtonBaseProps & LinkProps>(
     borderRadius: theme.spacing(0.5),
     width: "100%",
     minHeight: 58,
+    ...(props.disabled ? { color: theme.palette.action.active } : { color: "inherit" }),
   })
 );
 

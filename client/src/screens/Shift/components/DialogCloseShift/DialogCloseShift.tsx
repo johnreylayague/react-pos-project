@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Container, Divider, List, Toolbar } from "@mui/material";
 import { Close as CloseIcon } from "@mui/icons-material";
 import OutlinedButton from "../../../../components/common/elements/Button/OutlinedButton/OutlinedButton";
@@ -6,17 +6,28 @@ import ListItemDetail from "../ListItemDetail/ListItemDetail";
 import { useDispatch, useSelector } from "react-redux";
 import InputField from "../../../../components/common/elements/Input/InputField/InputField";
 import PesosInputField from "../../../../components/vendor/react-number-formatter/PesosInputField/PesosInputField";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, ControllerRenderProps, useForm } from "react-hook-form";
 import { validationRules } from "./DialogCloseShiftValidationRules";
 import { shiftActions } from "../../../../store/shift-slice";
 import { ButtonClose, DialogStyled, DialogTitleText } from "./DialogCloseShiftStyles";
 import { formatToPesos } from "../../../../utils/format";
 import { storeProps } from "../../../../store";
+import { computeFieldTotal, computeTotalFromMultiplication } from "../../../../utils/computeUtils";
 
 export type FormValuesCloseShift = {
-  // expectedAmount: string;
-  amount: string;
-  // differenceAmount: string;
+  startingCashAmount: string;
+  totalCashPayments: string;
+  totalCashRefunds: string;
+  totalPaidIn: string;
+  totalPaidOut: string;
+  expectedCashBalance: string;
+  actualCashBalance: string;
+  cashDifference: string;
+  totalGrossSales: string;
+  totalRefundAmount: string;
+  totalNetSales: string;
+  totalCash: string;
+  actualCashAmount: string;
 };
 
 type DialogCloseShiftProps = {
@@ -29,34 +40,149 @@ const DialogCloseShift: React.FC<DialogCloseShiftProps> = (props) => {
   const { isOpen, onClose, isMobile } = props;
 
   const dispatch = useDispatch();
-  const currentActiveShift = useSelector((state: storeProps) => state.shift.currentActiveShift);
+  const currentActiveShiftId = useSelector((state: storeProps) => state.shift.currentActiveShiftId);
+  const shiftList = useSelector((state: storeProps) => state.shift.shiftList);
+  const cashManagementList = useSelector((state: storeProps) => state.shift.cashManagementList);
+  const receipt = useSelector((state: storeProps) => state.sale.receipt);
+  const purchasedItems = useSelector((state: storeProps) => state.sale.purchasedItems);
 
   const {
     handleSubmit,
     control,
     watch,
+    reset,
+    setValue,
     formState: { errors },
-  } = useForm<FormValuesCloseShift>({
-    defaultValues: {
-      amount: "20.00",
-    },
-  });
+    getValues,
+  } = useForm<FormValuesCloseShift>();
 
-  const numericValue = (value: any) =>
-    typeof value === "string" ? Number.parseFloat(value) : value;
+  useEffect(() => {
+    if (isOpen) {
+      const filterByPayTypeAndShift = (payType: "PayIn" | "PayOut") =>
+        cashManagementList.filter(
+          (cashManagement) =>
+            cashManagement.shiftId === currentActiveShiftId && cashManagement.payType === payType
+        );
+
+      const filterByIsRefunded = (refunded: boolean) =>
+        receipt.filter(
+          (receipt) => receipt.shiftId === currentActiveShiftId && receipt.refunded === refunded
+        );
+
+      const totalPayInForActiveShift = computeFieldTotal(
+        filterByPayTypeAndShift("PayIn"),
+        "cashPayment"
+      );
+
+      const totalPayOutForActiveShift = computeFieldTotal(
+        filterByPayTypeAndShift("PayOut"),
+        "cashPayment"
+      );
+
+      const filteredReceiptByActiveShiftAndNotRefunded = receipt
+        .filter((receipt) => receipt.shiftId === currentActiveShiftId && !receipt.refunded)
+        .map((receipt) => receipt.id);
+      const filteredItems = purchasedItems.filter((item) =>
+        filteredReceiptByActiveShiftAndNotRefunded.includes(item.receiptId)
+      );
+
+      const accumulatedGrossSales = computeTotalFromMultiplication(filteredItems, "price", "count");
+
+      const accumulatedCashRefunds = computeFieldTotal(filterByIsRefunded(true), "totalAmount");
+
+      const activeShift = shiftList.find(
+        (shift) => shift.id === currentActiveShiftId && !shift.isShiftClosed
+      );
+      const startingCashAmount = activeShift ? activeShift.startingCashAmount : "0.00";
+
+      const shiftStartingCashAmount = parseFloat(startingCashAmount) || 0.0;
+
+      const accumulatedNetSales = accumulatedGrossSales - accumulatedCashRefunds;
+
+      const totalCashInOut = totalPayInForActiveShift - totalPayOutForActiveShift;
+
+      const accumulatedExpectedCashAmount =
+        shiftStartingCashAmount + accumulatedNetSales + totalCashInOut;
+
+      reset({
+        startingCashAmount: startingCashAmount,
+        totalCashPayments: accumulatedGrossSales.toFixed(2),
+        totalCashRefunds: accumulatedCashRefunds.toFixed(2),
+        totalPaidIn: totalPayInForActiveShift.toFixed(2),
+        totalPaidOut: totalPayOutForActiveShift.toFixed(2),
+        expectedCashBalance: accumulatedExpectedCashAmount.toFixed(2),
+        actualCashBalance: accumulatedExpectedCashAmount.toFixed(2),
+        cashDifference: "",
+        totalGrossSales: accumulatedGrossSales.toFixed(2),
+        totalRefundAmount: accumulatedCashRefunds.toFixed(2),
+        totalNetSales: accumulatedNetSales.toFixed(2),
+        totalCash: accumulatedNetSales.toFixed(2),
+        actualCashAmount: accumulatedExpectedCashAmount.toFixed(2),
+      });
+    }
+  }, [isOpen, reset]);
 
   const handleOnCloseShift = (data: FormValuesCloseShift) => {
-    const convertCurrentActiveShiftId =
-      typeof currentActiveShift.id === "string"
-        ? Number.parseInt(currentActiveShift.id)
-        : currentActiveShift.id;
+    // const actualCashAmount = watch("actualCashAmount");
 
-    dispatch(shiftActions.closeShift({ id: convertCurrentActiveShiftId, data: data }));
+    const activeShift = shiftList.find(
+      (shift) => shift.id === currentActiveShiftId && !shift.isShiftClosed
+    );
+
+    if (!activeShift) {
+      console.log("No active shift found or the shift is already closed.");
+      return;
+    }
+
+    const updatedData = {
+      ...data,
+      actualCashAmount: parseFloat(data.actualCashAmount).toFixed(2),
+    } as FormValuesCloseShift;
+
+    dispatch(
+      shiftActions.closeShift({
+        id: activeShift.id,
+        data: updatedData,
+      })
+    );
+
     onClose();
   };
 
-  const formattedExpectedAmount = formatToPesos(numericValue(0));
-  const formattedDifferenceAmount = formatToPesos(numericValue(0));
+  const handleOnBlurActualCashAmount = (
+    _event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement, Element>,
+    field: ControllerRenderProps<FormValuesCloseShift, "actualCashAmount">
+  ) => {
+    // naay bug, if e clear ang input inig click outside sa input,
+    // wlay value ang input na "₱0.00" , mao nlng ni ang pamaagi na ako gibuhat
+
+    const actualCashAmount = getValues("actualCashAmount") || " ";
+    field.onChange(actualCashAmount);
+  };
+
+  const handleOnChangeActualCashAmount = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    field: ControllerRenderProps<FormValuesCloseShift, "actualCashAmount">
+  ) => {
+    const actualCashAmount = event.target.value;
+    const expectedCashAmount = getValues("actualCashBalance");
+
+    const validatedAmount = parseFloat(actualCashAmount) || 0;
+
+    const calculatedDifference = parseFloat(actualCashAmount) - parseFloat(expectedCashAmount);
+
+    setValue("cashDifference", calculatedDifference.toFixed(2));
+
+    field.onChange(validatedAmount);
+  };
+
+  const watchExpectedCashAmount = watch("actualCashBalance");
+
+  const watchCashDifference = watch("cashDifference");
+
+  const formattedDifferenceAmount = formatToPesos(watchCashDifference);
+
+  const formattedExpectedAmount = formatToPesos(watchExpectedCashAmount);
 
   return (
     <DialogStyled open={isOpen} fullWidth maxWidth="sm" fullScreen={isMobile}>
@@ -78,7 +204,7 @@ const DialogCloseShift: React.FC<DialogCloseShiftProps> = (props) => {
           <ListItemDetail
             secondaryAction={
               <Controller
-                name="amount"
+                name="actualCashAmount"
                 control={control}
                 rules={validationRules.amount}
                 render={({ field }) => (
@@ -89,13 +215,15 @@ const DialogCloseShift: React.FC<DialogCloseShiftProps> = (props) => {
                     inputProps={{
                       ...field,
                       inputComponent: PesosInputField as any,
+                      onBlur: (event) => handleOnBlurActualCashAmount(event, field),
+                      onChange: (event) => handleOnChangeActualCashAmount(event, field),
                       sx: () => ({
                         "& .MuiInput-input": { textAlign: "right" },
                         "&.MuiInput-root": { marginTop: 0 },
                       }),
                     }}
-                    helperText={errors.amount?.message}
-                    isShowHelperText={!!errors.amount?.message}
+                    helperText={errors.actualCashAmount?.message}
+                    isShowHelperText={!!errors.actualCashAmount?.message}
                   />
                 )}
               />

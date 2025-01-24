@@ -1,4 +1,13 @@
-import { Box, styled, BoxProps, IconButton, IconButtonProps, Theme } from "@mui/material";
+import {
+  Box,
+  styled,
+  BoxProps,
+  IconButton,
+  IconButtonProps,
+  Theme,
+  Typography,
+  TypographyProps,
+} from "@mui/material";
 
 export const CloseButton = styled(IconButton)<IconButtonProps>(({ theme }: { theme: Theme }) => ({
   position: "absolute",
@@ -20,4 +29,9 @@ export const BoxStyled = styled(Box)<BoxProps>(({ theme }) => ({
   flex: 1,
   overflowY: "auto",
   padding: theme.spacing(2),
+}));
+
+export const ResultMessage = styled(Typography)<TypographyProps>(({}: { theme: Theme }) => ({
+  textAlign: "center",
+  width: "100%",
 }));

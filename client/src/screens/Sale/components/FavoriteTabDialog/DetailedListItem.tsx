@@ -1,37 +1,47 @@
 import React from "react";
 import { ListItem, ListItemAvatar, Avatar, Divider } from "@mui/material";
 import { ListItemButtonStyled, Detail, Label } from "./DetailedListItemStyles";
+import { formatToPesos } from "../../../../utils/format";
+import { convertToNumber } from "../../../../utils/typescriptHelpers";
 
 type DetailedListItemProps = {
-  label: string;
-  alt: string;
-  imageSrc: string;
-  itemPrice?: string;
-  categoryCount?: number;
+  onSelectedItem: (event: React.MouseEvent<HTMLDivElement>) => void;
+  itemId: number;
+  itemName: string;
+  itemPrice: string;
+  itemImageSrc: string;
+  itemColorAndShapeImage: string;
+  itemRepresentation: "image" | "colorAndShape";
 };
 
 const DetailedListItem: React.FC<DetailedListItemProps> = (props) => {
-  const { categoryCount, itemPrice, label, alt, imageSrc } = props;
+  const {
+    itemPrice,
+    itemName,
+    itemImageSrc,
+    itemRepresentation,
+    itemColorAndShapeImage,
+    onSelectedItem,
+    itemId,
+  } = props;
 
-  const formattedCategoryCount =
-    categoryCount?.toString() && categoryCount > 1
-      ? `${categoryCount} items`
-      : `${categoryCount} item`;
+  const convertItemPrice = convertToNumber("string", itemPrice);
+
+  const formattedPrice = formatToPesos(convertItemPrice);
+
+  const image = itemRepresentation === "colorAndShape" ? itemColorAndShapeImage : itemImageSrc;
 
   return (
     <>
       <ListItem disablePadding>
-        <ListItemButtonStyled>
+        <ListItemButtonStyled onClick={onSelectedItem} data-id={itemId}>
           <ListItemAvatar>
-            <Avatar alt={alt} src={imageSrc} />
+            <Avatar alt={itemName} src={image} />
           </ListItemAvatar>
 
-          <Label>{label}</Label>
+          <Label>{itemName}</Label>
 
-          <Detail>
-            {itemPrice && <>₱{itemPrice}</>}
-            {categoryCount?.toString() && formattedCategoryCount}
-          </Detail>
+          <Detail>{formattedPrice}</Detail>
         </ListItemButtonStyled>
       </ListItem>
       <Divider variant="inset" component="li" />

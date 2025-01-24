@@ -90,7 +90,7 @@ export const DividerStyled = styled(Divider)<DividerProps>(({ theme }) => ({
   marginRight: theme.spacing(2),
 }));
 
-export const TotalAmount = styled(Divider)<DividerProps>(({}) => ({
+export const TotalAmount = styled(ListItemText)<ListItemTextProps>(({}) => ({
   "& .MuiListItemText-primary": { fontWeight: "bold", textAlign: "right" },
 }));
 

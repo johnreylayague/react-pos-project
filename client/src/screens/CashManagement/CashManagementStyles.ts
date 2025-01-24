@@ -1,4 +1,3 @@
-import { HTMLAttributes } from "react";
 import {
   Box,
   Container,
@@ -36,15 +35,21 @@ export const DividerStyled = styled(Divider)<DividerProps>(({ theme }: { theme: 
   marginRight: `-${theme.spacing(3)}`,
 }));
 
-export const PaperStyled = styled(Paper)<PaperProps>(({ theme }: { theme: Theme }) => ({
-  [theme.breakpoints.down("sm")]: {
-    boxShadow: "none",
-    paddingLeft: 0,
-    paddingRight: 0,
-  } as CSSObject,
-  boxShadow: theme.shadows[3],
-  padding: `${theme.spacing(3)} ${theme.spacing(3)} ${theme.spacing(1)} ${theme.spacing(3)}`,
-}));
+export const PaperStyled = styled(Paper, {
+  shouldForwardProp: (props) => props !== "data-has-cash-management",
+})<PaperProps & { ["data-has-cash-management"]?: boolean }>(
+  ({ theme, ...props }: { theme: Theme; ["data-has-cash-management"]?: boolean }) => ({
+    [theme.breakpoints.down("sm")]: {
+      boxShadow: "none",
+      paddingLeft: 0,
+      paddingRight: 0,
+    } as CSSObject,
+    boxShadow: theme.shadows[3],
+    padding: `${theme.spacing(3)} ${theme.spacing(3)} ${
+      props["data-has-cash-management"] ? theme.spacing(1) : theme.spacing(3)
+    } ${theme.spacing(3)}`,
+  })
+);
 
 export const ContainerStyled = styled(Container)<ContainerProps>(({ theme }: { theme: Theme }) => ({
   [theme.breakpoints.down("sm")]: {

@@ -1,120 +1,123 @@
-import {
-  Dialog,
-  Button,
-  Container,
-  Stack,
-  Typography,
-  ButtonBase,
-  TextField,
-  IconButton,
-  IconButtonProps,
-  styled,
-  Theme,
-  Toolbar,
-  ToolbarProps,
-  TypographyProps,
-  TextFieldProps,
-  ButtonBaseProps,
-  IconProps,
-  StackProps,
-  DialogProps,
-  ButtonProps,
-} from "@mui/material";
-import { Close as CloseIcon, Add, Remove } from "@mui/icons-material";
-import React from "react";
+import { Container, useMediaQuery, useTheme } from "@mui/material";
+import { Close as CloseIcon } from "@mui/icons-material";
+import React, { useEffect } from "react";
 import NumericInputField from "../../../../components/vendor/react-number-formatter/NumericInputField/NumericInputField";
+import { useSelector } from "react-redux";
+import { Controller, ControllerRenderProps, useForm } from "react-hook-form";
+import { storeProps } from "../../../../store";
+import {
+  AddIcon,
+  ButtonClose,
+  ButtonDecreaseQuantity,
+  ButtonIncreaseQuantity,
+  ButtonSave,
+  DialogStyled,
+  DialogTitleText,
+  FieldName,
+  InputQuantity,
+  QuantityContainer,
+  QuantityControl,
+  RemoveIcon,
+  ToolbarStyled,
+} from "./DialogRefundQuantityStyles";
+import { convertToNumber } from "../../../../utils/typescriptHelpers";
 
-const ButtonClose = styled(IconButton)<IconButtonProps>(({ theme }: { theme: Theme }) => ({
-  marginLeft: `-${theme.spacing(1)}`,
-}));
-
-const FieldName = styled(Typography)<TypographyProps>(({}: { theme: Theme }) => ({
-  color: "#7a7a7a",
-}));
-
-const QuantityContainer = styled(Stack)<StackProps>(({ theme }: { theme: Theme }) => ({
-  paddingTop: theme.spacing(1),
-  paddingBottom: theme.spacing(4),
-}));
-
-const RemoveIcon = styled(Remove)<IconProps>(({}: { theme: Theme }) => ({
-  color: "#9d9d9d",
-}));
-
-const QuantityControl = styled(Stack)<StackProps>(({}: { theme: Theme }) => ({
-  alignItems: "end",
-}));
-
-const AddIcon = styled(Add)<IconProps>(({}: { theme: Theme }) => ({
-  color: "#9d9d9d",
-}));
-
-const InputQuantity = styled(TextField)<TextFieldProps>(({ theme }: { theme: Theme }) => ({
-  "& .MuiInput-input": { height: theme.spacing(4.125), textAlign: "center" },
-}));
-
-const ButtonIncreaseQuantity = styled(ButtonBase)<ButtonBaseProps>(
-  ({ theme }: { theme: Theme }) => ({
-    border: `1px solid #e2e2e2`,
-    padding: theme.spacing(1),
-    backgroundColor: "#f5f5f5",
-  })
-);
-
-const ButtonDecreaseQuantity = styled(ButtonBase)<ButtonBaseProps>(
-  ({ theme }: { theme: Theme }) => ({
-    border: `1px solid #e2e2e2`,
-    padding: theme.spacing(1),
-    backgroundColor: "#f5f5f5",
-  })
-);
-
-const DialogStyled = styled(Dialog)<DialogProps>(({}: { theme: Theme }) => ({
-  "& .MuiPaper-root": {
-    borderRadius: 0,
-  },
-}));
-
-const ToolbarStyled = styled(Toolbar)<ToolbarProps>(({ theme }: { theme: Theme }) => ({
-  borderBottom: `1px solid ${theme.palette.divider}`,
-}));
-
-const ButtonSave = styled(Button)<ButtonProps>(({ theme }: { theme: Theme }) => ({
-  minHeight: "inherit",
-  paddingLeft: theme.spacing(3),
-  paddingRight: theme.spacing(3),
-  borderRadius: 0,
-  flexShrink: 0,
-}));
-
-const DialogTitleText = styled(Typography)<TypographyProps>(({ theme }: { theme: Theme }) => ({
-  ...theme.typography.h6,
-  paddingLeft: theme.spacing(2),
-  flexGrow: 1,
-}));
+export type FormValuesRefund = {
+  id: number;
+  title: string;
+  quantity: number | string;
+};
 
 type DialogRefundQuantityProps = {
   isOpen: boolean;
-  dialogTitle: string;
-  inputQuantity: number;
   onClose: () => void;
-  isMobile: boolean;
+  onSave: (data: FormValuesRefund) => void;
 };
+
 const DialogRefundQuantity: React.FC<DialogRefundQuantityProps> = (props) => {
-  const { isOpen, onClose, dialogTitle, inputQuantity, isMobile } = props;
+  const { isOpen, onClose, onSave } = props;
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const dialogQuantity = useSelector((state: storeProps) => state.refund.dialogQuantity);
+  const refundedData = useSelector((state: storeProps) => state.refund.refundedData);
+  const purchasedItems = useSelector((state: storeProps) => state.sale.purchasedItems);
+  const receiptId = useSelector((state: storeProps) => state.refund.receiptId);
+
+  const {
+    handleSubmit,
+    control,
+    reset,
+    watch,
+    setValue,
+    formState: {},
+  } = useForm<FormValuesRefund>();
+
+  useEffect(() => {
+    reset({
+      id: dialogQuantity.id,
+      title: dialogQuantity.title,
+      quantity: dialogQuantity.quantity,
+    });
+  }, [dialogQuantity]);
+
+  const handleChangeQuantity = (type: "increase" | "decrease") => () => {
+    const quantity = watch("quantity");
+
+    const convertedQuantity = convertToNumber("string", quantity);
+
+    const decreaseCount = convertedQuantity <= 1 ? 1 : convertedQuantity - 1;
+
+    const increaseCount =
+      convertedQuantity >= dialogQuantity.quantity
+        ? dialogQuantity.quantity
+        : convertedQuantity + 1;
+
+    const updateCount = type === "increase" ? increaseCount : decreaseCount;
+
+    setValue("quantity", updateCount);
+  };
+
+  const handleOnBlurCount = (
+    event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement, Element>,
+    field: ControllerRenderProps<FormValuesRefund, "quantity">
+  ) => {
+    const quanity = event.target.value || 1;
+
+    const convertedQuantity = convertToNumber("string", quanity);
+
+    const validatedQuantity = convertedQuantity < 1 ? 1 : convertedQuantity;
+
+    const updatedQuantity =
+      convertedQuantity >= dialogQuantity.quantity ? dialogQuantity.quantity : validatedQuantity;
+
+    field.onChange(updatedQuantity);
+  };
 
   return (
-    <DialogStyled open={isOpen} maxWidth={"xs"} fullWidth fullScreen={isMobile}>
+    <DialogStyled
+      open={isOpen}
+      maxWidth={"xs"}
+      fullWidth
+      fullScreen={isMobile}
+      onTransitionExited={() => {
+        reset({
+          id: dialogQuantity.id,
+          title: dialogQuantity.title,
+          quantity: dialogQuantity.quantity,
+        });
+      }}
+    >
       <ToolbarStyled>
         <ButtonClose onClick={onClose}>
           <CloseIcon />
         </ButtonClose>
 
         <DialogTitleText component="h6" noWrap>
-          {dialogTitle}
+          {watch("title")}
         </DialogTitleText>
 
-        <ButtonSave variant="text" color="success">
+        <ButtonSave variant="text" color="success" onClick={handleSubmit(onSave)}>
           SAVE
         </ButtonSave>
       </ToolbarStyled>
@@ -124,20 +127,31 @@ const DialogRefundQuantity: React.FC<DialogRefundQuantityProps> = (props) => {
           <FieldName component={"div"}>Quantity</FieldName>
 
           <QuantityControl direction="row" spacing={2}>
-            <ButtonDecreaseQuantity>
+            <ButtonDecreaseQuantity onClick={handleChangeQuantity("decrease")}>
               <RemoveIcon />
             </ButtonDecreaseQuantity>
 
-            <InputQuantity
-              slotProps={{
-                input: { inputComponent: NumericInputField as any, value: inputQuantity },
-              }}
-              variant="standard"
-              color="success"
-              fullWidth
+            <Controller
+              name="quantity"
+              control={control}
+              rules={{}}
+              render={({ field }) => (
+                <InputQuantity
+                  slotProps={{
+                    input: {
+                      ...field,
+                      onBlur: (event) => handleOnBlurCount(event, field),
+                      inputComponent: NumericInputField as any,
+                    },
+                  }}
+                  variant="standard"
+                  color="success"
+                  fullWidth
+                />
+              )}
             />
 
-            <ButtonIncreaseQuantity>
+            <ButtonIncreaseQuantity onClick={handleChangeQuantity("increase")}>
               <AddIcon />
             </ButtonIncreaseQuantity>
           </QuantityControl>

@@ -1,106 +1,81 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { generateRandomId } from "../utils/generateId";
 
-type refundListProps = {
-  id: number;
-  itemName: string;
-  itemCount: number;
-  itemPrice: string;
+export type refundDataProps = {
+  itemId: number;
   refunded: boolean;
+  refundCount: number;
 };
 
-export type itemListProps = {
+export type refundedDataProps = {
   id: number;
-  itemName: string;
-  itemCount: number;
-  itemPrice: string;
-  refundedCount: number;
-  refunded: boolean;
+  itemId: number;
+  receiptId: number;
+  refundCount: number;
 };
-
-const itemList: itemListProps[] = [
-  {
-    id: 1,
-    itemName: "Item 21",
-    itemCount: 1,
-    itemPrice: "199.00",
-    refundedCount: 0,
-    refunded: false,
-  },
-  {
-    id: 2,
-    itemName: "Item 2",
-    itemCount: 3,
-    itemPrice: "100.00",
-    refundedCount: 0,
-    refunded: false,
-  },
-  {
-    id: 3,
-    itemName: "Item 3",
-    itemCount: 55,
-    itemPrice: "45.00",
-    refundedCount: 0,
-    refunded: false,
-  },
-];
-
-const refundList: itemListProps[] = [];
 
 export type initialRefundState = {
-  refundData: refundListProps[];
-  itemData: itemListProps[];
+  refundData: refundDataProps[];
+  refundedData: refundedDataProps[];
+  dialogQuantity: { id: number; title: string; quantity: number };
+  receiptId: number;
+};
+
+const initialState: initialRefundState = {
+  refundData: [],
+  refundedData: [],
+  dialogQuantity: { id: 0, title: "", quantity: 0 },
+  receiptId: 0,
 };
 
 const refundSlice = createSlice({
   name: "refund",
-  initialState: {
-    itemData: itemList,
-    refundData: refundList,
-  },
+  initialState: initialState,
   reducers: {
-    refundItem(state, action) {
-      const isItemExist = state.itemData.filter((item) => item.id === action.payload).length;
+    initialRefundData(
+      state,
+      action: { type: string; payload: { refundData: refundDataProps[]; receiptId: number } }
+    ) {
+      const { refundData, receiptId } = action.payload;
 
-      const isItemExistInRefund = state.refundData.filter(
-        (refund) => refund.id === action.payload
-      ).length;
-
-      if (!isItemExistInRefund && isItemExist) {
-        const updatedItemData = state.itemData.map((item) => {
-          if (item.id === action.payload) {
-            return { ...item, refunded: true };
-          }
-          return { ...item };
-        });
-
-        const addedRefundItem = updatedItemData.find((item) => item.id === action.payload);
-
-        state.itemData = [...updatedItemData];
-        if (addedRefundItem) {
-          state.refundData.push(addedRefundItem);
-        }
-      }
+      state.refundData = refundData;
+      state.receiptId = receiptId;
     },
-    removeRefundedItem(state, action) {
-      const isRefundExist = state.refundData.filter((item) => item.id === action.payload).length;
+    updateDialogQuantity(
+      state,
+      action: { payload: { id: number; title: string; quantity: number } }
+    ) {
+      const { quantity, title, id } = action.payload;
 
-      const isRefundExistInItem = state.refundData.filter(
-        (refund) => refund.id === action.payload
-      ).length;
+      state.dialogQuantity.id = id;
+      state.dialogQuantity.title = title;
+      state.dialogQuantity.quantity = quantity;
+    },
+    updateRefundItem(
+      state,
+      action: { payload: { itemId: number; refunded: boolean; refundCount: number } }
+    ) {
+      const { itemId, refundCount, refunded } = action.payload;
 
-      if (isRefundExistInItem && isRefundExist) {
-        const updatedItemData = state.itemData.map((item) => {
-          if (item.id === action.payload) {
-            return { ...item, refunded: false };
-          }
-          return { ...item };
-        });
+      const index = state.refundData.findIndex((refund) => refund.itemId === itemId);
 
-        const filteredRefundedItem = state.refundData.filter((item) => item.id !== action.payload);
+      state.refundData[index] = {
+        ...state.refundData[index],
+        refunded: refunded,
+        refundCount: refundCount,
+      };
+    },
+    updateRefundedData(state) {
+      const refundedData = state.refundData.map((refund) => {
+        return {
+          id: generateRandomId(),
+          itemId: refund.itemId,
+          receiptId: state.receiptId,
+          refundCount: refund.refundCount,
+        } as refundedDataProps;
+      });
 
-        state.itemData = [...updatedItemData];
-        state.refundData = filteredRefundedItem;
-      }
+      state.refundedData.push(...refundedData);
     },
   },
 });

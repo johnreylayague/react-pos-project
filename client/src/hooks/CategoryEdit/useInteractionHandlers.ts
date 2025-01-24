@@ -1,14 +1,23 @@
 import React from "react";
-import { UseFormSetValue, UseFormWatch } from "react-hook-form";
+import { UseFormSetValue } from "react-hook-form";
 import { FormValuesCategory } from "../../screens/CategoryEdit/CategoryEdit";
 import { itemActions } from "../../store/item-slice";
 import { useDispatch } from "react-redux";
 import { notificationProps } from "../material-ui/useSnackbar/useSnackbar";
 import { convertToNumber } from "../../utils/typescriptHelpers";
 
-export const useInteractionHandlers = (
+type useInteractionHandlersProps = (
   setValue: UseFormSetValue<FormValuesCategory>,
   handleOpenSnackbar: ({ message, severity }: notificationProps) => void
+) => {
+  handleColorSelectionChange: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  handleOnClickSelect: (event: React.MouseEvent<HTMLDivElement>) => void;
+  handleOnChangeSelect: (event: React.ChangeEvent<HTMLInputElement>) => void;
+};
+
+export const useInteractionHandlers: useInteractionHandlersProps = (
+  setValue,
+  handleOpenSnackbar
 ) => {
   const dispatch = useDispatch();
 

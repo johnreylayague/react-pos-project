@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import HeaderFormAction from "../../components/common/elements/Header/HeaderFormAction/HeaderFormAction";
 import ContainerWrapper from "./components/ContainerWrapper/ContainerWrapper.tsx";
 import Section from "./components/Section/Section.tsx";
@@ -13,7 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import InputField from "./components/InputField/InputField.tsx";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Grid2 as Grid, useMediaQuery, useTheme } from "@mui/material";
 import ShapeListItem from "./components/ShapeListItem/ShapeListItem.tsx";
 import ColorListItem from "./components/ColorListItem/ColorListItem.tsx";
@@ -22,9 +22,8 @@ import { NumberFormatter } from "./components/NumberFormatter/NumberFormatter.ts
 import SelectField from "./components/SelectField/SelectField.tsx";
 import SoldByOptionSelector from "./components/SoldByOptionSelector/SoldByOptionSelector.tsx";
 import DialogCategoryCreate from "./components/DialogCategoryCreate/DialogCategoryCreate.tsx";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
-import { useDialog } from "../../hooks/material-ui/useDialog/useDialog.tsx";
 import NumericInputField from "../../components/vendor/react-number-formatter/NumericInputField/NumericInputField.tsx";
 import {
   BoxStyled,
@@ -45,16 +44,19 @@ import {
   TakePhotoButton,
   TakePhotoCameraAltIcon,
   WebcamDialog,
-} from "./ItemCreateStyles.ts";
-import { validationCategoryRules, validationItemRules } from "./ItemCreateValidationRules.ts";
+} from "./Styles.ts";
+import { validationCategoryRules, validationItemRules } from "./ValidationRules.ts";
 import { useActions } from "../../hooks/ItemCreate/useActions.ts";
-import assets, { ColorDataProps, ShapeDataProps } from "../../assets/assets.ts";
-import { useRepresentationInteractionHandlers } from "../../hooks/ItemCreate/useRepresentationInteractionHandlers.ts";
+import assets from "../../assets/assets.ts";
+import { useInteractionHandlers } from "../../hooks/ItemCreate/useInteractionHandlers.ts";
 import { isMobile } from "react-device-detect";
 import Webcam from "react-webcam";
-import { useInteractionHandlers } from "../../hooks/ItemCreate/useInteractionHandlers.ts";
 import { storeProps } from "../../store/index.ts";
 import { useSnackbar } from "../../hooks/material-ui/useSnackbar/useSnackbar.ts";
+import { categoryCreate, FormValuesCategory, FormValuesItem, itemCreate } from "./FormValues.ts";
+
+const colorData = assets.json.colorData;
+const shapeData = assets.json.shapeData;
 
 type LocationState = {
   pathname: string;
@@ -69,39 +71,15 @@ type LocationState = {
   key: string;
 };
 
-export type FormValuesItem = {
-  name: string;
-  categoryId: string | number;
-  soldby: string;
-  price: string;
-  cost: string;
-  sku: string;
-  barcode: string;
-  trackstock: boolean;
-  representation: "colorAndShape" | "image";
-  image: string;
-  colorAndShapeImage: string;
-  colorId: number;
-  shapeId: number;
-  instock: number;
-};
-
-export type FormValuesCategory = {
-  name: string;
-};
-
 type ItemCreateProps = {};
 
 const ItemCreate: React.FC<ItemCreateProps> = (props) => {
   const {} = props;
 
   const theme = useTheme();
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+
   const location = useLocation() as LocationState;
   const isBelowSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
-  const [colorData, _setColorData] = useState<ColorDataProps[]>(assets.json.colorData);
-  const [shapeData, _setShapeData] = useState<ShapeDataProps[]>(assets.json.shapeData);
 
   const {
     handleSubmit: handleSubmitCategory,
@@ -109,9 +87,7 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
     control: controlCategory,
     formState: { errors: errorsCategory },
   } = useForm<FormValuesCategory>({
-    defaultValues: {
-      name: "",
-    },
+    defaultValues: categoryCreate,
   });
 
   const {
@@ -119,29 +95,15 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
     control: controlItem,
     setValue: setValueItem,
     watch: watchItem,
+    setError: setErrorItem,
     formState: { errors },
   } = useForm<FormValuesItem>({
-    defaultValues: {
-      name: "",
-      price: "0",
-      categoryId: "",
-      soldby: "each",
-      cost: "0",
-      sku: "",
-      barcode: "",
-      trackstock: false,
-      representation: "colorAndShape",
-      colorAndShapeImage: "",
-      image: "",
-      instock: 0,
-      colorId: 1,
-      shapeId: 1,
-    },
+    defaultValues: itemCreate,
   });
 
-  const { snackbar, handleCloseSnackbar, handleOpenSnackbar } = useSnackbar();
-
   const categoryList = useSelector((state: storeProps) => state.category.categoryList);
+
+  const { snackbar, handleCloseSnackbar, handleOpenSnackbar } = useSnackbar();
 
   useEffect(() => {
     const categoryId = location.state?.from.newCategoryId;
@@ -153,23 +115,27 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
     const findCategoryById = categoryList.find((category) => category.id === categoryId);
 
     if (!findCategoryById?.id) {
-      console.log("Error: Category with the specified ID not found.");
+      handleOpenSnackbar({
+        message: "Invalid Category ID provided",
+        severity: "error",
+      });
       return;
     }
 
     setValueItem("categoryId", findCategoryById.id);
   }, [setValueItem]);
 
+  useEffect(() => {
+    if (!watchItem("trackstock")) {
+      setValueItem("instock", 0);
+    }
+  }, [watchItem("trackstock")]);
+
   const defaultBackPath = isBelowSmallScreen ? "../index" : "..";
 
   const navigationBackPath = location.state?.from.previousPath
     ? location.state.from.previousPath
     : defaultBackPath;
-
-  const { isOpenDialog, handleCloseDialog, handleOpenDialog } = useDialog();
-
-  const { handleCategoryChange, handleSelectChangeColor, handleSelectChangeShape } =
-    useInteractionHandlers(setValueItem, watchItem, handleOpenDialog);
 
   const {
     handleCloseDialogWebcam,
@@ -182,25 +148,25 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
     isDialogWebcamDialog,
     isMediaStreamActive,
     mobileInputRef,
-    onStartMediaStream,
-    onStopMediaStream,
+    handleOnStartMediaStream,
+    handleOnStopMediaStream,
     webcamRef,
-  } = useRepresentationInteractionHandlers(setValueItem, isMobile);
+    handleCategoryChange,
+    handleCloseDialogCategoryCreate,
+    handleSelectChangeColor,
+    handleSelectChangeShape,
+    isOpenDialogCategoryCreate,
+    handleOnUserMediaError,
+  } = useInteractionHandlers(setValueItem, isMobile, handleOpenSnackbar);
 
   const { handleOnSubmitCategory, handleOnSubmitItem } = useActions(
     setValueItem,
-    navigate,
-    dispatch,
     isBelowSmallScreen,
-    handleCloseDialog,
-    resetCategory
+    handleCloseDialogCategoryCreate,
+    resetCategory,
+    handleOpenSnackbar,
+    setErrorItem
   );
-
-  const handleOnUserMediaError = () =>
-    handleOpenSnackbar({
-      message: "Unable to access the webcam. Please check your device settings and permissions.",
-      severity: "error",
-    });
 
   return (
     <>
@@ -488,18 +454,18 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
             />
           </>
         }
-        onClose={handleCloseDialog}
-        isOpen={isOpenDialog}
+        onClose={handleCloseDialogCategoryCreate}
+        isOpen={isOpenDialogCategoryCreate}
       />
       <WebcamDialog
         open={isDialogWebcamDialog}
         fullWidth
         maxWidth="sm"
         onTransitionEnter={() => {
-          onStopMediaStream();
+          handleOnStopMediaStream();
         }}
         onTransitionExited={() => {
-          onStopMediaStream();
+          handleOnStopMediaStream();
         }}
       >
         <Toolbar>
@@ -519,7 +485,7 @@ const ItemCreate: React.FC<ItemCreateProps> = (props) => {
         <Webcam
           audio={false}
           ref={webcamRef}
-          onUserMedia={onStartMediaStream}
+          onUserMedia={handleOnStartMediaStream}
           onUserMediaError={handleOnUserMediaError}
           screenshotFormat="image/png"
           style={{

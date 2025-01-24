@@ -1,27 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { FormValuesCloseShift } from "../screens/Shift/components/DialogCloseShift/DialogCloseShift";
 import { FormValuesCashManagement } from "../screens/CashManagement/CashManagement";
-
-const defaultCurrentActiveShift = {
-  id: "",
-  shiftNumber: "",
-  shiftOpened: "",
-  shiftStartDate: "",
-  shiftEndDate: "",
-  startingCash: "",
-  cashPayments: "",
-  cashRefunds: "",
-  paidIn: "",
-  paidOut: "",
-  expectedCashAmount: "",
-  actualCashAmount: "",
-  grossSales: "",
-  refunds: "",
-  discounts: "",
-  difference: "",
-  netSales: "",
-  isShiftCompleted: "",
-};
+import { convertToNumber, convertToParseFloatToFixed } from "../utils/typescriptHelpers";
 
 export interface cashManagementListProps {
   id: number | string;
@@ -34,84 +14,94 @@ export interface cashManagementListProps {
 }
 
 export interface shiftProps {
-  id: number | string;
-  shiftNumber: number | string;
-  shiftOpened: string;
-  shiftStartDate: Date | string;
-  shiftEndDate: Date | string;
-  startingCash: string;
-  cashPayments: string;
-  cashRefunds: string;
-  paidIn: string;
-  paidOut: string;
-  expectedCashAmount: string;
-  grossSales: string;
-  refunds: string;
-  discounts: string;
-  difference: string;
-  netSales: string;
+  id: number;
+  shiftNumber: number;
+  salesDevice: string;
+  openedBy: string;
+  closedBy: string;
+  openedAt: string;
+  closedAt: string;
+  startingCashAmount: string;
+  totalCashPayments: string;
+  totalCashRefunds: string;
+  totalPaidIn: string | number;
+  totalPaidOut: string | number;
+  expectedCashBalance: string;
+  actualCashBalance: string;
+  cashDifference: string;
+  totalGrossSales: string;
+  totalRefundAmount: string;
+  totalNetSales: string;
+  totalCash: string;
+  isShiftClosed: boolean;
   actualCashAmount: string;
-  isShiftCompleted: boolean | string;
+}
+
+export interface shiftDetailsProps {
+  id: number;
+  shiftNumber: number;
+  salesDevice: string;
+  openedBy: string;
+  closedBy: string;
+  openedAt: string;
+  closedAt: string;
+  startingCashAmount: number;
+  totalCashPayments: number;
+  totalCashRefunds: number;
+  totalPaidIn: number;
+  totalPaidOut: number;
+  expectedCashBalance: number;
+  actualCashBalance: number;
+  cashDifference: number;
+  totalGrossSales: number;
+  totalRefundAmount: number;
+  totalNetSales: number;
+  totalCash: number;
+  isShiftClosed: boolean;
 }
 
 export type initialShiftState = {
-  currentActiveShift: shiftProps;
-  selectedShiftReport: shiftProps;
+  currentActiveShiftId: number | null;
+  selectedReportShiftId: number | null;
   shiftList: shiftProps[];
   cashManagementList: cashManagementListProps[];
+  shiftDetails: shiftDetailsProps;
 };
 
 const shiftSlice = createSlice({
   name: "shift",
   initialState: {
-    currentActiveShift: defaultCurrentActiveShift,
-    selectedShiftReport: defaultCurrentActiveShift,
+    currentActiveShiftId: null,
+    selectedReportShiftId: null,
     shiftList: [
       {
-        id: 1,
-        shiftNumber: "1",
-        shiftOpened: "Owner",
-        shiftStartDate: "2024-11-19T05:32:03.449Z",
-        shiftEndDate: "2024-12-19T05:55:03.449Z",
-        startingCash: "12.00",
-        cashPayments: "",
-        cashRefunds: "",
-        paidIn: "",
-        paidOut: "",
-        expectedCashAmount: "",
+        id: 2257221,
+        shiftNumber: 4,
+        salesDevice: "POS 4",
+        openedBy: "Owner",
+        closedBy: "Owner",
+        openedAt: "2024-11-19T05:32:03.449Z",
+        closedAt: "2024-12-19T05:55:03.449Z",
+        startingCashAmount: "12.00",
+        totalCashPayments: "",
+        totalCashRefunds: "",
+        totalPaidIn: "",
+        totalPaidOut: "",
+        expectedCashBalance: "",
+        actualCashBalance: "",
+        cashDifference: "",
+        totalGrossSales: "",
+        totalRefundAmount: "",
+        totalNetSales: "",
+        totalCash: "",
         actualCashAmount: "",
-        grossSales: "",
-        refunds: "",
-        discounts: "",
-        difference: "",
-        netSales: "",
-        isShiftCompleted: true,
-      },
-      {
-        id: 2,
-        shiftNumber: "2",
-        shiftOpened: "Owner",
-        shiftStartDate: "2024-11-19T05:32:03.449Z",
-        shiftEndDate: "2024-12-19T05:55:03.449Z",
-        startingCash: "12.00",
-        cashPayments: "",
-        cashRefunds: "",
-        paidIn: "",
-        paidOut: "",
-        expectedCashAmount: "",
-        actualCashAmount: "",
-        grossSales: "",
-        refunds: "",
-        discounts: "",
-        difference: "",
-        netSales: "",
-        isShiftCompleted: true,
+        isShiftClosed: true,
       },
     ],
     cashManagementList: [
       {
         id: 1,
-        shiftId: 1,
+        shiftId: 2257221,
         payType: "PayIn",
         payDate: "2024-11-19T05:32:03.449Z",
         shiftOpened: "Owner",
@@ -120,11 +110,11 @@ const shiftSlice = createSlice({
       },
       {
         id: 2,
-        shiftId: 1,
+        shiftId: 2257221,
         payType: "PaidOut",
         payDate: "2024-11-19T05:32:03.449Z",
         shiftOpened: "Owner",
-        cashPayment: "10.00",
+        cashPayment: "5.00",
         comment: "Sample comment",
       },
     ],
@@ -135,12 +125,18 @@ const shiftSlice = createSlice({
 
       const dateToday = new Date();
 
-      const newCashManagementId = state.cashManagementList.length + 1;
-      const convertedAmount = (-parseFloat(amount)).toFixed(2);
+      const generatedId = Math.floor(Math.random() * 10000000);
+
+      const convertedAmount = parseFloat(amount).toFixed(2);
+
+      if (!state.currentActiveShiftId) {
+        console.log("'id' is not defined or is invalid.");
+        return;
+      }
 
       const newCashManagement: cashManagementListProps = {
-        id: newCashManagementId,
-        shiftId: state.currentActiveShift.id,
+        id: generatedId,
+        shiftId: state.currentActiveShiftId,
         cashPayment: convertedAmount,
         comment: comment,
         payDate: dateToday.toISOString(),
@@ -155,11 +151,16 @@ const shiftSlice = createSlice({
 
       const dateToday = new Date();
 
-      const newCashManagementId = state.cashManagementList.length + 1;
+      const generatedId = Math.floor(Math.random() * 10000000);
+
+      if (!state.currentActiveShiftId) {
+        console.log("'currentActiveShiftId' is not defined or is invalid.");
+        return;
+      }
 
       const newCashManagement: cashManagementListProps = {
-        id: newCashManagementId,
-        shiftId: state.currentActiveShift.id,
+        id: generatedId,
+        shiftId: state.currentActiveShiftId,
         cashPayment: amount,
         comment: comment,
         payDate: dateToday.toISOString(),
@@ -169,8 +170,8 @@ const shiftSlice = createSlice({
 
       state.cashManagementList.push(newCashManagement);
     },
-    selected: (state, action: PayloadAction<shiftProps>) => {
-      state.selectedShiftReport = action.payload;
+    setSelectedShiftId: (state, action: PayloadAction<number>) => {
+      state.selectedReportShiftId = action.payload;
     },
     openShift: (state, action: PayloadAction<{ amount: string }>) => {
       const { amount } = action.payload;
@@ -179,56 +180,42 @@ const shiftSlice = createSlice({
 
       const newShiftId = state.shiftList.length + 1;
 
+      const generatedId = Math.floor(Math.random() * 10000000);
+
       const newShiftData: shiftProps = {
-        id: newShiftId,
+        id: generatedId,
         shiftNumber: newShiftId,
-        shiftOpened: "Owner",
-        shiftStartDate: dateToday.toISOString(),
-        shiftEndDate: "",
-        startingCash: amount,
-        cashPayments: "",
-        cashRefunds: "",
-        paidIn: "",
-        paidOut: "",
-        expectedCashAmount: "",
+        salesDevice: `POS ${newShiftId}`,
+        openedBy: "Owner",
+        closedBy: "Owner",
+        openedAt: dateToday.toISOString(),
+        closedAt: "",
+        startingCashAmount: amount,
+        totalCashPayments: "",
+        totalCashRefunds: "",
+        totalPaidIn: "",
+        totalPaidOut: "",
+        expectedCashBalance: "",
+        actualCashBalance: "",
+        cashDifference: "",
+        totalGrossSales: "",
+        totalRefundAmount: "",
+        totalNetSales: "",
+        totalCash: "",
         actualCashAmount: "",
-        grossSales: "",
-        refunds: "",
-        discounts: "",
-        difference: "",
-        netSales: "",
-        isShiftCompleted: false,
+        isShiftClosed: false,
       };
 
       state.shiftList.push(newShiftData);
-      state.currentActiveShift = newShiftData;
+      state.currentActiveShiftId = generatedId;
     },
     closeShift: (state, action: PayloadAction<{ id: number; data: FormValuesCloseShift }>) => {
       const shiftId = action.payload.id;
-      const { amount } = action.payload.data;
+      const data = action.payload.data;
 
       const dateToday = new Date();
 
       const findIndexShiftById = state.shiftList.findIndex((shift) => shift.id === shiftId);
-
-      const findPayInByShiftId = state.cashManagementList.filter(
-        (cashManagement) => cashManagement.shiftId === shiftId && cashManagement.payType === "PayIn"
-      );
-
-      const findPayOutByShiftId = state.cashManagementList.filter(
-        (cashManagement) =>
-          cashManagement.shiftId === shiftId && cashManagement.payType === "PayOut"
-      );
-
-      if (!findPayInByShiftId) {
-        console.log("findPayInByShiftId no result found!");
-        return;
-      }
-
-      if (!findPayOutByShiftId) {
-        console.log("findPayOutByShiftId no result found!");
-        return;
-      }
 
       if (findIndexShiftById === -1) {
         console.log("Connot find ShiftList Id!");
@@ -236,38 +223,15 @@ const shiftSlice = createSlice({
       }
 
       if (findIndexShiftById > -1) {
-        const totalPayInAmount = findPayInByShiftId.reduce((total, payment) => {
-          const convertedCashPayment =
-            typeof payment.cashPayment === "string"
-              ? parseFloat(payment.cashPayment)
-              : payment.cashPayment;
-
-          return total + convertedCashPayment;
-        }, 0);
-
-        const totalPayOutAmount = findPayOutByShiftId.reduce((total, payment) => {
-          const convertedCashPayment =
-            typeof payment.cashPayment === "string"
-              ? parseFloat(payment.cashPayment)
-              : payment.cashPayment;
-
-          return total + convertedCashPayment;
-        }, 0);
-
-        const formattedTotalPayIn = totalPayInAmount.toFixed(2);
-        const formattedTotalPayOut = totalPayOutAmount.toFixed(2);
-
         state.shiftList[findIndexShiftById] = {
           ...state.shiftList[findIndexShiftById],
-          shiftEndDate: dateToday.toISOString(),
-          actualCashAmount: amount,
-          isShiftCompleted: true,
-          paidIn: formattedTotalPayIn,
-          paidOut: formattedTotalPayOut,
+          ...data,
+          closedAt: dateToday.toISOString(),
+          isShiftClosed: true,
         };
       }
 
-      state.currentActiveShift = defaultCurrentActiveShift;
+      state.currentActiveShiftId = null;
     },
   },
 });

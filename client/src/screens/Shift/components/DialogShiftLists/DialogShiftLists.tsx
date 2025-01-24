@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   styled,
   Theme,
@@ -52,7 +52,7 @@ const DialogShiftLists: React.FC<DialogShiftListsProps> = (props) => {
     handleOpenToggle: handleOpenLoading,
   } = useToggle(true);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setTimeout(() => {
       handleCloseLoading();
     }, 250);
@@ -77,12 +77,14 @@ const DialogShiftLists: React.FC<DialogShiftListsProps> = (props) => {
       <Fade in={!isLoading}>
         <ListStyled disablePadding>
           {shiftList
-            .filter((shift) => shift.isShiftCompleted)
+            .filter((shift) => shift.isShiftClosed)
             .map((shift) => {
               return (
                 <ListItemShiftHistory
                   key={shift.id}
-                  shiftData={shift}
+                  shiftId={shift.id}
+                  shiftOpenedAt={shift.openedAt}
+                  shiftClosedAt={shift.closedAt}
                   onShowShiftReport={onShowShiftReport}
                 />
               );

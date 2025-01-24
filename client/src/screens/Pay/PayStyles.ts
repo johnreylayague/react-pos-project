@@ -3,7 +3,7 @@ import { styled, Theme } from "@mui/material/styles";
 import ButtonContained from "../../components/common/elements/Button/ContainedButton/ContainedButton";
 import { LinkProps } from "react-router-dom";
 
-export const NewSaleButton = styled(ButtonContained)<ButtonProps & LinkProps>(
+export const NewSaleButton = styled(ButtonContained)<ButtonProps>(
   ({ theme }: { theme: Theme }) => ({
     [theme.breakpoints.down("sm")]: {
       marginTop: "calc(100dvh - 220px)",
