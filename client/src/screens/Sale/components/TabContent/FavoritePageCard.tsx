@@ -22,13 +22,12 @@ type colorAndShapesData = {
 
 type FavoritePageCardProps = {
   pageData: pageData[];
-  onOpenDialogAddItemAndCategory: (event: React.MouseEvent<HTMLButtonElement>) => void;
   colorAndShapesData: colorAndShapesData[];
   index: number;
   pageId: number;
 };
 const FavoritePageCard: React.FC<FavoritePageCardProps> = (props) => {
-  const { pageData, colorAndShapesData, index, pageId, onOpenDialogAddItemAndCategory } = props;
+  const { pageData, colorAndShapesData, index, pageId } = props;
 
   const item = pageData.find(
     (jsonPageData) => jsonPageData.pageId === pageId && jsonPageData.sequenceId === index
@@ -53,10 +52,7 @@ const FavoritePageCard: React.FC<FavoritePageCardProps> = (props) => {
 
   if (!representationImage && !item) {
     updatedButtonContent = (
-      <ShapeItemButton
-        onOpenDialogAddItemAndCategory={onOpenDialogAddItemAndCategory}
-        itemImage={assets.images.colorsAndShapes.SoftPeach.BorderSquare3}
-      />
+      <ShapeItemButton itemImage={assets.images.colorsAndShapes.SoftPeach.BorderSquare3} />
     );
   }
 

@@ -1,6 +1,6 @@
 import React from "react";
 import { SearchBarContainer } from "./DialogFilterSearchBarStyles";
-import { IconButton, InputBase, Toolbar } from "@mui/material";
+import { IconButton, InputBase } from "@mui/material";
 import { Search as SearchIcon, Close as CloseIcon } from "@mui/icons-material";
 
 type DialogFilterSearchBarProps = {

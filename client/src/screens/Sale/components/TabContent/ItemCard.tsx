@@ -2,7 +2,6 @@ import React from "react";
 import { Grid2 as Grid } from "@mui/material";
 import ShapeItemButton from "../ShapeItemButton/ShapeItemButton";
 import assets from "../../../../assets/assets";
-import { ContentCopy } from "@mui/icons-material";
 
 type ItemCardProps = {
   sequenceId: number;
@@ -11,14 +10,6 @@ type ItemCardProps = {
   itemImage: string;
   itemRepresentation: string;
   itemId?: number;
-  onInteractionHandlers?: {
-    onTouchStart?: () => void;
-    onTouchEnd?: () => void;
-    onTouchCancel?: () => void;
-    onMouseDown?: () => void;
-    onMouseUp?: () => void;
-    onMouseLeave?: () => void;
-  };
   onAddTicketItem?: (itemId: number) => void;
   onMouseDown?: () => void;
   onMouseUp?: () => void;
@@ -26,7 +17,6 @@ type ItemCardProps = {
 };
 const ItemCard: React.FC<ItemCardProps> = (props) => {
   const {
-    onInteractionHandlers,
     itemName,
     itemRepresentation,
     itemColorAndShapeImage,

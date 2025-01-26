@@ -12,7 +12,7 @@ import {
   PaperProps,
   Typography,
 } from "@mui/material";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import Header from "./components/Header/Header";
 import PriceSummary from "./components/PriceSummary/PriceSummary";
 import ReceiptInfo from "./components/ReceiptInfo/ReceiptInfo";
@@ -21,7 +21,6 @@ import TransactionSummary from "./components/TransactionSummary/TransactionSumma
 import TransactionDetail from "./components/TransactionDetail/TransactionDetail";
 import { storeProps } from "../../store";
 import { useSelector } from "react-redux";
-import { receipt } from "../../store/sale-slice";
 import { formatToPesos } from "../../utils/format";
 
 const ContainerStyled = styled(Container)<ContainerProps>(({ theme }: { theme: Theme }) => ({
