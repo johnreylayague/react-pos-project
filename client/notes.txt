@@ -5,7 +5,7 @@ http://localhost:5173/sale - favorite dialog - categories, og category page - il
 make the json data reusable
 ang search inig long press sa keyboard mo lagg
 - inig delete sa item while naa sa ticket, dli sya mawala bisan na delete na
-
+set gettime() try daw use ni sa receipt pra dli na mag new date() method perme
 -shift-
 id
 shiftNumber

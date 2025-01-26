@@ -1,17 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Container,
-  List,
-  styled,
-  Theme,
-  ContainerProps,
-  Box,
-  CSSObject,
-  BoxProps,
-  Paper,
-  PaperProps,
-  Typography,
-} from "@mui/material";
+import { List, Typography } from "@mui/material";
 import { useParams } from "react-router-dom";
 import Header from "./components/Header/Header";
 import PriceSummary from "./components/PriceSummary/PriceSummary";
@@ -22,34 +10,7 @@ import TransactionDetail from "./components/TransactionDetail/TransactionDetail"
 import { storeProps } from "../../store";
 import { useSelector } from "react-redux";
 import { formatToPesos } from "../../utils/format";
-
-const ContainerStyled = styled(Container)<ContainerProps>(({ theme }: { theme: Theme }) => ({
-  [theme.breakpoints.down("sm")]: {
-    paddingTop: 0,
-    paddingBottom: 0,
-  } as CSSObject,
-  paddingTop: theme.spacing(3),
-  paddingBottom: theme.spacing(3),
-}));
-
-const BoxStyled = styled(Box)<BoxProps>(({ theme }: { theme: Theme }) => ({
-  [theme.breakpoints.down("sm")]: {
-    height: `calc(100dvh - 56px)`,
-  } as CSSObject,
-  overflowY: "auto",
-  height: `calc(100dvh - 64px)`,
-}));
-
-const PaperStyled = styled(Paper)<PaperProps>(({ theme }: { theme: Theme }) => ({
-  [theme.breakpoints.down("sm")]: {
-    boxShadow: "none",
-    paddingLeft: 0,
-    paddingRight: 0,
-  },
-  padding: theme.spacing(3),
-  boxShadow: theme.shadows[3],
-  background: theme.palette.common.white,
-}));
+import { BoxStyled, ContainerStyled, PaperStyled } from "./ReceiptStyles";
 
 type ReceiptProps = {};
 const Receipt: React.FC<ReceiptProps> = (props) => {

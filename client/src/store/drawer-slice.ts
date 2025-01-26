@@ -17,7 +17,7 @@ const menuDataList = [
   { id: 2, name: "Receipts", link: "/receipt", icon: "receipt" },
   { id: 3, name: "Shift", link: "/shift", icon: "schedule" },
   { id: 4, name: "Items", link: "/item", icon: "list" },
-  { id: 5, name: "Settings", link: "/settings", icon: "settings" },
+  // { id: 5, name: "Settings", link: "/settings", icon: "settings" },
 ];
 
 const initialState: initialDrawerState = {

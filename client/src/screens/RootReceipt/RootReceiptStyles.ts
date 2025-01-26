@@ -9,8 +9,10 @@ import {
   IconProps,
   List,
   ListProps,
+  IconButtonProps,
+  IconButton,
 } from "@mui/material";
-import { Search } from "@mui/icons-material";
+import { Close, Search } from "@mui/icons-material";
 
 const sideBarWidth = {
   xs: "100%",
@@ -63,6 +65,7 @@ export const InputSearch = styled(InputBase)<InputBaseProps>(({ theme }: { theme
   },
   width: "100%",
   padding: `${theme.spacing(2)} ${theme.spacing(3)}`,
+  borderBottom: `1px solid ${theme.palette.divider}`,
 }));
 
 export const SearchIcon = styled(Search)<IconProps>(({ theme }: { theme: Theme }) => ({
@@ -79,3 +82,19 @@ export const ListStyled = styled(List)<ListProps>(({ theme }: { theme: Theme }) 
   borderRight: `1px solid ${theme.palette.divider}`,
   flexGrow: 1,
 }));
+
+export const ResultMessage = styled(List)<ListProps>(({ theme }: { theme: Theme }) => ({
+  textAlign: "center",
+  marginTop: theme.spacing(1),
+}));
+
+export const CloseIcon = styled(Close)<IconProps>(({}: { theme: Theme }) => ({}));
+
+export const CloseButton = styled(IconButton, {
+  shouldForwardProp: (props) => props !== "data-is-show",
+})<IconButtonProps & { ["data-is-show"]?: boolean }>(
+  ({ theme, ...prop }: { theme: Theme; ["data-is-show"]?: boolean }) => ({
+    marginRight: `-${theme.spacing(1)}`,
+    visibility: prop["data-is-show"] ? "hidden" : "visible",
+  })
+);

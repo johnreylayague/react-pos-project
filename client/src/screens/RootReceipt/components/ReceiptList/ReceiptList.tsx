@@ -7,7 +7,6 @@ const UlStyled = styled("ul")<HTMLAttributes<HTMLUListElement>>(({}: { theme: Th
 }));
 
 const DateHeader = styled(ListSubheader)<ListSubheaderProps>(({ theme }: { theme: Theme }) => ({
-  borderTop: `1px solid ${theme.palette.divider}`,
   borderBottom: `1px solid ${theme.palette.divider}`,
   color: theme.palette.success.main,
 }));

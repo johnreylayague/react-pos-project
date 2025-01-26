@@ -1,25 +1,66 @@
-import * as React from "react";
-import Typography from "@mui/material/Typography";
-import Breadcrumbs from "@mui/material/Breadcrumbs";
-import Link from "@mui/material/Link";
+import React from "react";
 
-function handleClick(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
-  event.preventDefault();
-  console.info("You clicked a breadcrumb.");
-}
+// Define the MenuItem type
+type MenuItem = {
+  id: number;
+  menuId: number | null;
+  title: string;
+  children?: MenuItem[]; // Recursive type for nested menus
+};
 
-export default function BasicBreadcrumbs() {
+// Function to organize menu into a nested structure
+const buildMenuTree = (menuItems: MenuItem[], parentId: number | null = null): MenuItem[] => {
+  return menuItems
+    .filter((item) => item.menuId === parentId)
+    .map((item) => ({
+      ...item,
+      children: buildMenuTree(menuItems, item.id),
+    }));
+};
+
+// Menu Component Props
+type MenuProps = {
+  menu: MenuItem[];
+};
+
+// Menu Component
+const Menu: React.FC<MenuProps> = ({ menu }) => {
+  // Build nested menu tree
+  const menuTree = buildMenuTree(menu);
+
+  // Render menu recursively
+  const renderMenu = (items: MenuItem[]) => {
+    return (
+      <ul>
+        {items.map((item) => (
+          <li key={item.id}>
+            {item.title}
+            {item.children && item.children.length > 0 && renderMenu(item.children)}
+          </li>
+        ))}
+      </ul>
+    );
+  };
+
+  return <nav>{renderMenu(menuTree)}</nav>;
+};
+
+const App: React.FC = () => {
+  const menu: MenuItem[] = [
+    { id: 1, menuId: null, title: "Home" },
+    { id: 2, menuId: 1, title: "Sub Home" },
+    { id: 3, menuId: 2, title: "Services" },
+    { id: 4, menuId: 3, title: "Web Development" },
+    { id: 5, menuId: 3, title: "Graphic Design" },
+    { id: 5, menuId: 4, title: "Graphic Design" },
+  ];
+
   return (
-    <div role="presentation" onClick={handleClick}>
-      <Breadcrumbs aria-label="breadcrumb">
-        <Link underline="hover" color="inherit" href="/">
-          MUI
-        </Link>
-        <Link underline="hover" color="inherit" href="/material-ui/getting-started/installation/">
-          Core
-        </Link>
-        <Typography sx={{ color: "text.primary" }}>Breadcrumbs</Typography>
-      </Breadcrumbs>
+    <div>
+      <h1>Dynamic Menu</h1>
+      <Menu menu={menu} />
     </div>
   );
-}
+};
+
+export default App;
