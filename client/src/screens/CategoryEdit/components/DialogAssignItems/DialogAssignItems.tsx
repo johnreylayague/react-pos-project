@@ -5,7 +5,6 @@ import { ListStyled, DialogStyled, EmptyMessage } from "./DialogAssignItemsStyle
 import Header from "../DialogHeader/DialogHeader";
 import { storeProps } from "../../../../store";
 import { useSelector } from "react-redux";
-import { Typography } from "@mui/material";
 
 type DialogAssignItemsProps = {
   open: boolean;
