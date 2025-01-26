@@ -20,7 +20,6 @@ type FavoriteCardProps = {
 const FavoriteCard: React.FC<FavoriteCardProps> = (props) => {
   const {
     onRemoveItem,
-    onOpenDialogAddItemAndCategory,
     itemColorAndShapeImage,
     itemImage,
     itemName,

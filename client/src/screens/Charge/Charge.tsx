@@ -1,14 +1,4 @@
-import {
-  AppBar,
-  Button,
-  ButtonBase,
-  Container,
-  Grid2 as Grid,
-  IconButton,
-  Theme,
-  Toolbar,
-  Typography,
-} from "@mui/material";
+import { AppBar, Container, Grid2 as Grid, IconButton, Theme, Toolbar } from "@mui/material";
 import { AmountSummary, ArrowBackIcon, FieldName } from "./ChargeStyles";
 import { Link, useNavigate } from "react-router-dom";
 import PaymentInput from "./components/PaymentInput/PaymentInput";
@@ -21,7 +11,7 @@ import { FormValuesCharge, defaultChargeForm } from "./FormValues";
 import { validationChargeRules } from "./ValidationRules";
 import InputField from "../../components/common/elements/Input/InputField/InputField";
 import PesosInputField from "../../components/vendor/react-number-formatter/PesosInputField/PesosInputField";
-import { convertToNumber, convertToParseFloatToFixed } from "../../utils/typescriptHelpers";
+import { convertToNumber } from "../../utils/typescriptHelpers";
 import { useEffect, useState } from "react";
 import { saleActions } from "../../store/sale-slice";
 
@@ -31,9 +21,7 @@ const Charge: React.FC<ChargeProps> = () => {
   const {
     handleSubmit,
     control,
-    setValue,
     watch,
-    trigger,
     reset,
     getValues,
     formState: { errors },
@@ -44,9 +32,7 @@ const Charge: React.FC<ChargeProps> = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isDisabled, setIsDisabled] = useState<boolean>(true);
-  const [cash, setCash] = useState<{ id: number; text: number }[] | []>([]);
   const ticket = useSelector((state: storeProps) => state.sale.ticket);
-  const cashReceived = useSelector((state: storeProps) => state.sale.cashReceived);
 
   useEffect(() => {
     const totalPrice = ticket

@@ -1,8 +1,6 @@
 import {
   Box,
   InputBase,
-  useMediaQuery,
-  useTheme,
   styled,
   InputBaseProps,
   Theme,
@@ -11,7 +9,6 @@ import {
   IconProps,
   List,
   ListProps,
-  Divider,
 } from "@mui/material";
 import { Search } from "@mui/icons-material";
 

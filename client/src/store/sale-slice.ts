@@ -1,11 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { itemListProps } from "./item-slice";
-import { convertToNumber, convertToParseFloatToFixed } from "../utils/typescriptHelpers";
+import { convertToNumber } from "../utils/typescriptHelpers";
 import { FormValuesSelectedItem } from "../screens/Sale/components/DialogSelectedItem/FormValues";
 import { FormValuesCharge } from "../screens/Charge/FormValues";
 import { FormValuesSale } from "../screens/Pay/Pay";
 import { generateRandomId } from "../utils/generateId";
-import { refundDataProps } from "./refund-slice";
 
 export type pageDataProps = {
   id: number;

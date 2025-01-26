@@ -10,7 +10,6 @@ import {
   IconProps,
 } from "@mui/material";
 import React, { useEffect } from "react";
-import { useSearch } from "../../../../hooks/Sale/useSearch";
 import { useDispatch, useSelector } from "react-redux";
 import { saleActions } from "../../../../store/sale-slice";
 import { storeProps } from "../../../../store";

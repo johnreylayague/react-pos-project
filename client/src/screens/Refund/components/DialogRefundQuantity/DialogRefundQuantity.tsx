@@ -40,9 +40,6 @@ const DialogRefundQuantity: React.FC<DialogRefundQuantityProps> = (props) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const dialogQuantity = useSelector((state: storeProps) => state.refund.dialogQuantity);
-  const refundedData = useSelector((state: storeProps) => state.refund.refundedData);
-  const purchasedItems = useSelector((state: storeProps) => state.sale.purchasedItems);
-  const receiptId = useSelector((state: storeProps) => state.refund.receiptId);
 
   const {
     handleSubmit,

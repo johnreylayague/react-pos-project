@@ -9,11 +9,8 @@ import {
   Theme,
   Typography,
 } from "@mui/material";
-import ShapeItemButton from "../ShapeItemButton/ShapeItemButton";
-import assets from "../../../../assets/assets";
 import { ContentCopy } from "@mui/icons-material";
 import { isMobile } from "react-device-detect";
-import { useInteractionHandler } from "../../../../hooks/Sale/useInteractionHandler";
 
 const AvatarStyled = styled(Avatar)<AvatarProps>(({}: { theme: Theme }) => ({
   "& .MuiAvatar-img": {
@@ -49,13 +46,10 @@ type CategoryCardOneProps = {
 const CategoryCardOne: React.FC<CategoryCardOneProps> = (props) => {
   const {
     itemName,
-    itemRepresentation,
-    itemColorAndShapeImage,
     itemImage,
     sequenceId,
     categoryId,
     onCategory,
-    onInteractionHandlers,
     onMouseDown: handleOnMouseDown,
     onMouseLeave: handleOnMouseLeave,
     onMouseUp: handleOnMouseUp,

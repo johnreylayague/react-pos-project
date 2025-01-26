@@ -2,8 +2,7 @@ import { UseFormSetValue } from "react-hook-form";
 import { FormValuesCategory } from "../../screens/CategoryCreate/CategoryCreate";
 import { convertToNumber } from "../../utils/typescriptHelpers";
 import { notificationProps } from "../material-ui/useSnackbar/useSnackbar";
-import { useDispatch, useSelector } from "react-redux";
-import { storeProps } from "../../store";
+import { useDispatch } from "react-redux";
 import { itemActions } from "../../store/item-slice";
 
 type useInteractionHandlersProps = (

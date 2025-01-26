@@ -8,7 +8,7 @@ import {
   SelectProps,
 } from "@mui/material";
 import React from "react";
-import { DividerStyled, ListItemIconStyled, AddIcon } from "./SelectFieldStyles";
+import { ListItemIconStyled, AddIcon } from "./SelectFieldStyles";
 import CloneElement from "../CloneElement/CloneElement";
 import { useSelector } from "react-redux";
 import { storeProps } from "../../../../store";

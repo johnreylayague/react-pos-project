@@ -23,17 +23,9 @@ type PageCardProps = {
   colorAndShapesData: colorAndShapesData[];
   index: number;
   pageId: number;
-  onInteractionHandlers?: {
-    onTouchStart?: () => void;
-    onTouchEnd?: () => void;
-    onTouchCancel?: () => void;
-    onMouseDown?: () => void;
-    onMouseUp?: () => void;
-    onMouseLeave?: () => void;
-  };
 };
 const PageCard: React.FC<PageCardProps> = (props) => {
-  const { onInteractionHandlers, pageData, colorAndShapesData, index, pageId } = props;
+  const { pageData, colorAndShapesData, index, pageId } = props;
 
   const item = pageData.find((page) => page.sequenceId === index && page.pageId === pageId);
 
@@ -55,11 +47,7 @@ const PageCard: React.FC<PageCardProps> = (props) => {
           lg: 1.5,
         }}
       >
-        <ShapeItemButton
-          onInteractionHandlers={onInteractionHandlers}
-          itemImage={itemImage}
-          itemName={item?.itemName}
-        />
+        <ShapeItemButton itemImage={itemImage} itemName={item?.itemName} />
       </Grid>
     </>
   );

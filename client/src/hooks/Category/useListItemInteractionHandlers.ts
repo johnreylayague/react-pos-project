@@ -18,7 +18,7 @@ export type InteractionEventHandlers = {
 
 export const useListItemInteractionHandlers = (handleOnCloseSearch: () => void) => {
   const isSelectionMode = useSelector((state: storeProps) => state.category.isSelectionMode);
-  const categoryData = useSelector((state: storeProps) => state.category.categoryData);
+  const categoryData = useSelector((state: storeProps) => state.category.categoryList);
 
   const holdTimeout = useRef<number | null>(null);
   const dispatch = useDispatch();

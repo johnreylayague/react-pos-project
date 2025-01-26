@@ -1,8 +1,6 @@
 import { MenuItem } from "@mui/material";
 import React from "react";
 import { MenuStyled } from "./MenuListFilterItemsStyles";
-import { useSelector } from "react-redux";
-import { storeProps } from "../../../../store";
 
 type MenuListFilterItemsProps = {
   anchorEl: HTMLElement | null;

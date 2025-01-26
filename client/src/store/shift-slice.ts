@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { FormValuesCloseShift } from "../screens/Shift/components/DialogCloseShift/DialogCloseShift";
 import { FormValuesCashManagement } from "../screens/CashManagement/CashManagement";
-import { convertToNumber, convertToParseFloatToFixed } from "../utils/typescriptHelpers";
 
 export interface cashManagementListProps {
   id: number | string;

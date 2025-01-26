@@ -23,12 +23,7 @@ const Pay: React.FC<PayProps> = (props) => {
   const currentActiveShiftId = useSelector((state: storeProps) => state.shift.currentActiveShiftId);
   const calculatedChange = useSelector((state: storeProps) => state.sale.calculatedChange);
 
-  const {
-    handleSubmit,
-    control,
-    formState: { errors },
-    reset,
-  } = useForm<FormValuesSale>();
+  const { handleSubmit, reset } = useForm<FormValuesSale>();
 
   useEffect(() => {
     reset({

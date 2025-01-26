@@ -12,7 +12,6 @@ import {
   TotalAmount,
   TotalText,
 } from "./RootTicketStyles";
-import TotalListItem from "./components/TotalListItem/TotalListItem";
 import { useSelector } from "react-redux";
 import { storeProps } from "../../store";
 import { ticket } from "../../store/sale-slice";

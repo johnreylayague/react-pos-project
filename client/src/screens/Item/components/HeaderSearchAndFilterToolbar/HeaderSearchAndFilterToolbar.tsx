@@ -13,7 +13,6 @@ import {
   ArrowDropDownIcon,
 } from "./HeaderSearchAndFilterToolbarStyles";
 import { useMenu } from "../../../../hooks/material-ui/useMenu/useMenu";
-import assets from "../../../../assets/assets";
 import { useDispatch, useSelector } from "react-redux";
 import { itemActions } from "../../../../store/item-slice";
 import { storeProps } from "../../../../store";

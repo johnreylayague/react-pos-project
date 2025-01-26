@@ -11,7 +11,7 @@ const AvatarStyled = styled(Avatar)<AvatarProps>(({}: { theme: Theme }) => ({
 type ShapeItemButtonProps = {
   itemName?: string;
   itemId?: number;
-  itemImage: string;
+  itemImage: string | undefined;
   sequenceId?: number;
   onAddItem?: (sequenceId: number) => void;
   onMouseDown?: () => void;
